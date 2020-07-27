@@ -1,3 +1,6 @@
+# spartacus
+Spartacus is a lean, Angular-based JavaScript storefront for SAP Commerce Cloud working exclusively through the Commerce REST API. This Spartacus project works with and enhances the telco and utilities accelerator.
+
 # TuaSpa
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.20.
