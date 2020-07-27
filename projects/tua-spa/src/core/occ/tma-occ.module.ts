@@ -1,21 +1,31 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { Config, defaultOccConfig, OccConfig, occConfigValidator, provideConfig, provideConfigValidator } from '@spartacus/core';
+import {
+  Config,
+  defaultOccConfig,
+  OccConfig,
+  occConfigValidator,
+  OccModule,
+  provideConfig,
+  provideConfigValidator
+} from '@spartacus/core';
 import { TmaOccCartModule } from './adapters/cart';
+import { TmaOccProductModule } from './adapters/product';
 
 @NgModule({
   imports: [
-    TmaOccCartModule
-  ],
+    TmaOccCartModule,
+    TmaOccProductModule
+  ]
 })
-export class TmaOccModule {
+export class TmaOccModule extends OccModule {
   static forRoot(): ModuleWithProviders<TmaOccModule> {
     return {
       ngModule: TmaOccModule,
       providers: [
         { provide: OccConfig, useExisting: Config },
         provideConfig(defaultOccConfig),
-        provideConfigValidator(occConfigValidator),
-      ],
+        provideConfigValidator(occConfigValidator)
+      ]
     };
   }
 }

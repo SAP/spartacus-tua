@@ -6,7 +6,7 @@ import { TmaProductDetailsTabModule } from './product-details-tab/tma-product-de
   imports: [
     ProductAttributesModule,
     TmaProductDetailsTabModule,
-    ProductReviewsModule,
-  ],
+    ProductReviewsModule
+  ]
 })
-export class TmaProductTabsModule extends ProductTabsModule{}
+export class TmaProductTabsModule extends ProductTabsModule { }

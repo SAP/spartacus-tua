@@ -1,13 +1,28 @@
-import { ActiveCartService, AuthService, CartActions, CartDataService, CartService, StateWithCart } from '@spartacus/core';
+import {
+  ActiveCartService,
+  AuthService,
+  CartActions,
+  CartDataService,
+  CartService,
+  OCC_USER_ID_ANONYMOUS,
+  StateWithCart
+} from '@spartacus/core';
 import * as TmaCartEntryActions from '../store/actions/tma-cart-entry.actions';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { TmaOrderEntry } from '../../model/tma-cart.entry.model';
+import { TmaOrderEntry } from '../../model';
+import { takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
-export class TmaCartService extends CartService {
+export class TmaCartService extends CartService implements OnDestroy {
+
+  protected cartId: string;
+  protected userId: string = OCC_USER_ID_ANONYMOUS;
+
+  protected destroyed$ = new Subject();
 
   constructor(
     protected store: Store<StateWithCart>,
@@ -16,13 +31,30 @@ export class TmaCartService extends CartService {
     protected activeCartService: ActiveCartService
   ) {
     super(store, cartData, authService, activeCartService);
+
+    this.authService.getOccUserId()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((userId: string) =>
+        this.userId = userId
+      );
+
+    this.activeCartService.getActiveCartId()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((cartId: string) =>
+        this.cartId = cartId
+      );
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   addCartEntry(cartEntry: TmaOrderEntry): void {
     this.store.dispatch(
       new TmaCartEntryActions.AddCartEntry({
-        userId: this.cartData.userId,
-        cartId: this.cartData.cartId,
+        userId: this.userId,
+        cartId: this.cartId,
         cartEntry
       })
     );
@@ -31,8 +63,8 @@ export class TmaCartService extends CartService {
   updateCartEntry(cartEntry: TmaOrderEntry): void {
     this.store.dispatch(
       new TmaCartEntryActions.UpdateCartEntry({
-        userId: this.cartData.userId,
-        cartId: this.cartData.cartId,
+        userId: this.userId,
+        cartId: this.cartId,
         cartEntry
       })
     );
@@ -40,8 +72,8 @@ export class TmaCartService extends CartService {
 
   loadCart() {
     this.store.dispatch(new CartActions.LoadCart({
-      userId: this.cartData.userId,
-      cartId: this.cartData.cartId
+      userId: this.userId,
+      cartId: this.cartId
     }));
   }
 }

@@ -9,9 +9,9 @@ import { TmfModule } from '../../core/tmf';
 @NgModule({
   imports: [
     TmaOccModule.forRoot(),
-    TmfModule.forRoot(),
+    TmfModule.forRoot()
   ],
-  exports: [MainModule, StorefrontFoundationModule, TmaStorefrontFoundationModule],
+  exports: [MainModule, StorefrontFoundationModule, TmaStorefrontFoundationModule]
 })
 export class TmaStorefrontModule extends StorefrontModule {
   static withConfig(
@@ -19,7 +19,7 @@ export class TmaStorefrontModule extends StorefrontModule {
   ): ModuleWithProviders<TmaStorefrontModule> {
     return {
       ngModule: TmaStorefrontModule,
-      providers: [provideConfig(config)],
+      providers: [provideConfig(config)]
     };
   }
 }

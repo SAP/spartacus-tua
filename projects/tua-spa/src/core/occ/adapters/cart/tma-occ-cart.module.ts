@@ -7,14 +7,13 @@ import { TmaOccCartEntryAdapter } from './tma-occ-cart-entry.adapter';
 @NgModule({
   imports: [
     CommonModule,
-    HttpClientModule,
+    HttpClientModule
   ],
   providers: [
     {
       provide: TmaCartEntryAdapter,
-      useClass: TmaOccCartEntryAdapter,
+      useClass: TmaOccCartEntryAdapter
     }
   ]
 })
-export class TmaOccCartModule {
-}
+export class TmaOccCartModule { }

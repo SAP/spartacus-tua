@@ -3,7 +3,7 @@
   "dest": "../../dist/tua-spa",
   "lib": {
     "entryFile": "src/public-api.ts",
-	"umdModuleIds": {
+    "umdModuleIds": {
       "@ngrx/effects": "effects",
       "@ngrx/router-store": "fromNgrxRouter",
       "@ngrx/store": "store",

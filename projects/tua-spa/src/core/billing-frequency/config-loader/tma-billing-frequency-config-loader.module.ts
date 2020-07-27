@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CONFIG_INITIALIZER, ConfigInitializer } from '@spartacus/core';
-import { TmaBillingFrequencyConfig } from '../config/tma-billing-frequency-config';
+import { TmaBillingFrequencyConfig } from '../config';
 import { TmaBillingFrequencyConfigLoaderService } from './tma-billing-frequency-config-loader.service';
 
 @NgModule()
@@ -13,9 +13,9 @@ export class TmaBillingFrequencyConfigLoaderModule {
           provide: CONFIG_INITIALIZER,
           useFactory: initConfig,
           deps: [TmaBillingFrequencyConfigLoaderService, TmaBillingFrequencyConfig],
-          multi: true,
-        },
-      ],
+          multi: true
+        }
+      ]
     };
   }
 }
@@ -33,7 +33,7 @@ export function initConfig(
   if (!config || !config.billingFrequency) {
     return {
       scopes: ['billingFrequency'],
-      configFactory: () => configLoader.loadConfig(),
+      configFactory: () => configLoader.loadConfig()
     };
   }
   return null;

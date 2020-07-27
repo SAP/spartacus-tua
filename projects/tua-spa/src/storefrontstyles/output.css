@@ -1,0 +1,50 @@
+@import '~material-design-icons/iconfont/material-icons.css';
+cx-page-slot.SiteContext::after {
+  border: none;
+}
+
+header {
+  background-color: var(--cx-color-inverse);
+  color: var(--cx-color-dark);
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+  background-color: var(--cx-color-dark);
+}
+
+cx-searchbox label {
+  background-color: var(--cx-color-background);
+  border-radius: 5px;
+}
+
+cx-login .cx-login-greet {
+  color: var(--cx-color-dark);
+}
+
+cx-navigation-ui {
+  justify-content: space-around;
+}
+
+.GuidedSellingPageTemplate {
+  max-width: 1700px;
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+}
+.GuidedSellingPageTemplate cx-page-slot.GuidedSellingContentSlot {
+  max-width: 1280px;
+  margin: auto;
+  flex-direction: row;
+  padding-bottom: 5%;
+}
+.GuidedSellingPageTemplate cx-page-slot.GuidedSellingContentSlot cx-guided-selling {
+  display: flex;
+  flex-direction: row;
+}
+.GuidedSellingPageTemplate cx-page-slot.GuidedSellingContentSlot cx-guided-selling > div {
+  flex-direction: column;
+  width: 95%;
+  margin: auto;
+}

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'cx-added-to-cart-dialog',
-  templateUrl: './tma-added-to-cart-dialog.component.html',
+  templateUrl: './tma-added-to-cart-dialog.component.html'
 })
 export class TmaAddedToCartDialogComponent extends AddedToCartDialogComponent implements OnInit {
 
@@ -19,7 +19,7 @@ export class TmaAddedToCartDialogComponent extends AddedToCartDialogComponent im
     protected cartService: TmaCartService,
     protected fb: FormBuilder,
     protected currencyService: CurrencyService,
-    protected promotionService?: PromotionService,
+    protected promotionService?: PromotionService
   ) {
     super(modalService, cartService, fb, promotionService);
   }

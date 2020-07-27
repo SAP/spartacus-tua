@@ -1,4 +1,3 @@
-export * from './actions';
-export * from './adapters';
-export * from './effects';
-export * from './reducers';
+export * from './actions/index';
+export * from './adapters/index';
+export * from './selectors/index';

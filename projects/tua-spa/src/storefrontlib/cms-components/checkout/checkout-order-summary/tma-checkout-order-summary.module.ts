@@ -12,13 +12,13 @@ import { TmaCheckoutOrderSummaryComponent } from './tma-checkout-order-summary.c
     ConfigModule.withConfig({
       cmsComponents: {
         CheckoutOrderSummary: {
-          component: TmaCheckoutOrderSummaryComponent,
-        },
-      },
-    }),
+          component: TmaCheckoutOrderSummaryComponent
+        }
+      }
+    })
   ],
   declarations: [TmaCheckoutOrderSummaryComponent],
   entryComponents: [TmaCheckoutOrderSummaryComponent],
-  exports: [TmaCheckoutOrderSummaryComponent],
+  exports: [TmaCheckoutOrderSummaryComponent]
 })
 export class TmaCheckoutOrderSummaryModule extends CheckoutOrderSummaryModule { }

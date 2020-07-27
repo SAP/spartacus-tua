@@ -1,19 +1,20 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { TmaTmfChecklistActionModule } from './adapters/checklistaction/tma-tmf-checklist-action.module';
+import { TmaTmfChecklistActionModule } from './adapters/checklistaction';
 import { TmfConfig } from './config/tmf-config';
 import { Config, provideConfig, provideConfigValidator } from '@spartacus/core';
 import { defaultTmfConfig } from './config/default-tmf-config';
 import { tmfConfigValidator } from './config/tmf-config-validator';
 import { TmfConfigLoaderModule } from './config-loader/tmf-config-loader.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TmaClientTokenInterceptor } from '../auth/http-interceptors/tma-client-token.interceptor';
-import { TmaUserTokenInterceptor } from '../auth/http-interceptors/tma-user-token.interceptor';
+import { TmaClientTokenInterceptor, TmaUserTokenInterceptor } from '../auth/http-interceptors';
+import { TmaTmfShoppingCartModule } from './adapters/cart';
 
 @NgModule({
   imports: [
     TmaTmfChecklistActionModule,
-    TmfConfigLoaderModule.forRoot(),
-  ],
+    TmaTmfShoppingCartModule,
+    TmfConfigLoaderModule.forRoot()
+  ]
 })
 export class TmfModule {
   static forRoot(): ModuleWithProviders<TmfModule> {
@@ -32,8 +33,8 @@ export class TmfModule {
           provide: HTTP_INTERCEPTORS,
           useClass: TmaUserTokenInterceptor,
           multi: true
-        },
-      ],
-    };
+        }
+      ]
+    }
   }
 }

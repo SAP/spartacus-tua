@@ -1,18 +1,22 @@
 import { HttpParams } from '@angular/common/http';
-import { Injectable, isDevMode, Optional } from '@angular/core';
+import { Injectable, isDevMode, OnDestroy, Optional } from '@angular/core';
 import { TmfConfig } from '../config/tmf-config';
 import { BASE_SITE_CONTEXT_ID, BaseSiteService } from '@spartacus/core';
 import { TmaDynamicTemplate } from '../../config/utils/tma-dynamic-template';
 import { getContextParameterDefault } from '../../site-context/config/tma-context-config-utils';
+import { takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs";
 
 
 @Injectable({
   providedIn: 'root',
 })
-export class TmfEndpointsService {
-  private activeBaseSite: string;
+export class TmfEndpointsService implements OnDestroy {
 
-  private readonly SCOPE_SUFFIX = '_scopes';
+  protected activeBaseSite: string;
+  protected readonly SCOPE_SUFFIX = '_scopes';
+
+  protected destroyed$ = new Subject();
 
   constructor(
     private config: TmfConfig,
@@ -22,10 +26,15 @@ export class TmfEndpointsService {
       getContextParameterDefault(this.config, BASE_SITE_CONTEXT_ID) || '';
 
     if (this.baseSiteService) {
-      this.baseSiteService
-        .getActive()
+      this.baseSiteService.getActive()
+        .pipe(takeUntil(this.destroyed$))
         .subscribe(value => (this.activeBaseSite = value));
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   /**
@@ -72,6 +81,7 @@ export class TmfEndpointsService {
    * @param endpoint Name of the TMF endpoint key config
    * @param urlParams  URL parameters
    * @param queryParams Query parameters
+   * @param scope The scope of the url
    */
   getUrl(
     endpoint: string,
@@ -82,10 +92,12 @@ export class TmfEndpointsService {
     endpoint = this.getEndpointForScope(endpoint, scope);
 
     if (urlParams) {
-      Object.keys(urlParams).forEach(key => {
-        urlParams[key] = encodeURIComponent(urlParams[key]);
+      urlParams.forEach((urlParam: object) => {
+        Object.keys(urlParam).forEach((key: string) =>
+          urlParam[key] = encodeURIComponent(urlParam[key])
+        );
+        endpoint = TmaDynamicTemplate.resolve(endpoint, urlParam);
       });
-      endpoint = TmaDynamicTemplate.resolve(endpoint, urlParams);
     }
 
     if (queryParams) {

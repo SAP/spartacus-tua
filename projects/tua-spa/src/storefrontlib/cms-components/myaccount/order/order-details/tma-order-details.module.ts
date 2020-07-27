@@ -33,33 +33,33 @@ import { TmaCartSharedModule } from '../../../cart/cart-shared';
         path: null,
         canActivate: [CmsPageGuard],
         component: PageLayoutComponent,
-        data: { pageLabel: 'order', cxRoute: 'orderGuest' },
+        data: { pageLabel: 'order', cxRoute: 'orderGuest' }
       },
       {
         path: null,
         canActivate: [AuthGuard, CmsPageGuard],
         component: PageLayoutComponent,
-        data: { cxRoute: 'orderDetails' },
-      },
+        data: { cxRoute: 'orderDetails' }
+      }
     ]),
     ConfigModule.withConfig({
       cmsComponents: {
         AccountOrderDetailsItemsComponent: {
-          component: TmaOrderDetailItemsComponent,
+          component: TmaOrderDetailItemsComponent
         },
         AccountOrderDetailsTotalsComponent: {
-          component: TmaOrderDetailTotalsComponent,
-        },
+          component: TmaOrderDetailTotalsComponent
+        }
       },
       features: {
         consignmentTracking: '1.2',
-      },
+      }
     }),
-    SpinnerModule,
+    SpinnerModule
   ],
   providers: [OrderDetailsService],
   declarations: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent],
   exports: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent],
-  entryComponents: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent],
+  entryComponents: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent]
 })
 export class TmaOrderDetailsModule extends OrderDetailsModule { }

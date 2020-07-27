@@ -1,8 +1,12 @@
 export interface TmaTmfEndpoints {
   /**
-   * Checklist action
+   * Checklist Action
    *
-   * @member {string}
    */
   checklistAction?: string;
+
+  /**
+   * Shopping Cart
+   */
+  shoppingCart?: string;
 }

@@ -3,8 +3,7 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { defaultTmaAuthConfig } from './config/default-tma-auth-config';
-import { TmaClientTokenInterceptor } from './http-interceptors/tma-client-token.interceptor';
-import { TmaUserTokenInterceptor } from './http-interceptors/tma-user-token.interceptor';
+import { TmaClientTokenInterceptor, TmaUserTokenInterceptor } from './http-interceptors';
 
 @NgModule({
   imports: [
@@ -22,16 +21,16 @@ export class TmaAuthModule extends AuthModule {
           {
             provide: HTTP_INTERCEPTORS,
             useExisting: TmaClientTokenInterceptor,
-            multi: true,
+            multi: true
           },
           {
             provide: HTTP_INTERCEPTORS,
             useExisting: TmaUserTokenInterceptor,
-            multi: true,
-          },
+            multi: true
+          }
         ],
         { provide: AuthConfig, useExisting: Config },
-      ],
+      ]
     };
   }
 }

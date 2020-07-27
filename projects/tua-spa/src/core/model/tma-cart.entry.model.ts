@@ -2,27 +2,27 @@ import { OrderEntry, Price, Region } from '@spartacus/core';
 import { TmaSubscribedProduct } from './tma-cart.model';
 import { TmaCycle, TmaProcessType } from './tma-product.model';
 
-export enum TmaActionTypeEnum {
+
+export enum TmaActionType {
   ADD = 'ADD',
-  UPDATE = 'UPDATE',
+  UPDATE = 'UPDATE'
 }
 
-export enum TmaBillingTimeEnum {
-  PayNow = 'paynow',
-  Monthly = 'monthly',
-  Yearly = 'yearly',
+export enum TmaBillingTimeType {
+  PAY_NOW = 'paynow',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly'
 }
 
-export enum TmaChargeTypeEnum {
-  OneTime = 'oneTime',
-  Recurring = 'recurring',
-  Usage = 'usage',
+export enum TmaChargeType {
+  ONE_TIME = 'oneTime',
+  RECURRING = 'recurring',
+  USAGE = 'usage'
 }
 
-export enum TmaPriceTypeEnum {
-  discount = 'DISCOUNT',
-  productPrice = 'PRODUCT_PRICE',
-  deliveryCost = 'DELIVERY_COST'
+export enum TmaPriceType {
+  DISCOUNT = 'DISCOUNT',
+  DELIVERY_COST = 'DELIVERY_COST'
 }
 
 export interface TmaDuration {
@@ -49,6 +49,7 @@ export interface TmaSubscriptionTerm {
 }
 
 export interface TmaCartPrice {
+  id: string;
   name: string;
   description: string;
   priceType: string;
@@ -61,10 +62,13 @@ export interface TmaCartPrice {
   cycle: TmaCycle;
   tierStart: string;
   tierEnd: string;
+  childPrices?: TmaChildCartPrice[];
+  usageChargeType?: string;
+  parentId?: string;
 }
 
 export interface TmaOrderEntry extends OrderEntry {
-  action?: TmaActionTypeEnum;
+  action?: TmaActionType;
   appointmentId?: string;
   processType?: TmaProcessType;
   subscribedProduct?: TmaSubscribedProduct;
@@ -74,6 +78,21 @@ export interface TmaOrderEntry extends OrderEntry {
   region?: Region;
   rootBpoCode?: string;
   cartPrice?: TmaCartPrice;
+}
+
+export interface TmaChildCartPrice {
+  taxIncludedAmount?: TmaTaxIncludedAmount;
+  billingTime?: TmaBillingTime;
+}
+
+export interface TmaTaxIncludedAmount {
+  value?: string;
+  currencyIso?: string;
+  formattedValue?: string;
+}
+
+export interface TmaBillingTime {
+  name?: string;
 }
 
 export interface TmaCartItemPrice {

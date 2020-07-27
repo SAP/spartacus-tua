@@ -28,9 +28,11 @@
             [item]="entry"
             [compact]="true"
             [isReadOnly]="false"
+            [isRemovable]="true"
             [displayPrices]="false"
             [parent]="form.controls[entry.product.code]"
             [cartIsLoading]="form.dirty"
+            [promotionLocation]="promotionLocation"
             (remove)="removeEntry($event)"
             (update)="updateEntry($event)"
             (view)="dismissModal('Product selected')"
@@ -51,7 +53,7 @@
             </div>
 
             <ng-container *ngIf="currency$ | async as currency">
-              <div>{{ 'common.currency.' + currency | cxTranslate }}{{ cartPriceService.computeSubTotalCartPrice(cart) }}</div>
+              <div>{{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartPriceService.computeSubTotalCartPrice(cart) }}</div>
             </ng-container>
           </div>
 

@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
 import {
-  CardModule, OrderConfirmationGuard,
-  PromotionsModule, PwaModule
+  CardModule,
+  OrderConfirmationGuard,
+  OrderConfirmationModule,
+  PromotionsModule,
+  PwaModule
 } from '@spartacus/storefront';
 import { CommonModule } from '@angular/common';
 import { ConfigModule, FeaturesConfigModule, I18nModule } from '@spartacus/core';
@@ -23,18 +26,17 @@ import { TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent
       cmsComponents: {
         OrderConfirmationItemsComponent: {
           component: TmaOrderConfirmationItemsComponent,
-          guards: [OrderConfirmationGuard],
+          guards: [OrderConfirmationGuard]
         },
         OrderConfirmationTotalsComponent: {
           component: TmaOrderConfirmationTotalsComponent,
-          guards: [OrderConfirmationGuard],
-        },
-      },
-    }),
+          guards: [OrderConfirmationGuard]
+        }
+      }
+    })
   ],
   declarations: [TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent],
   exports: [TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent],
-  entryComponents: [TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent],
+  entryComponents: [TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent]
 })
-export class TmaOrderConfirmationModule {
-}
+export class TmaOrderConfirmationModule extends OrderConfirmationModule { }

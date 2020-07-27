@@ -14,17 +14,16 @@ import { TmaCartSharedModule } from '../cart-shared';
     ConfigModule.withConfig({
       cmsComponents: {
         CartTotalsComponent: {
-          component: TmaCartTotalsComponent,
-        },
-      },
+          component: TmaCartTotalsComponent
+        }
+      }
     }),
     TmaCartSharedModule,
     I18nModule,
-    CartCouponModule,
+    CartCouponModule
   ],
   declarations: [TmaCartTotalsComponent],
   exports: [TmaCartTotalsComponent],
-  entryComponents: [TmaCartTotalsComponent],
+  entryComponents: [TmaCartTotalsComponent]
 })
-export class TmaCartTotalsModule extends CartTotalsModule {
-}
+export class TmaCartTotalsModule extends CartTotalsModule { }
