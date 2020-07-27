@@ -1,0 +1,28 @@
+cx-page-slot.SiteContext::after {
+  border: none;
+}
+
+header {
+  background-color: var(--cx-color-inverse);
+  color: var(--cx-color-dark);
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+  background-color: var(--cx-color-dark);
+}
+
+cx-searchbox label {
+  background-color: var(--cx-color-background);
+  border-radius: 5px;
+}
+
+cx-login .cx-login-greet {
+  color: var(--cx-color-dark);
+}
+
+// Spaces between tabs
+cx-navigation-ui {
+  justify-content: space-around;
+}

@@ -1,0 +1,25 @@
+<ng-container *ngIf="isMainAreaDisplay">
+  <div class="row">
+    <div>
+      {{'productDetails.price.priceTypes.billingEvents.oneTime' | cxTranslate : {context: priceList[0]?.billingEvent} }}:&nbsp;
+    </div>
+    <ng-container *ngIf="priceList && priceList.length > 0 && priceList[0].price else noPriceTemplate">
+      <div class="cx-bold">
+        {{priceService.getFormattedPrice(priceService.getSumOfPrices(priceList))}}
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!isMainAreaDisplay">
+  <div *ngIf="priceList && priceList.length > 0">
+    -&nbsp;{{priceService.getFormattedPrice(priceService.getSumOfPrices(priceList))}}&nbsp;-
+    {{'productDetails.price.priceTypes.billingEvents.oneTime' | cxTranslate : {context: priceList[0].billingEvent} }}
+  </div>
+</ng-container>
+
+<ng-template #noPriceTemplate>
+  <ng-container *ngIf="currency$ | async as currency">
+    <div class="cx-bold">{{ 'common.currencies.currency' | cxTranslate : {context: currency} }}&nbsp;0.0</div>
+  </ng-container>
+</ng-template>

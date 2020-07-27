@@ -1,0 +1,9 @@
+<ng-container *ngIf="cart$ | async as cart">
+  <ng-container *ngIf="entries$ | async as entries">
+    <cx-order-summary [cart]="cart"></cx-order-summary>
+    <button [routerLink]="{ cxRoute: 'checkout' } | cxUrl" *ngIf="entries.length" class="btn btn-primary btn-block"
+      type="button" [disabled]="hasCompatibilityErrors(cart)">
+      {{ 'cartDetails.proceedToCheckout' | cxTranslate }}
+    </button>
+  </ng-container>
+</ng-container>
