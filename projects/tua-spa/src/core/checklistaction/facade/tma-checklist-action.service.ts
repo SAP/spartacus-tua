@@ -1,16 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import * as TmaChecklistAction from '../store/actions/tma-checklist-action.action';
 import * as TmaChecklistActionModel from '../../model/tma-checklist-action.model';
 import { Store } from '@ngrx/store';
-import { TmaStateWithChecklistAction } from '../store/tma-checklist-action.state';
+import { TmaStateWithChecklistAction } from '../store';
 import * as TmaChecklistActionSelectors from '../store/selectors/tma-checklist-action.selector';
-import { filter, tap } from 'rxjs/operators';
+import { filter, takeUntil, tap } from 'rxjs/operators';
 
 @Injectable()
-export class TmaChecklistActionService {
+export class TmaChecklistActionService implements OnDestroy {
 
-  constructor(protected store: Store<TmaStateWithChecklistAction>) {
+  protected destroyed$ = new Subject();
+
+  constructor(
+    protected store: Store<TmaStateWithChecklistAction>
+  ) {
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   getChecklistActionForProductCode(baseSiteId: string, productCode: string): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
@@ -24,9 +33,10 @@ export class TmaChecklistActionService {
               productCode
             }));
           }
-        }
-        ), filter(checklistActions => checklistActions != null)
-      ).subscribe();
+        }),
+        filter(checklistActions => checklistActions != null),
+        takeUntil(this.destroyed$))
+      .subscribe();
 
     return this.store
       .select(TmaChecklistActionSelectors.getChecklistActionForProductCode, { productCode, baseSiteId });

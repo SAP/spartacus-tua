@@ -7,8 +7,7 @@ import { TmaCartPriceService } from '../../../../../core/cart/facade';
 
 @Component({
   selector: 'cx-order-summary',
-  templateUrl: './tma-order-summary.component.html',
-  styleUrls: ['./tma-order-summary.component.scss']
+  templateUrl: './tma-order-summary.component.html'
 })
 export class TmaOrderSummaryComponent extends OrderSummaryComponent implements OnInit {
 

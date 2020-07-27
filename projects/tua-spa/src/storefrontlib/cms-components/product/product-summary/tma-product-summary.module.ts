@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { ConfigModule, I18nModule } from '@spartacus/core';
 import { OutletModule, ProductSummaryModule } from '@spartacus/storefront';
 import { TmaProductSummaryComponent } from './tma-product-summary.component';
-import { TmaPriceModule } from '../price/tma-price.module';
+import { TmaPriceModule } from '../price';
 
 @NgModule({
   imports: [
@@ -13,15 +13,14 @@ import { TmaPriceModule } from '../price/tma-price.module';
     ConfigModule.withConfig({
       cmsComponents: {
         ProductSummaryComponent: {
-          component: TmaProductSummaryComponent,
-        },
-      },
+          component: TmaProductSummaryComponent
+        }
+      }
     }),
-    TmaPriceModule,
+    TmaPriceModule
   ],
   declarations: [TmaProductSummaryComponent],
   entryComponents: [TmaProductSummaryComponent],
-  exports: [TmaProductSummaryComponent],
+  exports: [TmaProductSummaryComponent]
 })
-export class TmaProductSummaryModule extends ProductSummaryModule {
-}
+export class TmaProductSummaryModule extends ProductSummaryModule { }

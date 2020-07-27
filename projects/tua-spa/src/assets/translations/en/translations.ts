@@ -4,11 +4,6 @@ export const tmaTranslations: TranslationResources = {
   en: {
     product: {
       productDetails: {
-        currency: {
-          USD: '$',
-          GBP: '£',
-          EUR: '€',
-        },
         price: {
           contractDuration: 'Contract Duration',
           common: {
@@ -16,7 +11,7 @@ export const tmaTranslations: TranslationResources = {
             to: 'to',
             upTo: 'up to',
             onwards: 'onwards',
-            each: 'each',
+            each: 'each'
           },
           priceTypes: {
             payNow: 'Pay Now',
@@ -25,10 +20,10 @@ export const tmaTranslations: TranslationResources = {
               oneTime: 'Pay Now',
               oneTime_paynow: 'Pay Now',
               oneTime_oncancellation: 'cancellation',
-              oneTime_onfirstbill: 'first bill fee',
+              oneTime_onfirstbill: 'first bill fee'
             },
             oneTimeFees: 'One Time Fees',
-            usageCharges: 'Usage Charges',
+            usageCharges: 'Usage Charges'
           },
           recurringCharges: {
             forFirst: 'for first',
@@ -45,25 +40,25 @@ export const tmaTranslations: TranslationResources = {
               abbreviation_annual: 'yr',
               abbreviation_annually: 'yr',
               abbreviation_quarter: 'qr',
-              abbreviation_quarterly: 'qr',
-            },
+              abbreviation_quarterly: 'qr'
+            }
           },
           usageCharge: {
             charges: {
-              charge_each_respective_tier: 'Charges',
-              charge_highest_applicable_tier: 'Charged By',
               charge: 'Charges',
+              charge_each_respective_tier: 'Charges',
+              charge_highest_applicable_tier: 'Charged By'
             },
             usageTypes: {
               usageType_each_respective_tier: 'Each Respective Tier',
               usageType_highest_applicable_tier: 'Highest Applicable Tier',
-              usageType: 'Each Respective Tier',
+              usageType: 'Each Respective Tier'
             },
             perUnit: 'Per Unit',
-            perVolume: 'Per Volume',
-          },
+            perVolume: 'Per Volume'
+          }
         }
-      },
+      }
     },
     cart: {
       cartItems: {
@@ -71,27 +66,29 @@ export const tmaTranslations: TranslationResources = {
         installationAddress: 'Installation Address',
         meterNo: 'Meter NO',
         price: {
+          common: {
+            from: 'From',
+            onwards: 'onwards'
+          },
           month: 'month',
           months: 'Months',
-          onwards: 'onwards',
           payOnCheckoutPrice: 'Pay On Checkout',
-          recurringCharges: 'Recurring Charges:',
-          oneTimeCharges: 'One Time Charges:',
-          usageCharges: 'Usage Charges:',
-          overcharge: '',
+          recurringCharges: 'Recurring Charges',
+          oneTimeCharges: 'One Time Charges',
+          usageCharges: 'Usage Charges',
           billingFrequency: {
             abbreviation_month: 'month',
             abbreviation_monthly: 'month',
             abbreviation_year: 'year',
             abbreviation_yearly: 'year',
             abbreviation_quarter: 'quarter',
-            abbreviation_quarterly: 'quarter',
+            abbreviation_quarterly: 'quarter'
           }
         }
-
       },
       orderCost: {
-        totalPayOnCheckout: 'Total Pay On Checkout:'
+        toBeDetermined: 'TBD',
+        totalPayOnCheckout: 'Total Pay On Checkout'
       }
     },
     common: {
@@ -100,11 +97,29 @@ export const tmaTranslations: TranslationResources = {
         no: 'No',
         next: 'Next',
         optional: 'Optional',
-        currency: {
-          USD: '$',
-          GBP: '£',
-          EUR: '€',
+        currencies: {
+          currency: '$',
+          currency_USD: '$',
+          currency_GBP: '£',
+          currency_EUR: '€'
+        }
+      }
+    },
+    guidedSelling: {
+      guidedSelling: {
+        steps: {
+          offers: 'Offers',
+          configureOffer: 'Configure Offer'
         },
+        addSelection: {
+          buttonLabel_select: 'Select',
+          buttonLabel_unselect: 'Unselect'
+        },
+        currentSelection: {
+          newContract: '(with new contract)',
+          offer: 'Offer',
+          startingFrom: 'Starting From'
+        }
       }
     }
   }

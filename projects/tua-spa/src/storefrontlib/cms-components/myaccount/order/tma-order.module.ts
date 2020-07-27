@@ -16,7 +16,7 @@ import { TmaOrderDetailsModule } from './order-details';
     OrderCancellationModule,
     OrderReturnModule,
     ReturnRequestListModule,
-    ReturnRequestDetailModule,
-  ],
+    ReturnRequestDetailModule
+  ]
 })
-export class TmaOrderModule extends OrderModule {}
+export class TmaOrderModule extends OrderModule { }

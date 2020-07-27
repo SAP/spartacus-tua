@@ -20,3 +20,14 @@
     font-size: 0.75rem;
   }
 }
+.cx-compact {
+  .cx-image-container {
+    padding: 0;
+  }
+
+  cx-media.is-missing {
+    min-width: 30px;
+    min-height: 30px;
+    background-size: 30px;
+  }
+}

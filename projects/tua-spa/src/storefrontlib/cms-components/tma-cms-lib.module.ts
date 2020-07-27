@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { TmaProductListModule, TmaProductSummaryModule } from './product';
-import { TmaCartComponentModule } from './cart/tma-cart.module';
-import { TmaCheckoutComponentModule } from './checkout/tma-checkout.module';
+import { TmaCartComponentModule } from './cart';
+import { TmaCheckoutComponentModule } from './checkout';
 import { TmaOrderConfirmationModule } from './order-confirmation';
 import { TmaOrderModule } from './myaccount/order/tma-order.module';
-import { TmaProductTabsModule } from './product/product-tabs/tma-product-tabs.module';
+import { TmaProductTabsModule } from './product/product-tabs';
+import { TmaGuidedSellingModule } from './guided-selling';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { TmaProductTabsModule } from './product/product-tabs/tma-product-tabs.mo
     TmaCheckoutComponentModule,
     TmaOrderConfirmationModule,
     TmaOrderModule,
+    TmaGuidedSellingModule
   ]
 })
 export class TmaCmsLibModule {

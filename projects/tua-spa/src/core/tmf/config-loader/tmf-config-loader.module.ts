@@ -15,9 +15,9 @@ export class TmfConfigLoaderModule {
           provide: CONFIG_INITIALIZER,
           useFactory: initConfig,
           deps: [TmfConfigLoaderService, SiteContextConfig],
-          multi: true,
-        },
-      ],
+          multi: true
+        }
+      ]
     };
   }
 }
@@ -25,17 +25,14 @@ export class TmfConfigLoaderModule {
 /**
  * Initializes the Spartacus config asynchronously basing on the external config
  */
-export function initConfig(
-  configLoader: TmfConfigLoaderService,
-  config: SiteContextConfig
-): ConfigInitializer {
+export function initConfig(configLoader: TmfConfigLoaderService, config: SiteContextConfig): ConfigInitializer {
   /**
    * Load config for `context` from backend only when there is no static config for `context.baseSite`
    */
   if (!config.context || !config.context[BASE_SITE_CONTEXT_ID]) {
     return {
       scopes: ['context', 'i18n.fallbackLang'],
-      configFactory: () => configLoader.loadConfig(),
+      configFactory: () => configLoader.loadConfig()
     };
   }
   return null;

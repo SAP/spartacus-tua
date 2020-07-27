@@ -15,7 +15,7 @@
           <div [ngClass]="compact ? '' : ' col-md-4 col-lg-4 col-xl-5'">
             <div *ngIf="item.product.name" class="cx-name">
               <a class="cx-link" [routerLink]="{ cxRoute: 'product', params: item.product } | cxUrl"
-                (click)="viewItem()">{{ item.product.name }}</a>
+                 (click)="viewItem()">{{ item.product.name }}</a>
             </div>
             <div *ngIf="item.product.code" class="cx-code">
               {{ 'cartItems.id' | cxTranslate }} {{ item.product.code }}
@@ -41,7 +41,7 @@
           <!-- Item Quantity -->
           <div class="cx-quantity" [ngClass]="compact ? '' : ' col-3'">
             <div class="cx-label" [ngClass]="compact ? '' : ' d-block d-md-none d-lg-none d-xl-none'" placement="left"
-              title="{{ 'cartItems.quantityTitle' | cxTranslate }}">
+                 title="{{ 'cartItems.quantityTitle' | cxTranslate }}">
               {{ 'cartItems.quantity' | cxTranslate }}
             </div>
 
@@ -50,13 +50,14 @@
             </div>
             <div *ngIf="!isReadOnly && parent" class="cx-value" [formGroup]="parent">
               <cx-item-counter
+                [quantity]="item.quantity"
+                [entryNumber]="item.entryNumber"
                 [isValueChangeable]="item.updateable"
                 [step]="1"
                 [min]="1"
                 [max]="item.product.stock?.stockLevel || 1000"
                 (update)="updateItem($event)"
-                [cartIsLoading]="cartIsLoading"
-                formControlName="quantity">
+                [cartIsLoading]="cartIsLoading">
               </cx-item-counter>
             </div>
           </div>
@@ -66,7 +67,7 @@
               {{ 'cartItems.price.payOnCheckoutPrice' | cxTranslate }}
             </div>
             <div class="cx-value">
-              {{ 'common.currency.' + currency | cxTranslate }}{{ cartItemPrice.payOnCheckoutPrice }}
+              {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartItemPrice.payOnCheckoutPrice }}
             </div>
           </div>
           <!-- Total -->
@@ -95,47 +96,60 @@
         <ng-container *ngIf="displayPrices">
           <div class="cx-costs col-10">
             <div class="col-sm-5 col-md-5 col-lq-5 col-xl-5">
+
+              <!-- Recurring Charges -->
               <div *ngIf="cartItemPrice.recurringPrices.length">
-                <div  [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.recurringCharges' | cxTranslate }}
+                <div [ngClass]="compact ? '' : ' cx-label'">
+                  {{ 'cartItems.price.recurringCharges' | cxTranslate }}:
                 </div>
                 <div *ngFor="let price of cartItemPrice.recurringPrices">
                   <div *ngIf="price.cycle">
                     <div>
                       <span>
                           - {{ 'cartItems.price.months' | cxTranslate }}
-                        {{ price.cycle.cycleStart }} - {{ price.cycle.cycleEnd ? (price.cycle.cycleEnd) : ('cartItems.price.onwards' | cxTranslate) }}:
-                        {{ 'common.currency.' + currency | cxTranslate }}{{ price.taxIncludedAmount.value }}
+                        {{ price.cycle.cycleStart }}
+                        - {{ price.cycle.cycleEnd ? (price.cycle.cycleEnd) : ('cartItems.price.common.onwards' | cxTranslate) }}:
+                        {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
                         / {{ 'cartItems.price.billingFrequency.abbreviation' | cxTranslate : {context: price?.recurringChargePeriod} }}
                       </span>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- One Time Charges -->
               <div *ngIf="cartItemPrice.oneTimeChargePrices.length">
-                <div  [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.oneTimeCharges' | cxTranslate }}
+                <div [ngClass]="compact ? '' : ' cx-label'">
+                  {{ 'cartItems.price.oneTimeCharges' | cxTranslate }}:
                 </div>
                 <div *ngFor="let price of cartItemPrice.oneTimeChargePrices">
                   <span>
-                    - {{ 'common.currency.' + currency | cxTranslate }}{{ price.taxIncludedAmount.value }}:
+                    - {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}:
                     {{ price.description }}
                   </span>
                 </div>
               </div>
             </div>
+
+            <!-- Usage Charges -->
             <div class="col-sm-5 col-md-5 col-lq-5 col-xl-5">
-              <div *ngIf="cartItemPrice.usageChargePrices.length">
-                <div  [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.usageCharges' | cxTranslate }}
+              <div *ngIf="(cartItemPrice.usageChargePrices | keyvalue)?.length > 0">
+                <div [ngClass]="compact ? '' : ' cx-label'">
+                  {{ 'cartItems.price.usageCharges' | cxTranslate }}:
                 </div>
-                <div *ngFor="let price of cartItemPrice.usageChargePrices">
-                  <div>
-                    <span>
-                      - {{ price.tierStart ? (price.tierStart + '-' + price.tierEnd + ':') : ('cartItems.price.overcharge' | cxTranslate) }}
-                      {{ 'common.currency.' + currency | cxTranslate }}{{ price.taxIncludedAmount.value }}
-                      / {{ price.unitOfMeasure }}
-                    </span>
+                <div *ngFor="let usageChargePrices of cartItemPrice.usageChargePrices | keyvalue">
+                  <div *ngFor="let price of usageChargePrices.value">
+                    <div>
+                      <span>
+                        - {{ price.tierStart ?
+                        (price.tierStart + '-' + price.tierEnd + ':') :
+                        (('cartItems.price.common.from' | cxTranslate) + ' ' +
+                          (cartPriceService.getMaximumTierEnd(usageChargePrices.value) + 1) + ' ' +
+                          ('cartItems.price.common.onwards' | cxTranslate) + ':') }}
+                        {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
+                        / {{ price.unitOfMeasure }}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -165,7 +179,7 @@
           "></ng-container>
           </ng-container>
 
-          <div class="col-md-3 col-lg-3 col-xl-3 cx-remove-btn">
+          <div *ngIf="isRemovable" [ngClass]="compact ? 'row col-3 col-md-3 col-lg-3 col-xl-3' : 'col-md-3 col-lg-3 col-xl-3 cx-remove-btn'">
             <button class="link" [disabled]="cartIsLoading" (click)="removeItem()">
               {{ 'common.remove' | cxTranslate }}
             </button>

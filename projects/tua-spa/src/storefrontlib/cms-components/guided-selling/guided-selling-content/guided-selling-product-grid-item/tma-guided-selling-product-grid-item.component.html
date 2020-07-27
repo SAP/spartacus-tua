@@ -1,0 +1,57 @@
+<div class="cx-container">
+  <a
+    [routerLink]="{ cxRoute: 'product', params: product } | cxUrl"
+    (click)="setShouldRemoveCurrentSelections(false)"
+    class="cx-product-image-container"
+    tabindex="-1"
+  >
+    <!-- Selected Star -->
+    <div *ngIf="isSelected" class="cx-selected-product ng-star-inserted">
+      <span class="material-icons starhalf">star</span>
+    </div>
+
+    <!-- Image -->
+    <cx-media
+      class="cx-product-image"
+      [container]="product.images?.PRIMARY"
+      format="product"
+      [alt]="product.summary"
+    ></cx-media>
+  </a>
+
+  <!-- Name -->
+  <a
+    [routerLink]="{ cxRoute: 'product', params: product } | cxUrl"
+    (click)="setShouldRemoveCurrentSelections(false)"
+    class="cx-product-name"
+    [innerHTML]="product.nameHtml"
+  ></a>
+
+  <!-- Rating -->
+  <div class="cx-product-rating">
+    <cx-star-rating
+      *ngIf="product.averageRating"
+      [rating]="product?.averageRating"
+      [disabled]="true"
+    ></cx-star-rating>
+    <div *ngIf="!product.averageRating">
+      {{ 'productDetails.noReviews' | cxTranslate }}
+    </div>
+  </div>
+
+  <!-- Price -->
+  <div class="cx-product-price-container">
+    <div class="cx-product-price" aria-label="Product price">
+      <div *ngIf="product.price?.formattedValue">
+        {{ 'guidedSelling.currentSelection.startingFrom' | cxTranslate }}
+      </div>
+      {{ product.price?.formattedValue }}
+    </div>
+  </div>
+
+  <!-- Select/Unselect Button -->
+  <cx-guided-selling-add-selection
+    [isSelected]="isSelected"
+    (updateSelected)="updateSelected($event)"
+  ></cx-guided-selling-add-selection>
+</div>

@@ -13,6 +13,6 @@ import { TmaOneTimeChargeComponent } from './one-time-charge/tma-one-time-charge
     I18nModule,
   ],
   declarations: [TmaOneTimeChargeComponent, TmaRecurringChargeComponent, TmaUsageChargeComponent, TmaPerUnitChargeComponent, TmaVolumeChargeComponent],
-  exports: [TmaOneTimeChargeComponent, TmaRecurringChargeComponent, TmaUsageChargeComponent, TmaPerUnitChargeComponent, TmaVolumeChargeComponent],
+  exports: [TmaOneTimeChargeComponent, TmaRecurringChargeComponent, TmaUsageChargeComponent, TmaPerUnitChargeComponent, TmaVolumeChargeComponent]
 })
 export class TmaPriceModule { }

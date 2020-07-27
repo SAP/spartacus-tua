@@ -25,18 +25,18 @@ import { TmaCartSharedModule } from '../cart-shared';
     ConfigModule.withConfig({
       cmsComponents: {
         ProductAddToCartComponent: {
-          component: TmaAddToCartComponent,
-        },
-      },
+          component: TmaAddToCartComponent
+        }
+      }
     }),
     UrlModule,
     IconModule,
     I18nModule,
     ItemCounterModule,
-    AutoFocusDirectiveModule,
+    AutoFocusDirectiveModule
   ],
   declarations: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
   entryComponents: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
-  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
+  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent]
 })
 export class TmaAddToCartModule extends AddToCartModule { }

@@ -11,15 +11,15 @@ import { TmaPriceModule } from '../../price';
     ConfigModule.withConfig({
       cmsComponents: {
         ProductDetailsTabComponent: {
-          component: TmaProductDetailsTabComponent,
-        },
-      },
+          component: TmaProductDetailsTabComponent
+        }
+      }
     }),
     I18nModule,
     TmaPriceModule
   ],
   declarations: [TmaProductDetailsTabComponent],
   entryComponents: [TmaProductDetailsTabComponent],
-  exports: [TmaProductDetailsTabComponent],
+  exports: [TmaProductDetailsTabComponent]
 })
 export class TmaProductDetailsTabModule { }

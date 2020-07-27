@@ -15,7 +15,7 @@ export class LoadChecklistActions extends StateLoaderActions.LoaderLoadAction {
   }
 }
 
-export class LoadChecklistActionsSuccess extends StateLoaderActions.LoaderLoadAction {
+export class LoadChecklistActionsSuccess extends StateLoaderActions.LoaderSuccessAction {
   readonly type = TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS_SUCCESS;
 
   constructor(public payload: any) {
@@ -23,7 +23,7 @@ export class LoadChecklistActionsSuccess extends StateLoaderActions.LoaderLoadAc
   }
 }
 
-export class LoadChecklistActionsFail extends StateLoaderActions.LoaderLoadAction {
+export class LoadChecklistActionsFail extends StateLoaderActions.LoaderFailAction {
   readonly type = TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS_FAIL;
 
   constructor(public payload: any) {

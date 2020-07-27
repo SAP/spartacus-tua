@@ -4,16 +4,19 @@ import * as TmaChecklistActions from '../actions/tma-checklist-action.action';
 import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { TmaChecklistActionTypes } from '../actions/tma-checklist-action.action';
-import { TmaChecklistActionConnector } from '../../connectors/tma-checklist-action.connector';
+import { TmaChecklistActionConnector } from '../../connectors';
 import { makeErrorSerializable } from '../../../config/utils/tma-serialization-utils';
-import { TmaChecklistAction } from '../../../model/tma-checklist-action.model';
+import { TmaChecklistAction } from '../../../model';
 import { Action } from '@ngrx/store';
 
 
 @Injectable()
 export class TmaChecklistActionEffect {
 
-  constructor(protected actions$: Actions, protected tmaChecklistActionConnector: TmaChecklistActionConnector) {
+  constructor(
+    protected actions$: Actions,
+    protected tmaChecklistActionConnector: TmaChecklistActionConnector
+  ) {
   }
 
   @Effect()
@@ -35,7 +38,6 @@ export class TmaChecklistActionEffect {
               makeErrorSerializable(error))
           ))
       );
-    }
-    )
+    })
   );
 }

@@ -5,13 +5,15 @@ import {
   ConfigModule,
   FeaturesConfigModule,
   I18nModule,
-  UrlModule,
+  UrlModule
 } from '@spartacus/core';
 import { TmaReviewSubmitComponent } from './tma-review-submit.component';
 import {
   CardModule,
   CartNotEmptyGuard,
-  CheckoutAuthGuard, DeliveryModeSetGuard, PaymentDetailsSetGuard,
+  CheckoutAuthGuard,
+  DeliveryModeSetGuard,
+  PaymentDetailsSetGuard,
   PromotionsModule,
   ShippingAddressSetGuard
 } from '@spartacus/storefront';
@@ -36,14 +38,14 @@ import { TmaCartSharedModule } from '../../cart/cart-shared';
             CartNotEmptyGuard,
             ShippingAddressSetGuard,
             DeliveryModeSetGuard,
-            PaymentDetailsSetGuard,
-          ],
-        },
-      },
-    }),
+            PaymentDetailsSetGuard
+          ]
+        }
+      }
+    })
   ],
   declarations: [TmaReviewSubmitComponent],
   entryComponents: [TmaReviewSubmitComponent],
-  exports: [TmaReviewSubmitComponent],
+  exports: [TmaReviewSubmitComponent]
 })
 export class TmaReviewSubmitModule { }

@@ -22,15 +22,14 @@ import { TmaCartSharedModule } from '../cart-shared';
     ConfigModule.withConfig({
       cmsComponents: {
         CartComponent: {
-          component: TmaCartDetailsComponent,
-        },
-      },
+          component: TmaCartDetailsComponent
+        }
+      }
     }),
-    I18nModule,
+    I18nModule
   ],
   declarations: [TmaCartDetailsComponent],
   exports: [TmaCartDetailsComponent],
-  entryComponents: [TmaCartDetailsComponent],
+  entryComponents: [TmaCartDetailsComponent]
 })
-export class TmaCartDetailsModule extends CartDetailsModule {
-}
+export class TmaCartDetailsModule extends CartDetailsModule { }

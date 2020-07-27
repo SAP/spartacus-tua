@@ -1,4 +1,4 @@
-<ng-container *ngIf="cartPriceService.computeCartPrice(cart) as cartPrice">
+<ng-container *ngIf="cartPriceService.computeCartTotalPrice(cart) as cartPrice">
   <ng-container *ngIf="currency$ | async as currency">
     <h4>{{ 'orderCost.orderSummary' | cxTranslate }}</h4>
 
@@ -8,18 +8,18 @@
           {{ 'orderCost.subtotal' | cxTranslate }}
         </div>
         <div class="col-6 cx-summary-amount">
-          {{ 'common.currency.' + currency | cxTranslate }}{{ cartPrice.payOnCheckoutSubTotal }}
+          {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartPrice.payOnCheckoutSubTotal }}
         </div>
       </div>
       <div class="cx-summary-row">
         <div class="col-6 cx-summary-label">
           {{ 'orderCost.estimatedShipping' | cxTranslate }}
         </div>
-        <div class="col-6 cx-summary-amount" *ngIf="cartPrice && cartPrice.deliveryCost != 0.0">
-          {{ 'common.currency.' + currency | cxTranslate }}{{ cartPrice.deliveryCost }}
+        <div class="col-6 cx-summary-amount" *ngIf="cartPrice && cartPrice.deliveryCost ">
+          {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartPrice.deliveryCost }}
         </div>
-        <div class="col-6 cx-summary-amount" *ngIf="!cartPrice || cartPrice.deliveryCost == 0.0">
-          {{'TBD'}}
+        <div class="col-6 cx-summary-amount" *ngIf="!cartPrice || !cartPrice.deliveryCost">
+          {{ 'orderCost.toBeDetermined' | cxTranslate }}
         </div>
       </div>
       <div class="cx-summary-row" *ngIf="cart.net">
@@ -32,10 +32,10 @@
       </div>
       <div class="cx-summary-row cx-summary-total">
         <div class="col-6 cx-summary-label">
-          {{ 'orderCost.totalPayOnCheckout' | cxTranslate }}
+          {{ 'orderCost.totalPayOnCheckout' | cxTranslate }}:
         </div>
         <div class="col-6 cx-summary-amount">
-          {{ 'common.currency.' + currency | cxTranslate }}{{ cartPrice.payOnCheckoutTotal }}
+          {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartPrice.payOnCheckoutTotal }}
         </div>
       </div>
       <div class="cx-summary-row" *ngIf="cart.totalDiscounts?.value > 0">

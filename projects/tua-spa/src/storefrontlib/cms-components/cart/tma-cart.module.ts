@@ -25,17 +25,15 @@ import { TmaAddToCartModule } from './add-to-cart/tma-add-to-cart.module';
     TmaCartSharedModule,
     TmaAddToCartModule,
     MiniCartModule,
-    CartModule,
+    CartModule
   ],
   declarations: [],
   providers: [
     {
       provide: PAGE_LAYOUT_HANDLER,
       useExisting: CartPageLayoutHandler,
-      multi: true,
-    },
-  ],
+      multi: true
+    }
+  ]
 })
-export class TmaCartComponentModule extends CartComponentModule {
-
-}
+export class TmaCartComponentModule extends CartComponentModule { }

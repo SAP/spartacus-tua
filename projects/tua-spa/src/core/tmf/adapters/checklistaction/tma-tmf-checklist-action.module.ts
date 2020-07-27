@@ -4,8 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { defaultTmaTmfChecklistActionConfig } from './default-tma-tmf-checklist-action-config';
 import { TmaTmfChecklistActionAdapter } from './tma-tmf-checklist-action.adapter';
-import { TmaChecklistActionAdapter } from '../../../checklistaction/store/adapters/tma-checklist-action-adapter';
-import { TmaTmfChecklistActionNormalizer } from './converters/tma-tmf-checklist-action-normalizer';
+import { TmaChecklistActionAdapter } from '../../../checklistaction/store/adapters';
+import { TmaTmfChecklistActionNormalizer } from './converters';
 import { TMA_CHECKLIST_ACTION_NORMALIZER } from "../../../checklistaction/connectors";
 
 
@@ -13,19 +13,18 @@ import { TMA_CHECKLIST_ACTION_NORMALIZER } from "../../../checklistaction/connec
   imports: [
     CommonModule,
     HttpClientModule,
-    ConfigModule.withConfig(defaultTmaTmfChecklistActionConfig),
+    ConfigModule.withConfig(defaultTmaTmfChecklistActionConfig)
   ],
   providers: [
     {
       provide: TmaChecklistActionAdapter,
-      useClass: TmaTmfChecklistActionAdapter,
+      useClass: TmaTmfChecklistActionAdapter
     },
     {
       provide: TMA_CHECKLIST_ACTION_NORMALIZER,
       useExisting: TmaTmfChecklistActionNormalizer,
-      multi: true,
+      multi: true
     }
   ]
 })
-export class TmaTmfChecklistActionModule {
-}
+export class TmaTmfChecklistActionModule { }

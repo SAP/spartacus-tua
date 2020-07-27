@@ -5,13 +5,13 @@ import { provideConfig, RoutingModule, RoutingModule as CoreRoutingModule } from
 
 @NgModule({
   imports: [
-    CoreRoutingModule.forRoot(), CmsRouteModule],
+    CoreRoutingModule.forRoot(), CmsRouteModule]
 })
 export class TmaRoutingModule extends RoutingModule {
   static forRoot(): ModuleWithProviders<TmaRoutingModule> {
     return {
       ngModule: TmaRoutingModule,
-      providers: [provideConfig(defaultTmaRoutingConfig)],
+      providers: [provideConfig(defaultTmaRoutingConfig)]
     };
   }
 }

@@ -17,9 +17,8 @@ import { metaReducers, reducerProvider, reducerToken } from "./reducers/checklis
     StateModule,
     StoreModule.forFeature(TMA_CHECKLIST_ACTION_FEATURE, reducerToken, { metaReducers }),
     EffectsModule.forFeature([TmaChecklistActionEffect]),
-    RouterModule,
+    RouterModule
   ],
-  providers: [reducerProvider],
+  providers: [reducerProvider]
 })
-export class TmaChecklistActionStoreModule {
-}
+export class TmaChecklistActionStoreModule { }

@@ -15,11 +15,11 @@ export interface TmaCartModification extends CartModification {
 }
 
 export enum TmaRelatedPartyRole {
-  SERVICE_PROVIDER = 'SERVICE_PROVIDER',
+  SERVICE_PROVIDER = 'SERVICE_PROVIDER'
 }
 
 export enum TmaPlaceRole {
-  INSTALLATION_ADDRESS = 'INSTALLATION_ADDRESS',
+  INSTALLATION_ADDRESS = 'INSTALLATION_ADDRESS'
 }
 
 export interface TmaCharacteristic {
@@ -47,6 +47,8 @@ export interface TmaPlace {
 export interface TmaCart extends Cart {
   entries?: TmaOrderEntry[];
   cartCosts?: TmaCartPrice[];
+  rootGroups?: TmaRootGroup[];
+  message?: TmaMessage[];
 }
 
 export interface TmaCartTotalPrice {
@@ -54,4 +56,23 @@ export interface TmaCartTotalPrice {
   payOnCheckoutSubTotal: number;
   payOnCheckoutTotal: number;
   deliveryCost: number;
+}
+
+export interface TmaRootGroup {
+  groupNumber?: number;
+  validationMessages?: TmaValidationMessage[];
+}
+
+export interface TmaValidationMessage {
+  code?: string;
+  message?: string;
+}
+
+export interface TmaMessage {
+  type?: string;
+  value?: string;
+}
+
+export enum TmaValidationMessageType {
+  COMPATIBILITY = 'COMPATIBILITY'
 }

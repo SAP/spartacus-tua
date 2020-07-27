@@ -28,7 +28,7 @@ import { TmaReviewSubmitModule } from './review-submit/tma-review-submit.module'
     PlaceOrderModule,
     PromotionsModule,
     TmaReviewSubmitModule,
-    ShippingAddressModule,
-  ],
+    ShippingAddressModule
+  ]
 })
 export class TmaCheckoutComponentModule extends CheckoutComponentModule { }

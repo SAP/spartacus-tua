@@ -20,6 +20,6 @@
 
 <ng-template #noPriceTemplate>
   <ng-container *ngIf="currency$ | async as currency">
-    <div class="cx-bold">{{'productDetails.currency.' + currency | cxTranslate}}&nbsp;0.0</div>
+    <div class="cx-bold">{{ 'common.currencies.currency' | cxTranslate : {context: currency} }}&nbsp;0.0</div>
   </ng-container>
 </ng-template>
