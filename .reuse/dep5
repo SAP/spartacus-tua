@@ -1,0 +1,14 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: tua-spa
+Upstream-Contact: Deborah Cholmeley-Jones  <<deborah.cholmeley-jones@sap.com>>
+Source: 
+
+# Sample paragraph, commented out:
+#
+# Files: src/*
+# Copyright: $YEAR $NAME <$CONTACT>
+# License: ...
+
+Files: angular.json package.json tsconfig.app.json tsconfig.json tsconfig.spec.json tslint.json projects/tua-spa/*
+Copyright: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+License: CC0-1.0

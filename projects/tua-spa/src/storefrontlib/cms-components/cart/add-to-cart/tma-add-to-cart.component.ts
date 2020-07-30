@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { AddToCartComponent, CurrentProductService, ModalService } from '@spartacus/storefront';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { TmaActiveCartService, TmaCartService } from '../../../../core/cart/facade';

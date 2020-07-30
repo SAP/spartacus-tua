@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # spartacus
 Spartacus is a lean, Angular-based JavaScript storefront for SAP Commerce Cloud working exclusively through the Commerce REST API. This Spartacus project works with and enhances the telco and utilities accelerator.
 

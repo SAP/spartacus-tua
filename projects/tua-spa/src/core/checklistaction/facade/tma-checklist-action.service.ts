@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import * as TmaChecklistAction from '../store/actions/tma-checklist-action.action';

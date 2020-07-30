@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { I18nTestingModule } from '@spartacus/core';
 import { Observable, of } from 'rxjs';

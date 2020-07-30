@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 export * from './tma-product-list.module';
 export * from './container/product-scroll/tma-product-scroll.component';
 export * from './container/tma-product-list.component';
