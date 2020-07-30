@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
 import { TmaChecklistActionType, TmaChecklistActionTypes } from '../actions/tma-checklist-action.action';
 import { TmaChecklistActionMap, TmaChecklistActionsState } from '../tma-checklist-action.state';
 import { ActionReducerMap, MetaReducer } from '@ngrx/store';

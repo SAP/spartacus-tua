@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 {
   "name": "tua-spa",
   "version": "0.1.0-next.2",
