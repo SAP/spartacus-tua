@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 Spartacus is a lean, Angular-based JavaScript storefront for SAP Commerce Cloud - Telco & Utilities Accelerator Module. TUA Spartacus talks to SAP Commerce Cloud (with Telco & Utilities Accelerator module embedded) exclusively through a set of REST APIs (OCC APIs). It also makes use of [Spartacus functionalities and libraries site](https://sap.github.io/spartacus-docs/)
 
 - Documentation is hosted on our dedicated [TUA Spartacus Documentation site](<spartacus-tua-documentation-link>).
-- Technical questions? Get in touch with us on [Stack Overflow](<spartacus-tua-slack-URL>).
+- Technical questions? Get in touch with us on [Slack workspace](<spartacus-tua-slack-URL>).
 - Non-technical questions? Join our [Slack workspace](<spartacus-tua-slack-URL>).
 - For details on the 1.0 launch, see the [Release Information page](<link-to-release-information-for-version-1.0.0>) on our Spartacus TUA documentation site.
 
