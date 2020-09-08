@@ -1,4 +1,4 @@
-OCC A<!--
+ <!--
 SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company and contributors.
 
 SPDX-License-Identifier: Apache-2.0
