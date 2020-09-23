@@ -19,7 +19,7 @@ TUA Spartacus is...
 - **Extendable**: TUA Spartacus is designed to be upgradable while maintaining full extendability. You'll be able to adopt new versions of Spartacus by updating the Spartacus libraries that we will regularly enhance. (In order to ensure that the first release is as extendable and upgradable as we'd like, breaking changes will very likely be introduced up until the 1.0 launch.)
 - **Upgradable**: Spartacus code is published and used as libraries and follows semantic versioning conventions. By using the libraries, Spartacus is upgradable for minor and patch releases.
 - **Progressive**: Spartacus is on a journey to be fully compliant with the Progressive Web Application (PWA) checklist. We aim to add support for all major features of a PWA-enabled storefront, to offer the best possible customer experience regardless of device or location.
-- **Open Source**: Spartacus is open source. It will be continually developed by the SAP Commerce Cloud team, but we are very keen to welcome contributors and to foster an inclusive, active development community for Spartacus. See our [contributing documentation](CONTRIBUTING.md) for more information.
+- **Open Source**: Spartacus is open source. It will be continually developed by the SAP Commerce Cloud team, but we are very keen to welcome contributors and to foster an inclusive, active development community for Spartacus. See our [contributing documentation](https://sap.github.io/spartacus-docs/contributors-guide/) for more information.
 - **Modern**: The Spartacus TUA storefront is part of our exciting new journey towards a customizable-yet-upgradable technology for SAP Commerce Cloud - Telco & Utilities Accelerator installations. See [SAP Customer Experience](https://cx.sap.com/en/products/commerce) for more information about SAP Commerce Cloud - Telco & Utilities Accelerator.
 
 # Storefront Features
@@ -90,7 +90,7 @@ To get help from the TUA Spartacus community:
 Team Spartacus welcomes feedback, ideas, requests, and especially code contributions.
 
 - Post comments to our Feedback chat in our [Slack](https://spartacus-storefront.slack.com/archives/C014K1LRJAY) channel.
-- Read the [Contributing document](CONTRIBUTING.md) and learn how to:
+- Read the [Contributing document](https://sap.github.io/spartacus-docs/contributors-guide/) and learn how to:
   - Help others
   - Report an issue
   - Contribute code to Spartacus
