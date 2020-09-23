@@ -9,10 +9,10 @@ SPDX-License-Identifier: Apache-2.0
 
 Spartacus is a lean, Angular-based JavaScript storefront for SAP Commerce Cloud - Telco & Utilities Accelerator Module. TUA Spartacus talks to SAP Commerce Cloud (with Telco & Utilities Accelerator module embedded) exclusively through a set of REST APIs (OCC APIs). It also makes use of [Spartacus functionalities and libraries site](https://sap.github.io/spartacus-docs/)
 
-- Documentation is hosted on our dedicated [TUA Spartacus Documentation site](<spartacus-tua-documentation-link>).
-- Technical questions? Get in touch with us on [Slack workspace](<spartacus-tua-slack-URL>).
-- Non-technical questions? Join our [Slack workspace](<spartacus-tua-slack-URL>).
-- For details on the 1.0 launch, see the [Release Information page](<link-to-release-information-for-version-1.0.0>) on our Spartacus TUA documentation site.
+- Documentation is hosted on our dedicated [TUA Spartacus Documentation site](https://sap.github.io/spartacus-docs/about-tua-spartacus/).
+- Technical questions? Get in touch with us on [Slack workspace](https://spartacus-storefront.slack.com/archives/C014K1LRJAY).
+- Non-technical questions? Join our [Slack workspace](https://spartacus-storefront.slack.com/archives/C014K1LRJAY).
+- For details on the 1.0 launch, see the [Release Information page](https://sap.github.io/spartacus-docs/telco-release-information/) on our Spartacus TUA documentation site.
 
 TUA Spartacus is...
 
@@ -35,7 +35,7 @@ TUA Spartacus provides core storefront features such as:
 - Checkout
 - Order
 
-See the [Release documentation](<link-to-tua-documentation>) for more information.
+See the [Release documentation](https://sap.github.io/spartacus-docs/telco-release-information/) for more information.
 
 # Requirements
 
@@ -53,7 +53,7 @@ To get up and running with Spartacus, the recommended approach is to build your 
 
 Spartacus currently can only be used with a SAP Commerce Cloud instance through Commerce APIs.
 
-For complete setup instructions, see [Building the Spartacus Storefront from Libraries](<link-to-tua-documentation-installation-guide>).
+For complete setup instructions, see [Building the TUA Spartacus Storefront from Libraries](https://sap.github.io/spartacus-docs/getting-started-with-tua-spartacus/).
 
 ## Customizing and Extending Spartacus
 
@@ -83,13 +83,13 @@ Spartacus is provided "as-is" with no official lines of support.
 
 To get help from the TUA Spartacus community:
 
-- For more general questions, post a question in the Help chat of our [Slack workspace](<spartacus-tua-slack-URL>).
+- For more general questions, post a question in the Help chat of our [Slack workspace](https://spartacus-storefront.slack.com/archives/C014K1LRJAY).
 
 # Contributing
 
 Team Spartacus welcomes feedback, ideas, requests, and especially code contributions.
 
-- Post comments to our Feedback chat in our [Slack](<spartacus-tua-slack-URL>) channel.
+- Post comments to our Feedback chat in our [Slack](https://spartacus-storefront.slack.com/archives/C014K1LRJAY) channel.
 - Read the [Contributing document](CONTRIBUTING.md) and learn how to:
   - Help others
   - Report an issue
