@@ -1,8 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
-
-SPDX-License-Identifier: Apache-2.0
--->
 <ng-container *ngIf="cartPriceService.computeEntryPrice(item) as cartItemPrice">
   <ng-container *ngIf="currency$ | async as currency">
     <div [ngClass]="compact ? 'cx-compact row' : 'row'">
@@ -42,6 +37,7 @@ SPDX-License-Identifier: Apache-2.0
                 </div>
               </ng-container>
             </ng-container>
+
           </div>
           <!-- Item Quantity -->
           <div class="cx-quantity" [ngClass]="compact ? '' : ' col-3'">
@@ -103,62 +99,22 @@ SPDX-License-Identifier: Apache-2.0
             <div class="col-sm-5 col-md-5 col-lq-5 col-xl-5">
 
               <!-- Recurring Charges -->
-              <div *ngIf="cartItemPrice.recurringPrices.length">
-                <div [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.recurringCharges' | cxTranslate }}:
-                </div>
-                <div *ngFor="let price of cartItemPrice.recurringPrices">
-                  <div *ngIf="price.cycle">
-                    <div>
-                      <span>
-                          - {{ 'cartItems.price.months' | cxTranslate }}
-                        {{ price.cycle.cycleStart }}
-                        - {{ price.cycle.cycleEnd ? (price.cycle.cycleEnd) : ('cartItems.price.common.onwards' | cxTranslate) }}:
-                        {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
-                        / {{ 'cartItems.price.billingFrequency.abbreviation' | cxTranslate : {context: price?.recurringChargePeriod} }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <cx-cart-item-recurring-charge [recurringCharge]="cartItemPrice.recurringPrices"></cx-cart-item-recurring-charge>
 
               <!-- One Time Charges -->
-              <div *ngIf="cartItemPrice.oneTimeChargePrices.length">
-                <div [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.oneTimeCharges' | cxTranslate }}:
-                </div>
-                <div *ngFor="let price of cartItemPrice.oneTimeChargePrices">
-                  <span>
-                    - {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}:
-                    {{ price.description }}
-                  </span>
-                </div>
-              </div>
+              <cx-cart-item-one-time-charge [oneTimeCharge]="cartItemPrice.oneTimeChargePrices"></cx-cart-item-one-time-charge>
             </div>
 
             <!-- Usage Charges -->
             <div class="col-sm-5 col-md-5 col-lq-5 col-xl-5">
-              <div *ngIf="(cartItemPrice.usageChargePrices | keyvalue)?.length > 0">
-                <div [ngClass]="compact ? '' : ' cx-label'">
-                  {{ 'cartItems.price.usageCharges' | cxTranslate }}:
-                </div>
-                <div *ngFor="let usageChargePrices of cartItemPrice.usageChargePrices | keyvalue">
-                  <div *ngFor="let price of usageChargePrices.value">
-                    <div>
-                      <span>
-                        - {{ price.tierStart ?
-                        (price.tierStart + '-' + price.tierEnd + ':') :
-                        (('cartItems.price.common.from' | cxTranslate) + ' ' +
-                          (cartPriceService.getMaximumTierEnd(usageChargePrices.value) + 1) + ' ' +
-                          ('cartItems.price.common.onwards' | cxTranslate) + ':') }}
-                        {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
-                        / {{ price.unitOfMeasure }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <cx-cart-item-usage-charge [usageCharge]="cartItemPrice.usageChargePrices"></cx-cart-item-usage-charge>
             </div>
+          </div>
+        </ng-container>
+
+        <ng-container>
+          <div class="row mx-auto" *ngIf="item.appointment">
+            <cx-appointment [cartPage]="cartPage"[item]="item"></cx-appointment>
           </div>
         </ng-container>
 

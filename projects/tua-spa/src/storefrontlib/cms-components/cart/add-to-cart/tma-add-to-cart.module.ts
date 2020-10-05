@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
@@ -18,6 +13,7 @@ import {
 import { TmaAddToCartComponent } from './tma-add-to-cart.component';
 import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { TmaCartSharedModule } from '../cart-shared';
+import { JourneyChecklistComponentModule } from '../../journey-checklist/journey-checklist.module';
 
 @NgModule({
   imports: [
@@ -26,6 +22,7 @@ import { TmaCartSharedModule } from '../cart-shared';
     RouterModule,
     SpinnerModule,
     PromotionsModule,
+    JourneyChecklistComponentModule,
     FeaturesConfigModule,
     ConfigModule.withConfig({
       cmsComponents: {

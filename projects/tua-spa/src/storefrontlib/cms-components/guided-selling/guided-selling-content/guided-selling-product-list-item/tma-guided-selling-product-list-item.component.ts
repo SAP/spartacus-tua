@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
 import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';

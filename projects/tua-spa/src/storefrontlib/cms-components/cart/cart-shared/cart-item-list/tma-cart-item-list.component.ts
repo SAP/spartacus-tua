@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CartItemListComponent } from '@spartacus/storefront';
 import {
@@ -50,6 +45,8 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
 
   @Input()
   shouldReloadCart: boolean;
+  @Input()
+  cartPage?:boolean;
 
   items: TmaItem[];
   groupedItems: TmaGroupedItemMap[];

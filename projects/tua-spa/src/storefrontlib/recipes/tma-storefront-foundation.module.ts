@@ -1,22 +1,27 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { NgModule } from '@angular/core';
 import { TmaAuthModule } from '../../core/auth';
 import { TmaRoutingModule } from '../cms-structure/routing';
 import { TmaBillingFrequencyConfigModule } from '../../core/billing-frequency/tma-billing-frequency.module';
 import { TmaTmfCartModule } from '../../core/tmf-cart';
+import { SubscriptionModule } from '../../core/subscription/subscription.module';
+import {
+  TmaChecklistActionModule,
+  AppointmentModule,
+  SearchTimeSlotModule,
+} from '../../core';
 
 @NgModule({
   imports: [
     TmaAuthModule.forRoot(),
     TmaRoutingModule.forRoot(),
     TmaBillingFrequencyConfigModule.forRoot(),
-    TmaTmfCartModule.forRoot()
+    TmaTmfCartModule.forRoot(),
+    SubscriptionModule,
+    TmaChecklistActionModule.forRoot(),
+    AppointmentModule.forRoot(),
+    SearchTimeSlotModule.forRoot(),
   ],
   exports: [],
-  providers: []
+  providers: [],
 })
-export class TmaStorefrontFoundationModule { }
+export class TmaStorefrontFoundationModule {}

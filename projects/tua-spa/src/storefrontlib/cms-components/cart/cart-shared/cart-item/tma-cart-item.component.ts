@@ -1,13 +1,12 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Component, Input, OnInit } from '@angular/core';
-import { CartItemComponent, Item, PromotionService } from '@spartacus/storefront';
+import {
+  CartItemComponent,
+  Item,
+  PromotionService,
+} from '@spartacus/storefront';
 import { CurrencyService } from '@spartacus/core';
 import { Observable } from 'rxjs';
-import { TmaCartPrice, TmaSubscribedProduct } from '../../../../../core/model';
+import { TmaCartPrice, TmaSubscribedProduct, Appointment } from '../../../../../core/model';
 import { TmaCartPriceService } from '../../../../../core/cart/facade';
 
 export interface TmaItem extends Item {
@@ -16,15 +15,15 @@ export interface TmaItem extends Item {
   cartPrice?: TmaCartPrice;
   entryGroupNumbers?: number[];
   rootBpoCode?: string;
+  appointment?: Appointment;
 }
 
 @Component({
   selector: 'cx-cart-item',
   templateUrl: './tma-cart-item.component.html',
-  styleUrls: ['./tma-cart-item.component.scss']
+  styleUrls: ['./tma-cart-item.component.scss'],
 })
 export class TmaCartItemComponent extends CartItemComponent implements OnInit {
-
   @Input()
   item: TmaItem;
 
@@ -33,6 +32,9 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit {
 
   @Input()
   isRemovable: boolean;
+
+  @Input()
+  cartPage?: boolean;
 
   currency$: Observable<string>;
 

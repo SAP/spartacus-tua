@@ -1,26 +1,39 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CartTotalsComponent } from '@spartacus/storefront';
 import { CartService } from '@spartacus/core';
-import { TmaCart, TmaMessage, TmaRootGroup, TmaValidationMessage, TmaValidationMessageType } from '../../../../core/model';
+import {
+  TmaCart,
+  TmaMessage,
+  TmaRootGroup,
+  TmaValidationMessage,
+  TmaValidationMessageType,
+} from '../../../../core/model';
+import { Observable } from 'rxjs';
+import { AppointmentService } from '../../../../core/appointment/facade';
 
 @Component({
   selector: 'cx-cart-totals',
   templateUrl: './tma-cart-totals.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TmaCartTotalsComponent extends CartTotalsComponent {
+export class TmaCartTotalsComponent
+  extends CartTotalsComponent
+  implements OnInit {
+  hasAppointmentError$: Observable<boolean>;
+  hasCancelledAppointment$: Observable<boolean>;
 
   constructor(
-    protected cartService: CartService
+    protected cartService: CartService,
+    protected appointmentService: AppointmentService
   ) {
-    super(cartService)
+    super(cartService);
   }
 
+  ngOnInit() {
+    super.ngOnInit();
+    this.hasAppointmentError$ = this.appointmentService.hasAppointmentError();
+    this.hasCancelledAppointment$ = this.appointmentService.hasCancelledAppointment();
+  }
   /**
    * Checks if cart has compatibility errors.
    *
@@ -28,18 +41,36 @@ export class TmaCartTotalsComponent extends CartTotalsComponent {
    * @return True if cart has compatibility errors, otherwise false
    */
   hasCompatibilityErrors(cart: TmaCart): boolean {
-    return this.hasCompatibilityErrorsOnCartLevel(cart) || this.hasCompatibilityErrorsOnEntryLevel(cart);
+    return (
+      this.hasCompatibilityErrorsOnCartLevel(cart) ||
+      this.hasCompatibilityErrorsOnEntryLevel(cart)
+    );
   }
 
   protected hasCompatibilityErrorsOnCartLevel(cart: TmaCart): boolean {
-    return cart.message && !!cart.message.find((validationMessage: TmaMessage) => validationMessage.type === TmaValidationMessageType.COMPATIBILITY);
+    return (
+      cart.message &&
+      !!cart.message.find(
+        (validationMessage: TmaMessage) =>
+          validationMessage.type === TmaValidationMessageType.COMPATIBILITY
+      )
+    );
   }
 
   protected hasCompatibilityErrorsOnEntryLevel(cart: TmaCart): boolean {
-    return cart.rootGroups && !!cart.rootGroups.find((rootGroup: TmaRootGroup) => {
-      if (rootGroup.validationMessages && !!rootGroup.validationMessages.find((validationMessage: TmaValidationMessage) => validationMessage.code === TmaValidationMessageType.COMPATIBILITY)) {
-        return rootGroup;
-      }
-    });
+    return (
+      cart.rootGroups &&
+      !!cart.rootGroups.find((rootGroup: TmaRootGroup) => {
+        if (
+          rootGroup.validationMessages &&
+          !!rootGroup.validationMessages.find(
+            (validationMessage: TmaValidationMessage) =>
+              validationMessage.code === TmaValidationMessageType.COMPATIBILITY
+          )
+        ) {
+          return rootGroup;
+        }
+      })
+    );
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "tua-spa",
-  "version": "0.1.0-next.2",
+  "version": "1.1.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -31,11 +31,14 @@
     "@spartacus/schematics": "^1.5.0",
     "@spartacus/storefront": "~1.5.0",
     "@spartacus/styles": "~1.5.0",
-    "bootstrap": "^4.2.1",
+    "bootstrap": "4.5.0",
+    "chart.js": "^2.9.3",
     "i18next": "^15.0.6",
     "i18next-xhr-backend": "^2.0.1",
     "material-design-icons": "^3.0.1",
+    "ng2-charts": "^2.3.2",
     "ngx-infinite-scroll": "^8.0.0",
+    "ngx-spinner": "^8.0.3",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"

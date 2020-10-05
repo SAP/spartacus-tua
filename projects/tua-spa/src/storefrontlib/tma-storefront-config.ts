@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import {
   AnonymousConsentsConfig, AsmConfig,
   AuthConfig,
@@ -17,6 +12,7 @@ import { TmfConfig } from '../core/tmf/config/tmf-config';
 import { CheckoutConfig, IconConfig, LayoutConfig, PWAModuleConfig, QualtricsConfig, ViewConfig } from '@spartacus/storefront';
 import { FeatureToggles } from '@spartacus/storefront/feature-toggles';
 import {TmaBillingFrequencyConfig} from '../core/billing-frequency/config';
+import { TmfAppointmentConfig } from '../core/tmf-appointment';
 
 class SkipLinkConfig {
 }
@@ -44,4 +40,5 @@ export type TmaStorefrontConfig =
   | ViewConfig
   | FeatureToggles
   | AsmConfig
-  | SkipLinkConfig;
+  | SkipLinkConfig
+  | TmfAppointmentConfig;

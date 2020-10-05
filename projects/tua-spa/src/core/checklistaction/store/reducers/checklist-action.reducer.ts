@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { TmaChecklistActionType, TmaChecklistActionTypes } from '../actions/tma-checklist-action.action';
 import { TmaChecklistActionMap, TmaChecklistActionsState } from '../tma-checklist-action.state';
 import { ActionReducerMap, MetaReducer } from '@ngrx/store';
@@ -17,11 +12,12 @@ export function checklistActionReducer(
   switch (action.type) {
     case TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS_SUCCESS: {
       if (!state.find(checklistActionState =>
-        checklistActionState.productId === action.payload.productCode && checklistActionState.baseSiteId === action.payload.baseSiteId)) {
+        checklistActionState.productId === action.payload.productCode && checklistActionState.baseSiteId === action.payload.baseSiteId && checklistActionState.processType === action.payload.processType)) {
         state = state.concat({
           checklistAction: action.payload.checklistAction,
           productId: action.payload.productCode,
-          baseSiteId: action.payload.baseSiteId
+          baseSiteId: action.payload.baseSiteId,
+          processType: action.payload.processType
         });
       }
       return state;

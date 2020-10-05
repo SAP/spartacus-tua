@@ -1,8 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
-
-SPDX-License-Identifier: Apache-2.0
--->
 <ng-container *ngIf="cart$ | async as cart">
   <ng-container *ngIf="entries$ | async as entries">
     <div *ngIf="cart.totalItems > 0" class="cart-details-wrapper">
@@ -20,6 +15,7 @@ SPDX-License-Identifier: Apache-2.0
         <cx-promotions [promotions]="promotions$ | async"></cx-promotions>
 
         <cx-cart-item-list
+          [cartPage]="true"
           [items]="entries"
           [cartIsLoading]="!(cartLoaded$ | async)"
           [potentialProductPromotions]="cart.potentialProductPromotions"
@@ -33,6 +29,7 @@ SPDX-License-Identifier: Apache-2.0
         </ng-container>
 
         <cx-cart-item-list
+          [cartPage]="true"
           [items]="entries"
           [cartIsLoading]="!(cartLoaded$ | async)"
           [promotionLocation]="promotionLocation"

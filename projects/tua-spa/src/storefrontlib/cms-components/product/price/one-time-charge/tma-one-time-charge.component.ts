@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { TmaProductOfferingPrice } from '../../../../../core/model';
 import { TmaPriceService } from '../../../../../core/product/facade';

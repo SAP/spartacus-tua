@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +11,8 @@ import { TmaCartItemListComponent } from './cart-item-list/tma-cart-item-list.co
 import { EffectsModule } from '@ngrx/effects';
 import { TmaTmfCartEffect } from '../../../../core/tmf-cart/store/effects/tma-tmf-cart.effect';
 import { TmaItemCounterModule } from '../../../shared/components/item-counter';
+import { CartItemPriceModule } from './cart-item-price';
+import { AppointmentComponentModule } from './appointment/appointment.module';
 
 @NgModule({
   providers: [
@@ -25,6 +22,7 @@ import { TmaItemCounterModule } from '../../../shared/components/item-counter';
     CommonModule,
     RouterModule,
     CartCouponModule,
+    CartItemPriceModule,
     ReactiveFormsModule,
     UrlModule,
     NgbModule,
@@ -34,6 +32,7 @@ import { TmaItemCounterModule } from '../../../shared/components/item-counter';
     TmaItemCounterModule,
     FeaturesConfigModule,
     SpinnerModule,
+    AppointmentComponentModule,
     EffectsModule.forFeature([TmaTmfCartEffect])
   ],
   declarations: [

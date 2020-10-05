@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { TmaProductOfferingPrice, TmaProductOfferingTerm, TmaQuantity } from '../../../../../core/model';
 import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../../../../core/billing-frequency/config';
@@ -19,7 +14,7 @@ export class TmaRecurringChargeComponent {
   @Input()
   recurringChargeList: TmaProductOfferingPrice[];
 
-  @Input()
+  @Input() 
   contractTerm: TmaProductOfferingTerm;
 
   constructor(

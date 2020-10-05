@@ -1,8 +1,4 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+import { Appointment } from './appointment.model';
 import { TmaTmfRelatedParty } from './tma-tmf-related-party.model';
 import { TmaProcessType } from './tma-product.model';
 
@@ -22,6 +18,7 @@ export interface TmaTmfCartItem {
   cartItem?: TmaTmfCartItem[];
   productOffering?: TmaTmfProductOffering;
   processType?: TmaProcessType;
+  appointment?: Appointment;
 }
 
 export interface TmaTmfProductOffering {
@@ -30,5 +27,5 @@ export interface TmaTmfProductOffering {
 
 export enum TmaTmfActionType {
   ADD = 'ADD',
-  UPDATE = 'UPDATE'
+  UPDATE = 'UPDATE',
 }
