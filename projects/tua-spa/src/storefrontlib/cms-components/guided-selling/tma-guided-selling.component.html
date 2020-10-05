@@ -1,0 +1,22 @@
+<ng-container *ngIf="compact">
+  <div>
+    <ng-container class="row">
+      <cx-guided-selling-current-selection></cx-guided-selling-current-selection>
+    </ng-container>
+    <ng-container>
+      <div class="row">
+        <cx-guided-selling-steps class="col-3" [bpoCode]="bpoCode"></cx-guided-selling-steps>
+
+        <cx-guided-selling-product-list class="col-9"></cx-guided-selling-product-list>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+<ng-container class="row" *ngIf="!compact">
+  <cx-guided-selling-steps class="col-2" [bpoCode]="bpoCode"></cx-guided-selling-steps>
+
+  <cx-guided-selling-product-list class="col-7"></cx-guided-selling-product-list>
+
+  <cx-guided-selling-current-selection class="col-3"></cx-guided-selling-current-selection>
+</ng-container>

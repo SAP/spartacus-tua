@@ -1,0 +1,53 @@
+<ng-container *ngIf="cart$ | async as cart">
+  <ng-container *ngIf="entries$ | async as entries">
+    <cx-order-summary [cart]="cart"></cx-order-summary>
+
+    <ng-container
+      *ngIf="
+        hasAppointmentError$ | async as hasAppointmentError;
+        else hasCancelledAppointment
+      "
+    >
+      <button
+        [routerLink]="{ cxRoute: 'checkout' } | cxUrl"
+        *ngIf="entries.length"
+        class="btn btn-primary btn-block"
+        type="button"
+        [disabled]="hasCompatibilityErrors(cart) || hasAppointmentError"
+      >
+        {{ 'cartDetails.proceedToCheckout' | cxTranslate }}
+      </button>
+    </ng-container>
+
+    <ng-template #hasCancelledAppointment>
+      <ng-container
+        *ngIf="
+          hasCancelledAppointment$ | async as hasCancelledAppointment;
+          else appointmentLoad
+        "
+      >
+        <button
+          [routerLink]="{ cxRoute: 'checkout' } | cxUrl"
+          *ngIf="entries.length"
+          class="btn btn-primary btn-block"
+          type="button"
+          [disabled]="hasCompatibilityErrors(cart) || hasCancelledAppointment"
+        >
+          {{ 'cartDetails.proceedToCheckout' | cxTranslate }}
+        </button>
+      </ng-container>
+    </ng-template>
+
+    <ng-template #appointmentLoad>
+      <button
+        [routerLink]="{ cxRoute: 'checkout' } | cxUrl"
+        *ngIf="entries.length"
+        class="btn btn-primary btn-block"
+        type="button"
+        [disabled]="hasCompatibilityErrors(cart)"
+      >
+        {{ 'cartDetails.proceedToCheckout' | cxTranslate }}
+      </button>
+    </ng-template>
+  </ng-container>
+</ng-container>

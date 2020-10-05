@@ -1,0 +1,43 @@
+<ng-container *ngIf="product$ | async as product">
+  <ng-template
+    [cxOutlet]="outlets.PRICE"
+    [cxOutletContext]="{ product: product }"
+  >
+
+    <div *ngIf="priceService.getMinimumPrice(product) as minimumPrice">
+      <div *ngIf="priceService.getAllPriceList(minimumPrice) as priceList">
+
+        <!-- Pay now price -->
+        <div class="col-12 col-lg-7">
+          <div *ngIf="priceService.getPayNowPrices(priceList) as payNowPriceList">
+            <cx-one-time-charge
+              [isMainAreaDisplay]="true"
+              [priceList]="payNowPriceList && payNowPriceList.length > 0 ? payNowPriceList : [minimumPrice]">
+            </cx-one-time-charge>
+          </div>
+        </div>
+
+        <br/>
+
+        <!-- Recurring prices -->
+        <div class="col-12">
+          <div *ngIf="priceService.getRecurringPrices(priceList) as recurringPriceList">
+            <div *ngIf="priceService.getContractTerm(minimumPrice) as contractTerm">
+              <cx-recurring-charge
+                [recurringChargeList]="recurringPriceList"
+                [contractTerm]="contractTerm">
+              </cx-recurring-charge>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template
+    [cxOutlet]="outlets.SUMMARY"
+    [cxOutletContext]="{ product: product }"
+  >
+    <p [innerHTML]="product?.summary" class="summary"></p>
+  </ng-template>
+</ng-container>

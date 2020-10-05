@@ -1,0 +1,47 @@
+<div class="cx-place-order-form form-check">
+  <label>
+    <input class="form-check-input" type="checkbox" (change)="toggleTAndC()" />
+    <span class="form-check-label">
+      {{ 'checkoutReview.confirmThatRead' | cxTranslate }}
+      <a
+        [routerLink]="{ cxRoute: 'termsAndConditions' } | cxUrl"
+        class="cx-tc-link"
+        target="_blank"
+      >
+        {{ 'checkoutReview.termsAndConditions' | cxTranslate }}
+      </a>
+    </span>
+  </label>
+</div>
+<ng-container *ngIf="hasAppointmentError$ | async as hasAppointmentError  ; else hasCancelledAppointment">
+  <button
+  [disabled]="!tAndCToggler || hasAppointmentError"
+  (click)="placeOrder()"
+  class="btn btn-primary btn-block"
+>
+  {{ 'checkoutReview.placeOrder' | cxTranslate }}
+</button>
+</ng-container>
+
+<ng-template #hasCancelledAppointment>
+<ng-container *ngIf="hasCancelledAppointment$ | async as hasCancelledAppointment  ; else appointmentLoad">
+  <button
+  [disabled]="!tAndCToggler || hasCancelledAppointment"
+  (click)="placeOrder()"
+  class="btn btn-primary btn-block"
+>
+  {{ 'checkoutReview.placeOrder' | cxTranslate }}
+</button>
+</ng-container>
+</ng-template>
+
+<ng-template #appointmentLoad>
+  <button
+  [disabled]="!tAndCToggler"
+  (click)="placeOrder()"
+  class="btn btn-primary btn-block"
+>
+  {{ 'checkoutReview.placeOrder' | cxTranslate }}
+</button>
+</ng-template>
+

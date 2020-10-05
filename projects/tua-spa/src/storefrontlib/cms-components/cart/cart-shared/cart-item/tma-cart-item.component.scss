@@ -1,0 +1,33 @@
+.cx-costs {
+  display: flex;
+  padding: 0;
+  margin: 20px 0 0 0;
+
+  @media screen and (max-width: 575px) {
+    flex-direction: column;
+  }
+  > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-left: 0;
+    margin-right: 10px;
+    > div {
+      margin-bottom: 15px;
+    }
+  }
+  span {
+    font-size: 0.75rem;
+  }
+}
+.cx-compact {
+  .cx-image-container {
+    padding: 0;
+  }
+
+  cx-media.is-missing {
+    min-width: 30px;
+    min-height: 30px;
+    background-size: 30px;
+  }
+}
