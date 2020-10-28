@@ -1,0 +1,36 @@
+<ng-container *ngIf="reservationError$ | async; else checkCancelledReservation">
+  <span class="text-danger">
+    {{ 'msisdnReservationError.getReservationError' | cxTranslate }}
+  </span>
+</ng-container>
+<ng-template #checkCancelledReservation>
+  <ng-container *ngIf="
+      logicalResourceReservationService.hasCancelledReservationForEntry(
+        logicalResources[0].value
+      ) | async;
+      else displayLogicalResource
+    ">
+    <span class="text-danger">
+      {{ 'msisdnReservationError.cancelledReservationError' | cxTranslate }}
+    </span>
+  </ng-container>
+</ng-template>
+<ng-template #displayLogicalResource>
+  <ng-container *ngFor="let resource of logicalResources">
+    <div class="row mx-auto">
+      <div class="col-12 px-0">
+        <span class="cx-label">{{ 'resource.type' | cxTranslate: {context: resource.type} }}:
+        </span>
+      </div>
+      <div class="col-12 cx-font-md px-0">
+        {{ resource.value }}
+        &nbsp;
+        <ng-container *ngIf="isCartPage">
+          <ng-container *ngIf="isResourceTypeMsisdn(resource.type)">
+            <span (click)="editMsisdn()" *ngIf="!isReadOnly" class="material-icons clickable cx-font-md">edit</span>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+</ng-template>

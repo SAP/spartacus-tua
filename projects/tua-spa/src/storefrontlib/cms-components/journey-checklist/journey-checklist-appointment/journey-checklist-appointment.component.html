@@ -1,0 +1,123 @@
+<div
+  class="row container mx-auto px-2 py-3 appointment-container stepper-container"
+>
+  <button
+    [hidden]="!isEdit"
+    class="btn clsBtn text-uppercase btn-sm"
+    (click)="closeModal()"
+  >
+    <span class="material-icons"> close </span>
+  </button>
+  <div
+    class="row mx-auto py-3 d-flex justify-content-start"
+    *ngIf="checkListLengthApp !== 1"
+  >
+    <span class="sentTxt">
+      {{ "checkList.appointment.headline" | cxTranslate }}
+    </span>
+  </div>
+  <ng-container *ngIf="errPatch">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ "checkList.appointment.patchError" | cxTranslate }}
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!errPatch">
+    <div class="row mx-auto w-100">
+      <ng-container *ngIf="timeSlots$ | async as timeSlot">
+        <div class="col-4 p-2 my-2">
+          <div class="border-round-ph p-2 alignMiddle">
+            <div class="form-group form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                id="timeSlot"
+                name="timeSlot"
+                [(ngModel)]="selectedAvailableTimeSlot"
+                (change)="selectedTimeSlot(defaultTimeSlot)"
+                [value]="defaultTimeSlot"
+                checked
+              />
+              <label class="form-check-label">{{
+                "checkList.appointment.call_to_schedule" | cxTranslate
+              }}</label>
+            </div>
+          </div>
+        </div>
+        <ng-container *ngIf="currentSelectedTimePeriod">
+          <div class="col-4 p-2 my-2">
+            <div class="border-round-ph p-2 alignMiddle">
+              <div class="form-group form-check">
+                <input
+                  type="radio"
+                  class="form-check-input"
+                  id="timeSlot"
+                  name="timeSlot"
+                  [(ngModel)]="selectedAvailableTimeSlot"
+                  [value]="
+                    currentSelectedTimePeriod.startDateTime
+                      | cxDate: 'MMM d, y h:mm a':'UTC'
+                  "
+                />
+                <label class="form-check-label" for="timeSlot">
+                  {{
+                    currentSelectedTimePeriod.startDateTime
+                      | cxDate: "MMM d, y h:mm a":"UTC"
+                  }}</label
+                >
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container
+          *ngFor="
+            let availableTimeSlot of timeSlot.availableTimeSlot;
+            let i = index
+          "
+        >
+          <ng-container *ngIf="i < getrequestedNumberOfTimeSlots()">
+            <ng-container
+              *ngIf="
+                currentSelectedTimePeriod === undefined ||
+                currentSelectedTimePeriod.startDateTime !==
+                  availableTimeSlot.validFor.startDateTime
+              "
+            >
+              <div class="col-4 p-2 my-2">
+                <div class="border-round-ph p-2 alignMiddle">
+                  <div class="form-group form-check">
+                    <input
+                      type="radio"
+                      class="form-check-input"
+                      id="timeSlot"
+                      name="timeSlot"
+                      (change)="selectedTimeSlot(availableTimeSlot)"
+                      [value]="
+                        availableTimeSlot.validFor.startDateTime
+                          | cxDate: 'MMM d, y h:mm a':'UTC'
+                      "
+                    />
+                    <label class="form-check-label" for="timeSlot">
+                      {{
+                        availableTimeSlot.validFor.startDateTime
+                          | cxDate: "MMM d, y h:mm a":"UTC"
+                      }}</label
+                    >
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div *ngIf="isEdit" class="row mx-auto d-flex justify-content-center w-100">
+      <button
+        (click)="update()"
+        [disabled]="!timeSlotChanged"
+        class="btn btn-primary btn-sm btn-wd-40 text-uppercase"
+      >
+        Update
+      </button>
+    </div>
+  </ng-container>
+</div>

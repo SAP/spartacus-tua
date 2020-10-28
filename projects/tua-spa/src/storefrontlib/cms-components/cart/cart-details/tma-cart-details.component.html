@@ -1,0 +1,57 @@
+<ng-container *ngIf="cart$ | async as cart">
+  <ng-container *ngIf="entries$ | async as entries">
+    <div *ngIf="cart.totalItems > 0" class="cart-details-wrapper">
+      <div class="cx-total">
+        {{ 'cartDetails.cartName' | cxTranslate: {code: cart.code} }}
+      </div>
+
+      <div class="row  d-flex justify-content-center" *ngFor="let compatibilityMessage of cart.message">
+        <div class="col-md-11 col-lg-11 col-xl-11 text-danger" *ngIf="compatibilityMessage.type === validationMessageType.COMPATIBILITY">
+          {{compatibilityMessage.value}}
+        </div>
+      </div>
+
+      <ng-container *cxFeatureLevel="'!1.5'">
+        <cx-promotions [promotions]="promotions$ | async"></cx-promotions>
+
+        <cx-cart-item-list
+          [isCartPage]="true"
+          [items]="entries"
+          [cartIsLoading]="!(cartLoaded$ | async)"
+          [potentialProductPromotions]="cart.potentialProductPromotions"
+          [shouldReloadCart]="true"
+        ></cx-cart-item-list>
+      </ng-container>
+
+      <ng-container *cxFeatureLevel="'1.5'">
+        <ng-container *ngIf="orderPromotions$ | async as orderPromotions">
+          <cx-promotions [promotions]="orderPromotions"></cx-promotions>
+        </ng-container>
+
+        <cx-cart-item-list
+          [isCartPage]="true"
+          [items]="entries"
+          [cartIsLoading]="!(cartLoaded$ | async)"
+          [promotionLocation]="promotionLocation"
+          [options]="{
+            isSaveForLater: false,
+            optionalBtn: isSaveForLaterEnabled() ? saveForLaterBtn : null
+          }"
+          [shouldReloadCart]="true"
+        ></cx-cart-item-list>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template let-ctx #saveForLaterBtn>
+  <div class="col-md-3 col-lg-3 col-xl-3 cx-sfl-btn">
+    <button
+      class="link"
+      [disabled]="ctx.loading"
+      (click)="saveForLater(ctx.item)"
+    >
+      {{ 'saveForLaterItems.saveForLater' | cxTranslate }}
+    </button>
+  </div>
+</ng-template>
