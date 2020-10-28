@@ -1,0 +1,57 @@
+<div
+  *ngIf="
+    priceService.getCycledPriceAlterations(priceList[0]) as cycledAlterations
+  "
+>
+  <div *ngIf="cycledAlterations.length > 0">
+    <span class="text-label">
+      {{ 'productDetails.price.common.applicableDiscount' | cxTranslate }}
+      {{
+        'cartItems.price.billingFrequency.abbreviation'
+          | cxTranslate: { context: priceList[0]?.recurringChargePeriod }
+      }}
+    </span>
+  </div>
+  <div class="row">
+    <div class="row w-100" *ngFor="let alteration of cycledAlterations">
+      <div class="text-value pl-30 w-100">
+        {{
+          alteration.cycle && alteration.cycle.cycleStart
+            ? alteration.cycle.cycleStart
+            : 1
+        }}
+        <span *ngIf="alteration.cycle && alteration.cycle.cycleEnd">
+          - {{ alteration.cycle.cycleEnd }}
+          {{
+            'cartItems.price.billingFrequency.abbreviation'
+              | cxTranslate: { context: alteration?.recurringChargePeriod }
+          }}
+        </span>
+        {{
+          alteration.cycle && alteration.cycle.cycleEnd
+            ? ''
+            : ('cartItems.price.billingFrequency.abbreviation'
+              | cxTranslate: { context: alteration?.recurringChargePeriod })
+        }}
+        {{
+          alteration.cycle && alteration.cycle.cycleEnd
+            ? ''
+            : ('cartItems.price.common.onwards' | cxTranslate)
+        }}
+        :
+        {{
+          alteration.price && alteration.price.percentage
+            ? alteration.price.percentage
+            : ('common.currencies.currency'
+              | cxTranslate
+                : { context: alteration.price.taxIncludedAmount.currencyIso })
+        }}{{
+          alteration.price.taxIncludedAmount
+            ? alteration.price.taxIncludedAmount.value
+            : ''
+        }}
+        {{ alteration.price.percentage ? 'Percent' : 'Flat' }}
+      </div>
+    </div>
+  </div>
+</div>

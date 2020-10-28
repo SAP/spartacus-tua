@@ -1,0 +1,65 @@
+<ng-container>
+  <div *ngIf="(usageCharge | keyvalue)?.length > 0">
+    <div class="row mx-auto">
+      <div class="cx-label col-xl-20">
+        {{ 'cartItems.price.usageCharges' | cxTranslate }}:
+      </div>
+      <div *ngFor="let usageChargePrices of usageCharge | keyvalue"></div>
+      <ng-container *ngIf="(usagePriceList | keyvalue)?.length > 0">
+        <ng-container *ngIf="usagePriceList !== null && usagePriceList.length > 0">
+          <div class="row col-12 cx-bold fontSmall font-sm-label pr-0 mt-2">
+            {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+            {{'productDetails.price.usageCharge.charges.charge' | cxTranslate }}
+          </div>
+          <ng-container *ngFor="let price of usagePriceList">
+            <div class="row mx-auto w-100">
+              <cx-cart-item-usage-charge-display [price]="price" class="mr-2">
+              </cx-cart-item-usage-charge-display>
+            </div>
+            <div class="row mx-auto w-100">
+              <cx-cart-item-alteration-details class="w-100" [price]="price"></cx-cart-item-alteration-details>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="eachRespectiveTierPriceList !== null && eachRespectiveTierPriceList.length > 0">
+        <ng-container *ngFor="let groupEachTierPrice of groupEachRespectiveTierPriceList">
+          <div class="row col-12 cx-bold fontSmall font-sm-label pr-0 mt-2">
+            {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+            {{'productDetails.price.usageCharge.charges.charge_each_respective_tier' | cxTranslate  }}
+            {{'productDetails.price.usageCharge.usageTypes.usageType_each_respective_tier' | cxTranslate }}:
+          </div>
+          <ng-container *ngFor="let price of groupEachTierPrice.groupItem">
+            <div class="row mx-auto w-100">
+              <cx-cart-item-usage-charge-display [price]="price" class="mr-2">
+              </cx-cart-item-usage-charge-display>
+            </div>
+          </ng-container>
+          <div class="row mx-auto w-100">
+            <cx-cart-item-alteration-details class="w-100" [priceList]="groupEachTierPrice.groupItem">
+            </cx-cart-item-alteration-details>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="highestApplicableTierPriceList !== null && highestApplicableTierPriceList.length > 0">
+        <ng-container *ngFor="let groupHighestTierPrice of groupHighestApplicableTierPriceList">
+          <div class="row col-12 cx-bold fontSmall font-sm-label pr-0 mt-2">
+            {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+            {{'productDetails.price.usageCharge.charges.charge_highest_applicable_tier' | cxTranslate  }}
+            {{'productDetails.price.usageCharge.usageTypes.usageType_highest_applicable_tier' | cxTranslate }}:
+          </div>
+          <ng-container *ngFor="let price of groupHighestTierPrice.groupItem">
+            <div class="row mx-auto w-100">
+              <cx-cart-item-usage-charge-display [price]="price" class="mr-2">
+              </cx-cart-item-usage-charge-display>
+            </div>
+          </ng-container>
+          <div class="row mx-auto w-100">
+            <cx-cart-item-alteration-details class="w-100" [priceList]="groupHighestTierPrice.groupItem">
+            </cx-cart-item-alteration-details>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,32 @@
+
+.p-14 {
+    padding: 0 14px;
+}
+
+.p-30 {
+    padding: 0 30px;
+}
+
+.text-value {
+    font-size: var(--cx-font-size, 1rem);
+    font-weight: var(--cx-font-weight-regular);
+    line-height: var(--cx-line-height, 1.2222222222);
+    text-align: left;
+    color: #008000 !important;
+}
+
+.text-label {
+    font-size: var(--cx-font-size, 1rem);
+    font-weight: var(--cx-font-weight-bold);
+    line-height: var(--cx-line-height, 1.2222222222);
+    text-align: left;
+    color: #008000 !important;  
+}
+
+.pl-30 {
+    padding-left: 40px !important;
+}
+
+.pl-10 {
+    padding-left: 10px;
+}

@@ -1,0 +1,82 @@
+<div
+  class="col-12 px-0 d-flex justify-content-start"
+  *ngIf="recurringCharges.length > 1; else singleRecurringPrice"
+>
+  <span>
+    <span class="text-label">
+      {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:
+    </span>
+    <div
+      class="row mx-auto w-100 my-1"
+      *ngFor="let recurringCharge of recurringCharges"
+    >
+      <div *ngIf="recurringCharge.cycle.cycleStart">
+        <div class="col-12 px-0 d-flex justify-content-start">
+          <span class="text-value">
+            {{ recurringCharge.cycle.cycleStart }}
+            <span *ngIf="recurringCharge.cycle.cycleEnd">
+              - {{ recurringCharge.cycle.cycleEnd }}
+              {{
+                'cartItems.price.billingFrequency.abbreviation'
+                  | cxTranslate: { context: recurringCharge?.billingEvent }
+              }}
+              :
+            </span>
+            <span *ngIf="!recurringCharge.cycle.cycleEnd">
+              {{
+                'cartItems.price.billingFrequency.abbreviation'
+                  | cxTranslate: { context: recurringCharge?.billingEvent }
+              }}
+              {{ 'cartItems.price.common.onwards' | cxTranslate }} :
+            </span>
+            <cx-price-display
+              [list]="false"
+              [price]="recurringCharge"
+              (availableDiscount)="availableDiscount($event)"
+            >
+            </cx-price-display>
+            /
+            {{
+              'cartItems.price.billingFrequency.abbreviation'
+                | cxTranslate: { context: recurringCharge?.billingEvent }
+            }}
+            <span *ngIf="discount > 0.0">
+              <cx-discount-display [discount]="discount"></cx-discount-display>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </span>
+</div>
+<ng-template #singleRecurringPrice>
+  <div
+    class="row mx-auto w-100 mt-2"
+    *ngFor="let recurringCharge of recurringCharges"
+  >
+    <div class="col-12 px-0 d-flex justify-content-start">
+      <span class="text-label">
+        {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:
+      </span>
+    </div>
+    <div class="col-12 px-0 d-flex justify-content-start my-1">
+      <span class="text-value">
+        <cx-price-display
+          [list]="false"
+          [price]="recurringCharge"
+          (availableDiscount)="availableDiscount($event)"
+        >
+        </cx-price-display>
+        /
+        {{
+          'cartItems.price.billingFrequency.abbreviation'
+            | cxTranslate: { context: recurringCharge?.billingEvent }
+        }}
+        <span *ngIf="discount > 0.0">
+          <cx-discount-display [discount]="discount"></cx-discount-display>
+        </span>
+      </span>
+    </div>
+  </div>
+</ng-template>
+<cx-alteration-details [priceList]="recurringCharges"></cx-alteration-details>

@@ -1,0 +1,7 @@
+<ng-container *ngIf="discountExist else noDiscountTemplate">
+  <span class="strikethrough">{{chargesSum}}</span>
+  <span>{{discountedPrice}}</span>
+</ng-container>
+<ng-template #noDiscountTemplate>
+  <span>{{chargesSum}}</span>
+</ng-template>

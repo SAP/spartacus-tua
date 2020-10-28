@@ -1,0 +1,18 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <div *ngIf="oneTimeCharge.length">
+    <div class="cx-label">
+      {{ 'cartItems.price.oneTimeCharges' | cxTranslate }}:
+    </div>
+    <div *ngFor="let price of oneTimeCharge">
+      <span class="fontSmall">
+        <cx-cart-item-price-display [price]="price" (availableDiscount)="availableDiscount($event)">
+        </cx-cart-item-price-display>
+        :
+        {{ price.description }}
+        <span *ngIf="discount > 0.00">
+          <cx-discount-display [discount]="discount"></cx-discount-display>
+        </span>
+      </span>
+    </div>
+  </div>
+</ng-container>

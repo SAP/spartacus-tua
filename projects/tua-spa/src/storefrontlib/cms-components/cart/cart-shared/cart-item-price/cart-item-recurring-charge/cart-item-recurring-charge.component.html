@@ -1,0 +1,80 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <div *ngIf="recurringCharge.length">
+    <div *ngIf="recurringCharge.length > 1; else singleRecurringPrice">
+      <div class="cx-label">
+        {{ 'cartItems.price.recurringCharges' | cxTranslate }}:
+      </div>
+      <div *ngFor="let price of recurringCharge">
+        <div *ngIf="price.cycle">
+          <div>
+            <span class="fontSmall">
+              {{ price.cycle.cycleStart }}
+              <span *ngIf="price.cycle.cycleEnd">
+                - {{ price.cycle.cycleEnd }}
+                {{
+                  'cartItems.price.billingFrequency.abbreviation'
+                    | cxTranslate: { context: price?.recurringChargePeriod }
+                }}
+                :
+              </span>
+              <span *ngIf="!price.cycle.cycleEnd">
+                {{
+                  'cartItems.price.billingFrequency.abbreviation'
+                    | cxTranslate: { context: price?.recurringChargePeriod }
+                }}
+                {{ 'cartItems.price.common.onwards' | cxTranslate }} :
+              </span>
+              <cx-cart-item-price-display
+                [price]="price"
+                (availableDiscount)="availableDiscount($event)"
+              >
+              </cx-cart-item-price-display>
+              /
+              {{
+                'cartItems.price.billingFrequency.abbreviation'
+                  | cxTranslate: { context: price?.recurringChargePeriod }
+              }}
+              <span *ngIf="discount > 0.0">
+                <cx-discount-display
+                  [discount]="discount"
+                ></cx-discount-display>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #singleRecurringPrice>
+      <div class="cx-label">
+        {{ 'cartItems.price.recurringCharges' | cxTranslate }}:
+      </div>
+      <div *ngFor="let price of recurringCharge">
+        <div *ngIf="price.cycle">
+          <div>
+            <span class="fontSmall">
+              <cx-cart-item-price-display
+                [price]="price"
+                (availableDiscount)="availableDiscount($event)"
+              >
+              </cx-cart-item-price-display>
+              /
+              {{
+                'cartItems.price.billingFrequency.abbreviation'
+                  | cxTranslate: { context: price?.recurringChargePeriod }
+              }}
+              <span *ngIf="discount > 0.0">
+                <cx-discount-display
+                  [discount]="discount"
+                ></cx-discount-display>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <cx-cart-item-alteration-details
+      [priceList]="recurringCharge"
+    ></cx-cart-item-alteration-details>
+  </div>
+</ng-container>

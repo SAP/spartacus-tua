@@ -1,0 +1,57 @@
+<ng-container *ngIf="isMainAreaDisplay">
+  <div class="row text-label">
+    <div>
+      {{
+        'productDetails.price.priceTypes.billingEvents.oneTime'
+          | cxTranslate: { context: priceList[0]?.billingEvent }
+      }}:&nbsp;
+    </div>
+    <ng-container
+      *ngIf="
+        priceList && priceList.length > 0 && priceList[0].price;
+        else noPriceTemplate
+      "
+    >
+      <div class="cx-bold">
+        <cx-price-display
+          [list]="true"
+          [priceList]="priceList"
+          (availableDiscount)="availableDiscount($event)"
+        >
+        </cx-price-display>
+        <span *ngIf="discount > 0.0">
+          <cx-discount-display [discount]="discount"></cx-discount-display>
+        </span>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!isMainAreaDisplay">
+  <div *ngIf="priceList && priceList.length > 0">
+    &nbsp;<cx-price-display
+      [list]="true"
+      [priceList]="priceList"
+      (availableDiscount)="availableDiscount($event)"
+    >
+    </cx-price-display>
+    &nbsp;
+    {{
+      'productDetails.price.priceTypes.billingEvents.oneTime'
+        | cxTranslate: { context: priceList[0].billingEvent }
+    }}
+    <span *ngIf="discount > 0.0">
+      <cx-discount-display [discount]="discount"></cx-discount-display>
+    </span>
+  </div>
+</ng-container>
+
+<ng-template #noPriceTemplate>
+  <ng-container *ngIf="currency$ | async as currency">
+    <div class="cx-bold">
+      {{
+        'common.currencies.currency' | cxTranslate: { context: currency }
+      }}&nbsp;0.0
+    </div>
+  </ng-container>
+</ng-template>

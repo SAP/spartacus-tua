@@ -1,0 +1,183 @@
+<ng-container *ngIf="currentCart$ | async as currentCart">
+  <section class="cx-page-section">
+    <div>
+      <h5 class="activeGroup">
+        <span
+          class="material-icons icon-align icon-cursor"
+          (click)="clearCurrentSelection()"
+          >highlight_off</span
+        >
+        <span class="bpo-align">
+          <span>{{ parentBpo?.name }}&nbsp;</span>
+          <span>{{
+            'guidedSelling.currentSelection.newContract' | cxTranslate
+          }}</span>
+        </span>
+        <span
+          *ngIf="!isCurrentSelectionCollapsed() != true; else expand"
+          (click)="expandCurrentSelection()"
+          class="material-icons expandCursor icon-cursor icon-align icon-position"
+          >keyboard_arrow_up</span
+        >
+
+        <ng-template #expand>
+          <span
+            (click)="collapseCurrentSelection()"
+            class="material-icons collapseCursor icon-cursor icon-align icon-position"
+            >keyboard_arrow_down</span
+          >
+        </ng-template>
+      </h5>
+      <div [@slideInOut]="isCurrentSelectionCollapsed()">
+        <div class="row productHeader">
+          <div class="col-4"></div>
+          <div class="col-3 px-0 charge-align">
+            <div class="row mx-auto">
+              <span class="font-bold">{{
+                'cartItems.price.payOnCheckoutPrice' | cxTranslate
+              }}</span>
+            </div>
+            <div class="row mx-auto">
+              <span class="font-small"
+                >({{
+                  'guidedSelling.currentSelection.bestApplicable' | cxTranslate
+                }})</span
+              >
+            </div>
+          </div>
+          <div class="col-3 px-0 charge-align">
+            <div class="row mx-auto">
+              <span class="font-bold">{{
+                'cartItems.price.recurringCharges' | cxTranslate
+              }}</span>
+            </div>
+            <div class="row mx-auto">
+              <span class="font-small"
+                >({{
+                  'guidedSelling.currentSelection.bestApplicable' | cxTranslate
+                }})</span
+              >
+            </div>
+          </div>
+        </div>
+        <div *ngFor="let product of currentSelections">
+          <div class="row product">
+            <div class="col-4">{{ product.name || product.code }}</div>
+            <div
+              class="col-3 price"
+              *ngIf="
+                getPayNowPrice(product?.productOfferingPrice) as payNowPrice
+              "
+            >
+              <span
+                class="small-text"
+                *ngIf="
+                  payNowPrice !==
+                  constants.GUIDED_SELLING.CURRENT_SELECTION.DASH
+                "
+              ></span>
+              <span>
+                <cx-price-display
+                  [list]="true"
+                  [priceList]="payNowPrice"
+                  (availableDiscount)="availableDiscount($event)"
+                >
+                </cx-price-display>
+              </span>
+            </div>
+            <div
+              class="col-3 price"
+              *ngIf="
+                getRecurringPrice(
+                  product?.productOfferingPrice
+                ) as recurringPrice
+              "
+            >
+              <span
+                class="small-text"
+                *ngIf="
+                  recurringPrice !==
+                  constants.GUIDED_SELLING.CURRENT_SELECTION.DASH
+                "
+              ></span>
+              <span>
+                <div
+                  class="row mx-auto w-100 my-1"
+                  *ngFor="let recurringCharge of recurringPrice"
+                >
+                  <div *ngIf="recurringCharge.cycle.cycleStart">
+                    <div class="col-12 px-0 d-flex justify-content-start">
+                      <span
+                        *ngIf="recurringPrice.length > 1"
+                        class="text-value"
+                      >
+                        {{ recurringCharge.cycle.cycleStart }}
+                        <span *ngIf="recurringCharge.cycle.cycleEnd">
+                          - {{ recurringCharge.cycle.cycleEnd }}
+                          {{ 'cartItems.price.month' | cxTranslate }}
+                          :
+                        </span>
+                        <span *ngIf="!recurringCharge.cycle.cycleEnd">
+                          {{
+                            'cartItems.price.billingFrequency.abbreviation'
+                              | cxTranslate
+                                : { context: recurringCharge?.billingEvent }
+                          }}
+                          {{ 'cartItems.price.common.onwards' | cxTranslate }} :
+                        </span>
+                      </span>
+                      <cx-price-display
+                        [list]="false"
+                        [price]="recurringCharge"
+                        (availableDiscount)="availableDiscount($event)"
+                      ></cx-price-display>
+                    </div>
+                  </div>
+                </div>
+              </span>
+            </div>
+            <div
+              class="remove-icon"
+              (click)="removeProductFromCurrentSelection(product)"
+            >
+              <span class="material-icons">highlight_off</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="summary"
+      [ngClass]="{
+        'horizontal-line':
+          currentSelections.length !== 0 && isCurrentSelectionCollapsed()
+      }"
+    >
+      <div class="row productTotal">
+        <div class="col-4">{{ 'cartItems.total' | cxTranslate }}</div>
+        <div class="col-3 price">
+          <span
+            class="small-text"
+            *ngIf="
+              currentSelectionTotal !==
+              constants.GUIDED_SELLING.CURRENT_SELECTION.DASH
+            "
+            >{{
+              'guidedSelling.currentSelection.startingFrom' | cxTranslate
+            }}</span
+          >
+          {{ currentSelectionTotal }}
+        </div>
+      </div>
+    </div>
+
+    <button
+      #addToCartButton
+      class="btn btn-primary btn-block cx-bottom-fixed"
+      (click)="addBpoToCart(currentCart)"
+      [disabled]="currentSelections?.length == 0"
+    >
+      {{ 'addToCart.addToCart' | cxTranslate }}
+    </button>
+  </section>
+</ng-container>

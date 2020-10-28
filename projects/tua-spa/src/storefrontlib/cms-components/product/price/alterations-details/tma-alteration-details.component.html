@@ -1,0 +1,55 @@
+<div *ngIf="priceList.length > 0">
+  <div
+    *ngIf="
+      priceService.getCycledPriceAlterations(priceList[0]) as cycledAlterations
+    "
+  >
+    <div class="pl-10" *ngIf="cycledAlterations.length > 0">
+      <span class="text-label">
+        {{ 'productDetails.price.common.applicableDiscount' | cxTranslate }}
+        {{
+          'cartItems.price.billingFrequency.abbreviation'
+            | cxTranslate: { context: priceList[0]?.billingEvent }
+        }}
+      </span>
+    </div>
+    <div class="row">
+      <div class="row w-100" *ngFor="let alteration of cycledAlterations">
+        <div class="text-value pl-30 w-100">
+          {{
+            alteration.cycle && alteration.cycle.cycleStart
+              ? alteration.cycle.cycleStart
+              : 1
+          }}
+          <span *ngIf="alteration.cycle && alteration.cycle.cycleEnd">
+            - {{ alteration.cycle.cycleEnd }}
+            {{
+              'cartItems.price.billingFrequency.abbreviation'
+                | cxTranslate: { context: alteration?.billingEvent }
+            }}
+          </span>
+          {{
+            alteration.cycle && alteration.cycle.cycleEnd
+              ? ''
+              : ('cartItems.price.billingFrequency.abbreviation'
+                | cxTranslate: { context: alteration?.billingEvent })
+          }}
+          {{
+            alteration.cycle && alteration.cycle.cycleEnd
+              ? ''
+              : ('cartItems.price.common.onwards' | cxTranslate)
+          }}
+          :
+          {{
+            alteration.isPercentage
+              ? ''
+              : ('common.currencies.currency'
+                | cxTranslate: { context: alteration.price.currencyIso })
+          }}
+          {{ alteration.price.value }}
+          {{ alteration.isPercentage ? 'Percent' : 'Flat' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

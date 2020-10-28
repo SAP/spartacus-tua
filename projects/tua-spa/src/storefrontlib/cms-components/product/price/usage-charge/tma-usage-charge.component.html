@@ -1,0 +1,42 @@
+<ng-container *ngIf="(usageChargeList | keyvalue)?.length > 0">
+  <div class="row col-12 cx-bold">{{'productDetails.price.priceTypes.usageCharges' | cxTranslate}}</div>
+  <ng-container *ngIf="usagePriceList !== null && usagePriceList.length > 0">
+    <div class="row col-12 cx-bold">
+      {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+      {{'productDetails.price.usageCharge.charges.charge' | cxTranslate :{context: usagePriceList[0].usageType} }}
+    </div>
+    <ng-container *ngFor="let price of usagePriceList">
+      <cx-per-unit-charge [price]="price">
+      </cx-per-unit-charge>
+      <cx-alteration-details [price]="price"></cx-alteration-details>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="eachRespectiveTierPriceList !== null && eachRespectiveTierPriceList.length > 0">
+    <ng-container *ngFor="let groupEachTierPrice of groupEachRespectiveTierPriceList">
+      <div class="row col-12 cx-bold">
+        {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+        {{'productDetails.price.usageCharge.charges.charge_each_respective_tier' | cxTranslate  }}
+        {{'productDetails.price.usageCharge.usageTypes.usageType_each_respective_tier' | cxTranslate }}:
+      </div>
+      <ng-container *ngFor="let price of groupEachTierPrice.groupItem">
+        <cx-per-unit-charge [price]="price">
+        </cx-per-unit-charge>
+      </ng-container>
+      <cx-alteration-details [priceList]="groupEachTierPrice.groupItem"></cx-alteration-details>
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="highestApplicableTierPriceList !== null && highestApplicableTierPriceList.length > 0">
+    <ng-container *ngFor="let groupHighestTierPrice of groupHighestApplicableTierPriceList">
+      <div class="row col-12 cx-bold">
+        {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+        {{'productDetails.price.usageCharge.charges.charge_highest_applicable_tier' | cxTranslate  }}
+        {{'productDetails.price.usageCharge.usageTypes.usageType_highest_applicable_tier' | cxTranslate }}:
+      </div>
+      <ng-container *ngFor="let price of groupHighestTierPrice.groupItem">
+        <cx-per-unit-charge [price]="price">
+        </cx-per-unit-charge>
+      </ng-container>
+      <cx-alteration-details [priceList]="groupHighestTierPrice.groupItem"></cx-alteration-details>
+    </ng-container>
+  </ng-container>
+</ng-container>

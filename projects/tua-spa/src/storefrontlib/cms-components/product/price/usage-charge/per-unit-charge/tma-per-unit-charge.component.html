@@ -1,0 +1,19 @@
+<ng-container>
+  <div class="row col-12">
+    <div *ngIf="price.tierStart">
+      {{price.tierStart}}
+      {{price.tierEnd  ? ('productDetails.price.common.to' | cxTranslate) : "" }}
+      {{price.tierEnd ? (price.tierEnd) : ('cartItems.price.common.onwards' | cxTranslate)}}:&nbsp;
+    </div>
+    <cx-price-display
+      [list]="false"
+      [price]="price"
+      (availableDiscount)="availableDiscount($event)">
+    </cx-price-display>
+    /{{price.usageUnit.name}}
+    {{'productDetails.price.common.each' |cxTranslate}}
+    <span *ngIf="discount > 0.00">
+      <cx-discount-display [discount]="discount"></cx-discount-display>
+    </span>
+  </div>
+</ng-container>

@@ -1,0 +1,44 @@
+<ng-container *ngIf="product$ | async as product">
+  <div class="container" [innerHTML]="product?.description"></div>
+  <br />
+  <div class="container" *ngIf="priceService.getHighestPriorityPriceForSPO(product) as highestPriorityPrice">
+    <div *ngIf="priceService.getAllPriceList(highestPriorityPrice) as priceList">
+
+      <!-- Contract duration -->
+      <div class="row col-12" *ngIf="priceService.getContractTerm(highestPriorityPrice) as contractTerm">
+        <div *ngIf="contractTerm && isContractTermDisplayNeeded(priceList)">
+          <div class="cx-bold">
+            {{'productDetails.price.contractDuration' | cxTranslate}}:
+            <div class="d-inline-block cx-normal">
+              {{contractTerm?.name}}
+            </div>
+          </div>
+          <br />
+        </div>
+      </div>
+
+      <!-- One time fees -->
+      <div *ngIf="priceService.getCancellationFeePrices(priceList) as cancellationFees">
+        <div *ngIf="priceService.getOnFirstBillPrices(priceList) as onFirstFillPrices">
+          <div *ngIf="(cancellationFees && cancellationFees.length > 0) ||
+                  (onFirstFillPrices && onFirstFillPrices.length > 0)">
+            <div class="cx-bold">
+              {{'productDetails.price.priceTypes.oneTimeFees' | cxTranslate}}:
+            </div>
+            <!-- Cancellation Fees -->
+            <cx-one-time-charge [isMainAreaDisplay]="false" [priceList]="cancellationFees">
+            </cx-one-time-charge>
+            <!-- On First Bill Fees -->
+            <cx-one-time-charge [isMainAreaDisplay]="false" [priceList]="onFirstFillPrices">
+            </cx-one-time-charge>
+            <br />
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="priceService.getUsagePrices(priceList) as usageChargePriceGroupedList">
+        <cx-usage-charge [usageChargeList]="usageChargePriceGroupedList">
+        </cx-usage-charge>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>

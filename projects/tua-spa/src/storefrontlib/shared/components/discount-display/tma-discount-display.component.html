@@ -1,0 +1,4 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <span class="priceGreen px-2">({{ 'productDetails.price.common.discount' | cxTranslate }}
+    {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{discount |number}})</span>
+</ng-container>

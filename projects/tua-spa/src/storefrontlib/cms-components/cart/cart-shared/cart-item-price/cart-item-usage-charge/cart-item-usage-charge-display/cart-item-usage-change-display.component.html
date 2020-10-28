@@ -1,0 +1,11 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <div class="fontSmall">
+    {{ price.tierStart + '-' + (price.tierEnd ? (price.tierEnd) : ('cartItems.price.common.onwards' | cxTranslate)) + ' : '}}
+    <cx-cart-item-price-display [price]="price" (availableDiscount)="availableDiscount($event)">
+    </cx-cart-item-price-display>
+    / {{ price.unitOfMeasure }}
+    <span *ngIf="discount > 0.00">
+      <cx-discount-display [discount]="discount"></cx-discount-display>
+    </span>
+  </div>
+</ng-container>

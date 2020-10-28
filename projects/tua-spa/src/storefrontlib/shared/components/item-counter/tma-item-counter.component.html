@@ -1,0 +1,29 @@
+<button
+  type="button"
+  class="cx-counter-action"
+  (click)="decrement()"
+  [disabled]="control.disabled || control.value <= min"
+  tabindex="-1"
+>
+  -
+</button>
+
+<input
+  #qty
+  type="number"
+  [min]="min"
+  [max]="max"
+  [step]="step"
+  [readonly]="readonly"
+  [formControl]="control"
+/>
+
+<button
+  type="button"
+  class="cx-counter-action"
+  (click)="increment()"
+  [disabled]="control.disabled || control.value >= max"
+  tabindex="-1"
+>
+  +
+</button>

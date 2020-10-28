@@ -1,0 +1,45 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <div class="row mx-auto w-100">
+    <div class="col-12 px-0 d-flex justify-content-start mb-2">
+      <span class="text-label-big">
+        {{
+          'priceheadLine.productListPriceHeadline.bestApplicable' | cxTranslate
+        }}
+      </span>
+    </div>
+    <div class="col-12 px-0 d-flex justify-content-start my-1">
+      <ng-container
+        *ngIf="
+          priceService.getPayNowPrices(compositePricingList) as payNowCharges
+        "
+      >
+        <div class="col-12 col-lg-7">
+          <cx-one-time-charge
+            [isMainAreaDisplay]="true"
+            [priceList]="payNowCharges"
+          >
+          </cx-one-time-charge>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-container
+    *ngIf="
+      priceService.getRecurringPrices(compositePricingList) as recurringCharges
+    "
+  >
+    <cx-recurring-charge [recurringCharges]="recurringCharges">
+    </cx-recurring-charge>
+  </ng-container>
+
+  <ng-template #noPrice>
+    <ng-container *ngIf="currency$ | async as currency">
+      <div class="text-value">
+        {{
+          'common.currencies.currency' | cxTranslate: { context: currency }
+        }}&nbsp;0.0
+      </div>
+    </ng-container>
+  </ng-template>
+</ng-container>
