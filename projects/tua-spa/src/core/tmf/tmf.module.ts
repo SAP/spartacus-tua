@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TmaTmfChecklistActionModule } from './adapters/checklistaction';
 import { TmfConfig } from './config/tmf-config';
@@ -11,15 +6,20 @@ import { defaultTmfConfig } from './config/default-tmf-config';
 import { tmfConfigValidator } from './config/tmf-config-validator';
 import { TmfConfigLoaderModule } from './config-loader/tmf-config-loader.module';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TmaClientTokenInterceptor, TmaUserTokenInterceptor } from '../auth/http-interceptors';
+import {
+  TmaClientTokenInterceptor,
+  TmaUserTokenInterceptor,
+} from '../auth/http-interceptors';
+import { TmfSubscriptionModule } from './adapters/subscription';
 import { TmaTmfShoppingCartModule } from './adapters/cart';
 
 @NgModule({
   imports: [
     TmaTmfChecklistActionModule,
+    TmfSubscriptionModule,
     TmaTmfShoppingCartModule,
-    TmfConfigLoaderModule.forRoot()
-  ]
+    TmfConfigLoaderModule.forRoot(),
+  ],
 })
 export class TmfModule {
   static forRoot(): ModuleWithProviders<TmfModule> {
@@ -32,14 +32,14 @@ export class TmfModule {
         {
           provide: HTTP_INTERCEPTORS,
           useClass: TmaClientTokenInterceptor,
-          multi: true
+          multi: true,
         },
         {
           provide: HTTP_INTERCEPTORS,
           useClass: TmaUserTokenInterceptor,
-          multi: true
-        }
-      ]
-    }
+          multi: true,
+        },
+      ],
+    };
   }
 }

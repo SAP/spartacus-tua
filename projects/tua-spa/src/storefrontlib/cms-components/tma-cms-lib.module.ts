@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { NgModule } from '@angular/core';
 import { TmaProductListModule, TmaProductSummaryModule } from './product';
 import { TmaCartComponentModule } from './cart';
@@ -10,7 +5,10 @@ import { TmaCheckoutComponentModule } from './checkout';
 import { TmaOrderConfirmationModule } from './order-confirmation';
 import { TmaOrderModule } from './myaccount/order/tma-order.module';
 import { TmaProductTabsModule } from './product/product-tabs';
+import { SubscriptionComponentModule } from './myaccount';
 import { TmaGuidedSellingModule } from './guided-selling';
+import { JourneyChecklistComponentModule } from './journey-checklist';
+import { LogicalResourceModule } from './cart/cart-shared/logical-resource';
 
 @NgModule({
   imports: [
@@ -21,8 +19,10 @@ import { TmaGuidedSellingModule } from './guided-selling';
     TmaCheckoutComponentModule,
     TmaOrderConfirmationModule,
     TmaOrderModule,
-    TmaGuidedSellingModule
-  ]
+    SubscriptionComponentModule,
+    TmaGuidedSellingModule,
+    LogicalResourceModule,
+    JourneyChecklistComponentModule,
+  ],
 })
-export class TmaCmsLibModule {
-}
+export class TmaCmsLibModule {}

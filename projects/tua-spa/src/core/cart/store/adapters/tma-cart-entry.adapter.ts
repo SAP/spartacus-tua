@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Observable } from 'rxjs';
 import { TmaCartModification } from '../../../model/tma-cart.model';
 import { CartEntryAdapter } from '@spartacus/core';

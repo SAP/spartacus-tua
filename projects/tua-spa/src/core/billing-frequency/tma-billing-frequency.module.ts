@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TmaBillingFrequencyConfigLoaderModule } from './config-loader/tma-billing-frequency-config-loader.module';
 import { TmaBillingFrequencyConfig } from './config';

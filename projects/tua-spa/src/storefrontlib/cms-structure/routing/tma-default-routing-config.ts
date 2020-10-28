@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { RoutesConfig, RoutingConfig } from '@spartacus/core';
 
 export const defaultTmaStorefrontRoutesConfig: RoutesConfig = {
@@ -10,7 +5,14 @@ export const defaultTmaStorefrontRoutesConfig: RoutesConfig = {
     paths: ['product/:productCode']
   },
   category: {
-    paths: ['c/:categoryCode']
+    paths: ['c/:categoryCode'],
+  },
+  usageConsumption: {
+    paths: ['my-account/subscription/subscription-base/:subscriptionId'],
+    paramsMapping: { subscriptionId: 'code' },
+  },
+  subscriptions: {
+    paths: ['/my-account/subscription'],
   },
   cgs: {
     paths: ['cgs/:bpoCode'],

@@ -1,0 +1,15 @@
+.font-label {
+  font-size: var(--cx-font-size, 0.875rem);
+  font-weight: var(--cx-font-weight-bold);
+  line-height: var(--cx-line-height, 1.2222222222);
+  overflow-wrap: break-word;
+  padding-right: 1rem;
+}
+
+.font-small {
+  font-size: var(--cx-font-size, 0.875rem);
+}
+
+.clickable {
+  cursor: pointer;
+}

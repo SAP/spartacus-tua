@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {
@@ -13,12 +8,12 @@ import {
   CheckoutProgressModule,
   DeliveryModeModule,
   PaymentMethodModule,
-  PlaceOrderModule,
   PromotionsModule,
-  ShippingAddressModule
+  ShippingAddressModule,
 } from '@spartacus/storefront';
 import { TmaCheckoutOrderSummaryModule } from './checkout-order-summary/tma-checkout-order-summary.module';
 import { TmaReviewSubmitModule } from './review-submit/tma-review-submit.module';
+import { TmaPlaceOrderModule } from './place-order/tma-place-order.module';
 
 @NgModule({
   imports: [
@@ -30,10 +25,10 @@ import { TmaReviewSubmitModule } from './review-submit/tma-review-submit.module'
     CheckoutProgressMobileBottomModule,
     DeliveryModeModule,
     PaymentMethodModule,
-    PlaceOrderModule,
     PromotionsModule,
     TmaReviewSubmitModule,
-    ShippingAddressModule
-  ]
+    ShippingAddressModule,
+    TmaPlaceOrderModule,
+  ],
 })
-export class TmaCheckoutComponentModule extends CheckoutComponentModule { }
+export class TmaCheckoutComponentModule extends CheckoutComponentModule {}

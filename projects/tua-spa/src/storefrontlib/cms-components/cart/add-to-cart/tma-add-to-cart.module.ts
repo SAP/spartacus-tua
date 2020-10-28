@@ -1,23 +1,24 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ConfigModule, FeaturesConfigModule, I18nModule, UrlModule } from '@spartacus/core';
+import {
+  ConfigModule,
+  FeaturesConfigModule,
+  I18nModule,
+  UrlModule,
+} from '@spartacus/core';
 import {
   AddToCartModule,
   AutoFocusDirectiveModule,
   IconModule,
   ItemCounterModule,
   PromotionsModule,
-  SpinnerModule
+  SpinnerModule,
 } from '@spartacus/storefront';
 import { TmaAddToCartComponent } from './tma-add-to-cart.component';
 import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { TmaCartSharedModule } from '../cart-shared';
+import { JourneyChecklistComponentModule } from '../../journey-checklist';
 
 @NgModule({
   imports: [
@@ -26,22 +27,24 @@ import { TmaCartSharedModule } from '../cart-shared';
     RouterModule,
     SpinnerModule,
     PromotionsModule,
+    JourneyChecklistComponentModule,
     FeaturesConfigModule,
     ConfigModule.withConfig({
       cmsComponents: {
         ProductAddToCartComponent: {
-          component: TmaAddToCartComponent
-        }
-      }
+          component: TmaAddToCartComponent,
+        },
+      },
     }),
     UrlModule,
     IconModule,
     I18nModule,
     ItemCounterModule,
-    AutoFocusDirectiveModule
+    AutoFocusDirectiveModule,
+    JourneyChecklistComponentModule,
   ],
   declarations: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
   entryComponents: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
-  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent]
+  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
 })
-export class TmaAddToCartModule extends AddToCartModule { }
+export class TmaAddToCartModule extends AddToCartModule {}

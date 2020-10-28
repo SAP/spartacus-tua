@@ -1,0 +1,22 @@
+<ng-container *ngIf="currency$ | async as currency">
+<div *ngIf="(usageCharge | keyvalue)?.length > 0">
+    <div  class="cx-label">
+      {{ 'cartItems.price.usageCharges' | cxTranslate }}:
+    </div>
+    <div *ngFor="let usageChargePrices of usageCharge | keyvalue">
+      <div *ngFor="let price of usageChargePrices.value">
+        <div>
+          <span class="fontSmall">
+            - {{ price.tierStart ?
+              (price.tierStart + '-' + (price.tierEnd ? (price.tierEnd) : ('cartItems.price.common.onwards' | cxTranslate)) + ':') :
+            (('cartItems.price.common.from' | cxTranslate) + ' ' +
+              (cartPriceService.getMaximumTierEnd(usageChargePrices.value) + 1) + ' ' +
+              ('cartItems.price.common.onwards' | cxTranslate) + ':') }}
+            {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
+            / {{ price.unitOfMeasure }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

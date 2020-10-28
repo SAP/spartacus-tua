@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Component } from '@angular/core';
 import { OrderDetailsService, OrderDetailTotalsComponent } from '@spartacus/storefront';
 import { Observable } from 'rxjs';

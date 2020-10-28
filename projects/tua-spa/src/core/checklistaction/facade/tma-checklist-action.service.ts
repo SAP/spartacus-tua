@@ -1,50 +1,56 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+import { TmaProcessTypeEnum } from './../../model';
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import * as TmaChecklistAction from '../store/actions/tma-checklist-action.action';
 import * as TmaChecklistActionModel from '../../model/tma-checklist-action.model';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { TmaStateWithChecklistAction } from '../store';
 import * as TmaChecklistActionSelectors from '../store/selectors/tma-checklist-action.selector';
-import { filter, takeUntil, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class TmaChecklistActionService implements OnDestroy {
-
   protected destroyed$ = new Subject();
 
-  constructor(
-    protected store: Store<TmaStateWithChecklistAction>
-  ) {
-  }
+  constructor(protected store: Store<TmaStateWithChecklistAction>) {}
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
   }
 
-  getChecklistActionForProductCode(baseSiteId: string, productCode: string): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
-    this.store.select(TmaChecklistActionSelectors.getAllChecklistActions)
-      .pipe(
-        tap(checklistActions => {
-          if (!checklistActions.find(checklistAction =>
-            checklistAction.productId === productCode && checklistAction.baseSiteId === baseSiteId)) {
-            this.store.dispatch(new TmaChecklistAction.LoadChecklistActions({
+  /**
+   * This method is used to retrive checklist actions for defined product and process type
+   * @param baseSiteId  The base site Id
+   * @param productCode The product code
+   * @param processType? The process type to find the checklist actions
+   * @returns TmaChecklistActionModel.TmaChecklistAction[] The applicable checkist actions
+   */
+  getChecklistActionForProductCode(
+    baseSiteId: string,
+    productCode: string,
+    processType?: TmaProcessTypeEnum
+  ): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
+    return this.store.pipe(
+      select(TmaChecklistActionSelectors.getChecklistActionForProductCode, {
+        productCode,
+        baseSiteId,
+        processType,
+      }),
+      tap((checklistActions: TmaChecklistActionModel.TmaChecklistAction[]) => {
+        if (
+          checklistActions === undefined ||
+          Object.keys(checklistActions).length === 0
+        ) {
+          this.store.dispatch(
+            new TmaChecklistAction.LoadChecklistActions({
               baseSiteId,
-              productCode
-            }));
-          }
-        }),
-        filter(checklistActions => checklistActions != null),
-        takeUntil(this.destroyed$))
-      .subscribe();
-
-    return this.store
-      .select(TmaChecklistActionSelectors.getChecklistActionForProductCode, { productCode, baseSiteId });
+              productCode,
+              processType,
+            })
+          );
+        }
+      })
+    );
   }
-
 }

@@ -1,0 +1,21 @@
+<ng-container *ngIf="currency$ | async as currency">
+  <div *ngIf="recurringCharge.length">
+    <div  class="cx-label">
+      {{ 'cartItems.price.recurringCharges' | cxTranslate }}:
+    </div>
+    <div *ngFor="let price of recurringCharge">
+      <div *ngIf="price.cycle">
+        <div>
+          <span class="fontSmall">
+            - {{ 'cartItems.price.months' | cxTranslate }}
+            {{ price.cycle.cycleStart }}
+            - {{ price.cycle.cycleEnd ? (price.cycle.cycleEnd) : ('cartItems.price.common.onwards' | cxTranslate) }}:
+            {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}
+            /
+            {{ 'cartItems.price.billingFrequency.abbreviation' | cxTranslate : {context: price?.recurringChargePeriod} }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
