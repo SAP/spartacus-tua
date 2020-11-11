@@ -1,0 +1,35 @@
+<div class="row d-flex justify-content-center">
+
+  <!-- Close button -->
+  <section class="col-md-12">
+    <button
+      type="button"
+      class="close"
+      aria-label="Close"
+      (click)="dismissModal({})"
+    >
+        <span aria-hidden="true">
+          <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
+        </span>
+    </button>
+
+    <!-- Consumption component -->
+    <ngb-tabset type="pills">
+      <ngb-tab *ngFor="let poConsumption of consumptionComponent?.searchByConsumptionComponents | keyvalue">
+        <ng-template ngbTabTitle>
+          <span>{{ poConsumption.value.productSpecification.name }}</span>
+        </ng-template>
+        <ng-template ngbTabContent>
+          <cx-po-search-by-consumption
+            [poConsumption]="poConsumption.value"
+            [isModal]="true"
+            [url]="url"
+            [queryParams]="queryParams"
+            (closeModal)="dismissModal($event)"
+          >
+          </cx-po-search-by-consumption>
+        </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+  </section>
+</div>

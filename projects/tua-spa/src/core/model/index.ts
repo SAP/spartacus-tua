@@ -1,13 +1,25 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+export * from './appointment.model';
+export * from './search-time-slot.model';
+export * from './time-period.model';
+export * from './tma-address.model';
 export * from './tma-cart.entry.model';
 export * from './tma-cart.model';
 export * from './tma-checklist-action.model';
+export * from './tma-cms-model';
+export * from './tma-consumption.model';
 export * from './tma-guided-selling.model';
+export * from './tma-image.model';
 export * from './tma-order.model';
+export * from './tma-po-search-by-consumption.model';
+export * from './tma-premise-details.model';
 export * from './tma-product.model';
+export * from './subscription-base.model';
+export * from './usage-consumption-report.model';
 export * from './tma-tmf-related-party.model';
 export * from './tma-tmf-shopping-cart.model';
+export * from './logical-resource.model';
+export * from './reservation.model';
+export * from './tmf-product.model';
+export * from './search-time-slot.model';
+export * from './time-period.model';
+export * from './appointment.model';

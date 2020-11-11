@@ -1,0 +1,48 @@
+export const subscriptions = {
+  subscriptions: {
+    headingSubscription: 'My Subscriptions',
+    subscribedServices: 'Subscribed Services:',
+    usageDetailsBtn: 'Usage Details',
+    backToSubscriptions: 'Go back to Subscriptions',
+    orderNumber: 'Order Number',
+    contractStartDate: 'Contract Start date',
+    contractDuration: 'Contract Duration',
+    expiresOn: 'Expires On',
+    noSubscription: 'You have no subscriptions',
+    priceInfo: 'Original Order Prices',
+    noConsumptions: 'No usage consumption data available',
+    usageConsumption: 'Usage Consumption',
+    overUsedDataLimit: 'Over Used Data Limit',
+    usageRemaining: 'remaining',
+    usageUsed: 'used',
+    serviceName: 'Service Name',
+    startDate: 'Start Date',
+    endDate: 'End Date',
+    usagePercentage: 'Usage %',
+    usage: 'Usage',
+    usageConsumptionMsg:
+      'You have used {{usageValue}} {{usageUnit}} out of {{total}} {{usageUnit}}',
+    usageRemainingMsg: '{{usageValue}} {{usageUnit}} Remaining',
+    usageUsedMsg: '{{usageValue}} {{usageUnit}} Used',
+    subscriptionUnits: {
+      mobile_data: 'Mobile Data',
+      phone_minutes: 'Phone Minutes',
+      movies_on_demand: 'Movies on demand',
+      theme_packages: 'Theme  Packages',
+      radio_stations: 'Radio Stations',
+      documentaries_on_demand: 'Documentaries on demand',
+      blockbusters_on_demand: 'Blockbusters on demand',
+      videos_on_demand: 'Videos on demand',
+      music_pieces: 'Music Pieces',
+      sms: 'SMS',
+      mb: 'MB',
+      gb: 'GB',
+      sessions: 'Sessions',
+      channels: 'Channels',
+      unit: 'Unit',
+      replacements: 'Replacements',
+      gbps: 'GBPS',
+      mbps: 'MBPS'
+    }
+  }
+};

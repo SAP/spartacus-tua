@@ -1,10 +1,6 @@
-<!--
-SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
-
-SPDX-License-Identifier: Apache-2.0
--->
 <ng-container *ngIf="priceList && priceList.length > 0">
-  <div class="row col-12 cx-bold">
+  <div class="row"
+       [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small cx-bold' : 'col-12 cx-size-small cx-bold' : 'col-12 cx-bold'">
     <div *ngIf="priceList[0].name">
       {{priceList[0].name}},
       {{'productDetails.price.usageCharge.charges.charge' | cxTranslate :{context: priceList[0].usageType} }}
@@ -17,7 +13,8 @@ SPDX-License-Identifier: Apache-2.0
     </div>
   </div>
   <ng-container *ngFor="let price of priceList">
-    <div class="row col-12">
+    <div class="row"
+         [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small' : 'col-12 cx-size-small' : 'col-12'">
       <div *ngIf="price.tierStart">
         {{'productDetails.price.common.from' | cxTranslate}}
         {{price.tierStart}}

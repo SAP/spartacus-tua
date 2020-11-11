@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { OccConfig, ProductScope } from '@spartacus/core';
 
 export const defaultTmaOccProductConfig: OccConfig = {
@@ -10,7 +5,7 @@ export const defaultTmaOccProductConfig: OccConfig = {
     occ: {
       endpoints: {
         product:
-          'products/${productCode}?fields=DEFAULT,averageRating,images(FULL),classifications,manufacturer,numberOfReviews,categories(FULL),baseOptions,baseProduct,variantOptions,variantType',
+          'products/${productCode}?fields=DEFAULT,averageRating,images(FULL),classifications,manufacturer,numberOfReviews,categories(FULL),baseOptions,baseProduct,variantOptions,variantType,productOfferingPrice(FULL)',
         product_scopes: {
           list:
             'products/${productCode}?fields=code,name,summary,price(formattedValue),images(DEFAULT,galleryIndex)',

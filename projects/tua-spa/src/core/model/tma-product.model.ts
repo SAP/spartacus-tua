@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Product } from '@spartacus/core';
 import { TmaBillingPlan } from './tma-cart.entry.model';
 
@@ -127,4 +122,8 @@ export interface TmaProductOfferingGroup {
   id?: string;
   name?: string;
   childProductOfferings?: TmaProduct[];
+}
+
+export interface TmaBillingEvent {
+  name?: string;
 }

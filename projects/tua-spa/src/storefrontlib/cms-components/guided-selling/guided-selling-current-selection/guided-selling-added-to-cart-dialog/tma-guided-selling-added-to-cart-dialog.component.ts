@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Component, Input, OnInit } from '@angular/core';
 import { TmaActiveCartService, TmaCartPriceService, TmaCartService } from '../../../../../core/cart/facade';
 import { FormBuilder, FormGroup } from '@angular/forms';

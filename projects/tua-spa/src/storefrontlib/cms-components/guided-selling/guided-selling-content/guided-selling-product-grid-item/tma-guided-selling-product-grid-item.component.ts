@@ -1,14 +1,17 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { CurrencyService, ProductService } from '@spartacus/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { TmaBillingFrequencyConfig } from '../../../../../core/config/billing-frequency/config';
+import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
 import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';
-import { Subject } from 'rxjs';
+import {
+  TmaConsumptionChangeService,
+  TmaPriceService,
+  TmaProductService
+} from '../../../../../core';
 import { TmaProductGridItemComponent } from '../../../product/product-list';
-import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'cx-guided-selling-product-grid-item',
@@ -23,9 +26,16 @@ export class TmaGuidedSellingProductGridItemComponent extends TmaProductGridItem
 
   constructor(
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
-    protected changeDetectorRef: ChangeDetectorRef
+    protected changeDetectorRef: ChangeDetectorRef,
+    public priceService: TmaPriceService,
+    protected productService: ProductService,
+    protected currencyService: CurrencyService,
+    protected consumptionConfig: TmaConsumptionConfig,
+    protected productSpecificationProductService: TmaProductService,
+    protected consumptionChangeService: TmaConsumptionChangeService,
+    protected billingFrequencyConfig: TmaBillingFrequencyConfig
   ) {
-    super();
+    super(priceService, productService, currencyService, consumptionConfig, productSpecificationProductService, consumptionChangeService, billingFrequencyConfig);
   }
 
   ngOnInit(): void {

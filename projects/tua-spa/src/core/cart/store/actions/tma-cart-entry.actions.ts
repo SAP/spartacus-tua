@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CART_DATA, StateLoaderActions } from '@spartacus/core';
 
 export enum TmaCartEntryActionTypes {
@@ -16,7 +11,7 @@ export enum TmaCartEntryActionTypes {
 
 export class AddCartEntry extends StateLoaderActions.LoaderLoadAction {
   readonly type = TmaCartEntryActionTypes.ADD_CART_ENTRY;
-
+  
   constructor(public payload: any) {
     super(CART_DATA);
   }

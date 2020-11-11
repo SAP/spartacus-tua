@@ -1,0 +1,126 @@
+<ng-container *ngIf="activeUser$ |async as activeUser else loading">
+  <ng-container *ngIf="product$ |async as product else loading">
+    <ng-container *ngIf="addresses$|async as addresses">
+      <ng-container [ngSwitch]="premiseDetailsStep">
+        <!-- Premise details form -->
+        <ng-container *ngSwitchCase="'premiseDetailsStep'">
+          <cx-premise-details-form
+            [premiseDetail]=premiseDetails
+            [isDialog]="false"
+            (validatePremiseDetails)="validatePremiseDetails($event, product)"
+          ></cx-premise-details-form>
+        </ng-container>
+
+        <!-- Valid premise details -->
+        <ng-container *ngSwitchCase="'premiseValidationResult'">
+          <ng-container *ngIf="validationResult$ |async as validationResult else loading">
+            <ng-container *ngIf="verifyPremiseResultValidity(validationResult)">
+
+              <!-- Premise details -->
+              <cx-premise-details-display
+                [premiseDetail]="premiseDetails"
+                [productCode]="productCode"
+                [compact]="false"
+                [isReadOnly]="false"
+                (updatePremiseDetails)="updatePremiseDetails($event)"
+              ></cx-premise-details-display>
+
+              <!-- Success message -->
+              <div class="row">
+                <div class="alert alert-success" role="alert">
+                  <span class="sr-only"></span>
+                  {{ 'premiseDetails.premiseDetailsValidation.success' | cxTranslate }}
+                </div>
+              </div>
+
+              <cx-purchase-reason
+                [contractStartDate]="contractStartDate"
+                [serviceProvider]="serviceProvider"
+                [productCode]="productCode"
+                [compact]="false"
+                [isReadOnly]="false"
+                (moveIn)="onSetMoveIn()"
+                (switchProvider)="onUnsetMoveIn()"
+                (updateContractStartDate)="updateContractStartDate($event)"
+                (updateServiceProvider)="energySupplierEdited($event)"
+              >
+              </cx-purchase-reason>
+
+              <!-- Add to cart button -->
+              <div class="row">
+                <div class="col-md-6">
+                  <button
+                    class="btn btn-block btn-success"
+                    (click)="addToCart(activeUser, addresses)"
+                    [disabled]="isMoveIn ? !contractStartDate : (!contractStartDate || !serviceProvider)"
+                  >{{ 'common.yes' | cxTranslate }}</button>
+                </div>
+
+                <!-- No button -->
+                <div class="col-md-6">
+                  <button
+                    class="btn btn-block btn-danger"
+                    (click)="onGoToPreviousPage()"
+                  >{{ 'common.no' | cxTranslate }}</button>
+                </div>
+              </div>
+            </ng-container>
+
+
+            <!-- Invalid premise details -->
+            <ng-container *ngIf="!verifyPremiseResultValidity(validationResult)">
+
+              <!-- Premise details -->
+              <cx-premise-details-display
+                [premiseDetail]=premiseDetails
+                [productCode]="productCode"
+                [compact]="false"
+                [isReadOnly]="false"
+                (updatePremiseDetails)="updatePremiseDetails($event)"
+              ></cx-premise-details-display>
+
+              <!-- Fail message -->
+              <div class="row">
+                <div class="alert alert-danger" role="alert">
+                  <span class="sr-only"></span> {{ 'premiseDetails.premiseDetailsValidation.fail' | cxTranslate }}
+                </div>
+              </div>
+
+              <!-- Return to Previous Page -->
+              <div class="d-flex justify-content-center">
+                <button class="btn btn-danger"
+                        (click)="onGoToPreviousPage()">{{ 'common.back' | cxTranslate }}</button>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <!-- Check premise validity -->
+        <ng-container *ngSwitchCase="'premiseCheckButton'">
+
+          <!-- Premise validity check button -->
+          <div class="row">
+            <div class="col-md-12 col-lg-9">
+              <div class="cx-checkout-btns row">
+                <div class="col-md-12 col-lg-12">
+                  <button
+                    class="btn btn-block btn-primary"
+                    (click)="onChangePremiseDetailsStep()"
+                  >
+                    {{ 'premiseDetails.checkAvailability' | cxTranslate }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>
+  <div class="cx-spinner">
+    <cx-spinner></cx-spinner>
+  </div>
+</ng-template>

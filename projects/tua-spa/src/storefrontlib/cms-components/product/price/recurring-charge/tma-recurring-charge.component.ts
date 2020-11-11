@@ -1,33 +1,52 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { CurrencyService } from '@spartacus/core';
+import { Observable } from 'rxjs';
+import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../../../../core/config/billing-frequency/config';
 import { TmaProductOfferingPrice, TmaProductOfferingTerm, TmaQuantity } from '../../../../../core/model';
-import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../../../../core/billing-frequency/config';
 import { TmaPriceService } from '../../../../../core/product/facade';
 
 @Component({
   selector: 'cx-recurring-charge',
   templateUrl: './tma-recurring-charge.component.html',
   styleUrls: ['./tma-recurring-charge.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TmaRecurringChargeComponent {
+export class TmaRecurringChargeComponent implements OnInit {
 
   @Input()
   recurringChargeList: TmaProductOfferingPrice[];
 
-  @Input()
+  @Input() 
   contractTerm: TmaProductOfferingTerm;
+
+  @Input()
+  isMainAreaDisplay: boolean;
+
+  @Input()
+  isListingAreaDisplay: boolean;
+
+  @Input()
+  isListMode: boolean;
+
+  currency$: Observable<string>;
 
   constructor(
     public priceService: TmaPriceService,
     protected billingFrequencyConfig: TmaBillingFrequencyConfig,
+    protected currencyService: CurrencyService
   ) {
   }
 
+  ngOnInit(): void {
+    this.currency$ = this.currencyService.getActive();
+  }
+
+  /**
+   * Retrieves the recurring charge prices grouped by the duration of the price charge.
+   * @param priceList List containing all prices of a product
+   * @param contractTerm The duration of the contract
+   * @return List of {@link TmaProductOfferingPrice} containing the recurring prices.
+   */
   getGroupedRecurringChargeList(priceList: TmaProductOfferingPrice[], contractTerm: TmaProductOfferingTerm): TmaProductOfferingPrice[] {
     if (!priceList || priceList.length === 0 || !contractTerm || !contractTerm.duration || contractTerm.duration.amount == null) {
       return [];
@@ -61,13 +80,13 @@ export class TmaRecurringChargeComponent {
         groupedRecurringChargeList.push({
           price: {
             value: currentPrice.toString(),
-            currencyIso: currency,
+            currencyIso: currency
           },
           cycle: {
             cycleStart: cycleStart,
-            cycleEnd: i + 1,
+            cycleEnd: i + 1
           },
-          recurringChargePeriodType: recurringChargePeriodType,
+          recurringChargePeriodType: recurringChargePeriodType
         });
         break;
       }
@@ -76,13 +95,13 @@ export class TmaRecurringChargeComponent {
         groupedRecurringChargeList.push({
           price: {
             value: currentPrice.toString(),
-            currencyIso: currency,
+            currencyIso: currency
           },
           cycle: {
             cycleStart: cycleStart,
-            cycleEnd: i + 1,
+            cycleEnd: i + 1
           },
-          recurringChargePeriodType: recurringChargePeriodType,
+          recurringChargePeriodType: recurringChargePeriodType
         });
         currentPrice = perMonthPriceList[i + 1];
         cycleStart = i + 2;
@@ -92,6 +111,12 @@ export class TmaRecurringChargeComponent {
     return groupedRecurringChargeList;
   }
 
+  /**
+   * Formats the term value.
+   *
+   * @param contractTerm The duration of te contract
+   * @return The formatted period
+   */
   getPeriodType(contractTerm: TmaProductOfferingTerm): string {
     if (!contractTerm || !contractTerm.billingPlan || !contractTerm.billingPlan.billingTime) {
       return 'month';
@@ -101,6 +126,13 @@ export class TmaRecurringChargeComponent {
     return periodType.toLowerCase();
   }
 
+  /**
+   * Retrieves the duration of a price based on its cycle.
+   *
+   * @param price The prices for which the duration is computed.
+   * @param contractTerm The duration of the contract
+   * @return The duration of the price
+   */
   getCycleDuration(price: TmaProductOfferingPrice, contractTerm: TmaProductOfferingTerm): number {
     if (price && price.cycle && price.cycle.cycleStart) {
       if (price.cycle.cycleEnd && price.cycle.cycleEnd !== -1) {

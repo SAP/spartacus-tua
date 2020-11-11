@@ -1,8 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
-
-SPDX-License-Identifier: Apache-2.0
--->
 <div *ngIf="hasHeader" class="d-none d-md-block d-lg-block d-xl-block">
   <div class="cx-item-list-header row">
     <div class="cx-item-list-desc col-md-6 col-lg-5 col-xl-6">
@@ -30,7 +25,8 @@ SPDX-License-Identifier: Apache-2.0
         <div class="row">
           <div class="col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center">
             <span class="material-icons pointer-cursor" *ngIf="!isReadOnly" (click)="removeBpo(group.key)">highlight_off</span>
-            <span class="material-icons pointer-cursor" *ngIf="!isReadOnly" (click)="prepareCgsForEdit(group.key, group.value, 0)">edit</span>
+            <span class="material-icons pointer-cursor" *ngIf="!isReadOnly"
+                  (click)="prepareCgsForEdit(group.key, group.value, 0)">edit</span>
             <ng-container *ngIf="getProduct(group.value[0].rootBpoCode) | async as bpo">
               <label class="label text-capitalize">
                 <strong class="h3">&nbsp;&nbsp;{{bpo.name}}</strong>
@@ -38,7 +34,8 @@ SPDX-License-Identifier: Apache-2.0
             </ng-container>
           </div>
         </div>
-        <div class="row d-flex justify-content-center" *ngFor="let compatibilityMessage of getCompatibilityErrorsForEntryGroup(group.key)">
+        <div class="row d-flex justify-content-center"
+             *ngFor="let compatibilityMessage of getCompatibilityErrorsForEntryGroup(group.key)">
           <div class="col-md-11 col-lg-11 col-xl-11 text-danger">
             {{compatibilityMessage.message}}
           </div>
@@ -48,6 +45,7 @@ SPDX-License-Identifier: Apache-2.0
       <div class="cx-item-list-items" *ngFor="let item of group.value">
         <ng-container *cxFeatureLevel="'!1.5'">
           <cx-cart-item
+            [isCartPage]="isCartPage"
             [parent]="form.controls[item.product.code]"
             [item]="item"
             [isReadOnly]="isReadOnly"
@@ -61,6 +59,7 @@ SPDX-License-Identifier: Apache-2.0
 
         <ng-container *cxFeatureLevel="'1.5'">
           <cx-cart-item
+            [isCartPage]="isCartPage"
             [parent]="form.controls[item.product.code]"
             [item]="item"
             [isReadOnly]="isReadOnly"

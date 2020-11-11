@@ -1,8 +1,11 @@
-/*
- * SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 .cx-bold {
   font-weight: var(--cx-font-weight-bold);
+}
+
+.font-small {
+  font-size: var(--cx-font-size, 0.85rem);
+}
+
+.cx-product-warning {
+  color: var(--cx-color-warning);
 }

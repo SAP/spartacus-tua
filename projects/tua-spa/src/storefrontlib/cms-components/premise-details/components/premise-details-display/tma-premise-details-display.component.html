@@ -1,0 +1,42 @@
+<ng-container *ngIf="getPremiseDetails(premiseDetails$ | async)">
+  <ng-container *ngIf="checklistAction$ |async as checklistAction else loading">
+    <ng-container *ngIf="hasChecklistActionOfType(checklistAction, checklistActionType.INSTALLATION_ADDRESS)">
+      <!-- Premise address -->
+      <div [ngClass]="compact ? '' : 'row'">
+        <div [ngClass]="compact ? '' : 'col-md-6'">
+          <div class="form-inline form-group">
+            <label class="readonly"
+              for="installation_address_readonly_success">{{ 'premiseDetails.premiseAddress.title' | cxTranslate }}
+              :&nbsp;</label>
+            <label class="readonly-value"
+              id="installation_address_readonly_success">{{getInstallationAddress(premiseDetail, (premiseDetails$ | async)?.entryNumber)}}</label>
+          </div>
+        </div>
+
+        <!-- Meter details -->
+        <div [ngClass]="compact ? '' : 'col-md-6'">
+          <div class="form-inline form-group">
+            <label class="readonly"
+              for="meter_readonly_success">{{ 'premiseDetails.meterDetails.meterId.label' | cxTranslate }}:&nbsp;</label>
+            <label class="readonly-value"
+              id="meter_readonly_success">{{getMeterDetails(premiseDetail, (premiseDetails$ | async)?.entryNumber)}}</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Update premise details link -->
+      <ng-container *ngIf="!isReadOnly">
+        <div [ngClass]="compact ? '' : 'd-flex justify-content-center'">
+          <button [ngClass]="compact ? 'btn btn-link button-link' : 'btn btn-link'"
+            (click)="updatePremise()">{{ 'premiseDetails.updateDetails' | cxTranslate }}</button>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>
+  <div class="cx-spinner">
+    <cx-spinner></cx-spinner>
+  </div>
+</ng-template>

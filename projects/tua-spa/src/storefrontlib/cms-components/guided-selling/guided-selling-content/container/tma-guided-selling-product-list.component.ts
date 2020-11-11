@@ -1,10 +1,8 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Component } from '@angular/core';
-import { PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
+import { ActivatedRoute } from '@angular/router';
+import { CmsService } from '@spartacus/core';
+import { ModalService, PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
+import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
 import { TmaProductListComponent } from '../../../product/product-list';
 
 @Component({
@@ -17,8 +15,12 @@ export class TmaGuidedSellingProductListComponent extends TmaProductListComponen
   constructor(
     pageLayoutService: PageLayoutService,
     productListComponentService: ProductListComponentService,
-    scrollConfig?: ViewConfig
+    scrollConfig: ViewConfig,
+    protected consumptionConfig: TmaConsumptionConfig,
+    protected activatedRoute: ActivatedRoute,
+    protected cmsService: CmsService,
+    protected modalService: ModalService
   ) {
-    super(pageLayoutService, productListComponentService, scrollConfig);
+    super(pageLayoutService, productListComponentService, consumptionConfig, activatedRoute, cmsService, scrollConfig, modalService);
   }
 }

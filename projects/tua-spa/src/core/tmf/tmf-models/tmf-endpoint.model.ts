@@ -1,15 +1,25 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 export interface TmaTmfEndpoints {
   /**
    * Checklist Action
    *
    */
   checklistAction?: string;
-
+  /**
+   * Tmf subscriptionBase
+   */
+  subscriptionBase?: string;
+  /**
+   * Tmf subscriptionBase Details
+   */
+  subscriptionBaseId?: string;
+  /**
+   * Tmf Product
+   */
+  tmfProductId?: string;
+  /**
+   * Tmf Usage Consumption
+   */
+  usageConsumptionReport?: string;
   /**
    * Shopping Cart
    */

@@ -1,8 +1,8 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
+import { Injectable, OnDestroy } from '@angular/core';
+import { TranslationService } from '@spartacus/core';
+import { Subject } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
+import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../config/billing-frequency/config';
 import {
   TmaItemType,
   TmaMoney,
@@ -10,12 +10,11 @@ import {
   TmaPopChargeType,
   TmaProduct,
   TmaProductOfferingPrice,
-  TmaProductOfferingTerm, TmaUsageType
+  TmaProductOfferingTerm,
+  TmaProductSpecificationCharacteristicValue,
+  TmaUsageType,
+  TmaUsageUnit
 } from '../../model';
-import { Injectable, OnDestroy } from '@angular/core';
-import { TranslationService } from '@spartacus/core';
-import { first, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +28,7 @@ export class TmaPriceService implements OnDestroy {
   protected destroyed$ = new Subject();
 
   constructor(
+    protected billingFrequencyConfig: TmaBillingFrequencyConfig,
     protected translationService: TranslationService
   ) {
   }
@@ -174,32 +174,32 @@ export class TmaPriceService implements OnDestroy {
    */
   getEachRespectiveTierUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
-        .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.EACH_RESPECTIVE_TIER)
-        .sort((s1, s2) => {
-          if (!s1.tierEnd) {
-            return 1;
-          }
-          if (!s2.tierEnd) {
-            return -1;
-          }
-          if (s1.tierEnd < s2.tierEnd) {
-            return -1;
-          }
+      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+      .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.EACH_RESPECTIVE_TIER)
+      .sort((s1, s2) => {
+        if (!s1.tierEnd) {
           return 1;
-        })
-        .sort((s1, s2) => {
-          if (!s1.tierStart) {
-            return 1;
-          }
-          if (!s2.tierStart) {
-            return -1;
-          }
-          if (s1.tierStart < s2.tierStart) {
-            return -1;
-          }
+        }
+        if (!s2.tierEnd) {
+          return -1;
+        }
+        if (s1.tierEnd < s2.tierEnd) {
+          return -1;
+        }
+        return 1;
+      })
+      .sort((s1, s2) => {
+        if (!s1.tierStart) {
           return 1;
-        }), this.ID) :
+        }
+        if (!s2.tierStart) {
+          return -1;
+        }
+        if (s1.tierStart < s2.tierStart) {
+          return -1;
+        }
+        return 1;
+      }), this.ID) :
       [];
   }
 
@@ -211,32 +211,32 @@ export class TmaPriceService implements OnDestroy {
    */
   getHighestApplicableTierUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
-        .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.HIGHEST_APPLICABLE_TIER)
-        .sort((s1, s2) => {
-          if (!s1.tierEnd) {
-            return 1;
-          }
-          if (!s2.tierEnd) {
-            return -1;
-          }
-          if (s1.tierEnd < s2.tierEnd) {
-            return -1;
-          }
+      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+      .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.HIGHEST_APPLICABLE_TIER)
+      .sort((s1, s2) => {
+        if (!s1.tierEnd) {
           return 1;
-        })
-        .sort((s1, s2) => {
-          if (!s1.tierStart) {
-            return 1;
-          }
-          if (!s2.tierStart) {
-            return -1;
-          }
-          if (s1.tierStart < s2.tierStart) {
-            return -1;
-          }
+        }
+        if (!s2.tierEnd) {
+          return -1;
+        }
+        if (s1.tierEnd < s2.tierEnd) {
+          return -1;
+        }
+        return 1;
+      })
+      .sort((s1, s2) => {
+        if (!s1.tierStart) {
           return 1;
-        }), this.ID) :
+        }
+        if (!s2.tierStart) {
+          return -1;
+        }
+        if (s1.tierStart < s2.tierStart) {
+          return -1;
+        }
+        return 1;
+      }), this.ID) :
       [];
   }
 
@@ -248,32 +248,32 @@ export class TmaPriceService implements OnDestroy {
    */
   getNotApplicableUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.PER_UNIT_USAGE_CHARGE)
-        .filter((unitPrice: TmaProductOfferingPrice) => !unitPrice.usageType || unitPrice.usageType === '')
-        .sort((s1, s2) => {
-          if (!s1.tierEnd) {
-            return 1;
-          }
-          if (!s2.tierEnd) {
-            return -1;
-          }
-          if (s1.tierEnd < s2.tierEnd) {
-            return -1;
-          }
+      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.PER_UNIT_USAGE_CHARGE)
+      .filter((unitPrice: TmaProductOfferingPrice) => !unitPrice.usageType || unitPrice.usageType === '')
+      .sort((s1, s2) => {
+        if (!s1.tierEnd) {
           return 1;
-        })
-        .sort((s1, s2) => {
-          if (!s1.tierStart) {
-            return 1;
-          }
-          if (!s2.tierStart) {
-            return -1;
-          }
-          if (s1.tierStart < s2.tierStart) {
-            return -1;
-          }
+        }
+        if (!s2.tierEnd) {
+          return -1;
+        }
+        if (s1.tierEnd < s2.tierEnd) {
+          return -1;
+        }
+        return 1;
+      })
+      .sort((s1, s2) => {
+        if (!s1.tierStart) {
           return 1;
-        }), this.ID) :
+        }
+        if (!s2.tierStart) {
+          return -1;
+        }
+        if (s1.tierStart < s2.tierStart) {
+          return -1;
+        }
+        return 1;
+      }), this.ID) :
       [];
   }
 
@@ -285,31 +285,31 @@ export class TmaPriceService implements OnDestroy {
    */
   getVolumeUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.VOLUME_USAGE_CHARGE)
-        .sort((s1, s2) => {
-          if (!s1.tierEnd) {
-            return 1;
-          }
-          if (!s2.tierEnd) {
-            return -1;
-          }
-          if (s1.tierEnd < s2.tierEnd) {
-            return -1;
-          }
+      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.VOLUME_USAGE_CHARGE)
+      .sort((s1, s2) => {
+        if (!s1.tierEnd) {
           return 1;
-        })
-        .sort((s1, s2) => {
-          if (!s1.tierStart) {
-            return 1;
-          }
-          if (!s2.tierStart) {
-            return -1;
-          }
-          if (s1.tierStart < s2.tierStart) {
-            return -1;
-          }
+        }
+        if (!s2.tierEnd) {
+          return -1;
+        }
+        if (s1.tierEnd < s2.tierEnd) {
+          return -1;
+        }
+        return 1;
+      })
+      .sort((s1, s2) => {
+        if (!s1.tierStart) {
           return 1;
-        }), this.ID) :
+        }
+        if (!s2.tierStart) {
+          return -1;
+        }
+        if (s1.tierStart < s2.tierStart) {
+          return -1;
+        }
+        return 1;
+      }), this.ID) :
       [];
   }
 
@@ -328,6 +328,195 @@ export class TmaPriceService implements OnDestroy {
   }
 
   /**
+   * Returns the average cost per month based on the consumption and term provided.
+   *
+   * @param product - The product for which the average cost per month will be returned
+   * @param currency - The currency of the price
+   * @param consumption - The consumption for which the average cost per month will be computed
+   * @param term - The duration of te contract
+   * @return A {@link TmaMoney} containing the average cost per month
+   */
+  getAverageCostPerMonth(product: TmaProduct, currency: string, consumption: number, term: number): TmaMoney {
+    const minimumPrice = this.getMinimumPrice(product);
+    const priceList = this.getAllPriceList(minimumPrice);
+
+    const onFirstBillOneTimeChargePriceList = this.getOnFirstBillPrices(priceList);
+    const onCancellationOneTimeChargePriceList = this.getCancellationFeePrices(priceList);
+    const payNowOneTimeChargePriceList = this.getPayNowPrices(priceList);
+    const recurringChargePriceList = this.getRecurringPrices(priceList);
+    const eachRespectiveTierUsageChargePriceList = this.getEachRespectiveTierUsagePrices(priceList);
+    const highestApplicableTierUsageChargePriceList = this.getHighestApplicableTierUsagePrices(priceList);
+    const notApplicableUsageChargePriceList = this.getNotApplicableUsagePrices(priceList);
+    const volumeUsageChargePriceList = this.getVolumeUsagePrices(priceList);
+
+    const contractTerm = this.getContractTerm(minimumPrice);
+
+    if (!priceList || priceList.length === 0) {
+      return { value: '0.0', currencyIso: currency };
+    }
+
+    let averageCost = 0;
+
+    let oneTimeChargeValue = 0;
+    onFirstBillOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
+    onCancellationOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
+    payNowOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
+
+    let recurringChargeValue = 0;
+    recurringChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => {
+      const cycleEnd = childPrice.cycle && childPrice.cycle.cycleEnd ? (childPrice.cycle.cycleEnd === -1 ?
+        contractTerm.duration.amount : childPrice.cycle.cycleEnd) : contractTerm.duration.amount;
+      recurringChargeValue += Number(childPrice.price.value) * (cycleEnd - childPrice.cycle.cycleStart + 1);
+    });
+
+    if (!consumption) {
+      averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount);
+      return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
+    }
+
+    const billingFrequency: number = this.getBillingFrequency(contractTerm);
+    const consumptionIncluded: number = this.getConsumptionIncludedInPlan(minimumPrice, product);
+    const extraConsumption: number = consumption / (term / billingFrequency) - consumptionIncluded;
+
+    if (extraConsumption <= 0) {
+      averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount);
+      return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
+    }
+
+    let eachRespectiveTierValue = 0;
+    Object.keys(eachRespectiveTierUsageChargePriceList).forEach((key: string) => {
+      const maxTierForEachRespectiveTierPrice = eachRespectiveTierUsageChargePriceList[key].length !== 0 ?
+        eachRespectiveTierUsageChargePriceList[key].reduce((prev, current) => {
+          if (!current.tierEnd) {
+            return prev;
+          }
+          if (prev.tierEnd > current.tierEnd) {
+            return prev;
+          }
+          return current;
+        }).tierEnd : 0;
+
+      eachRespectiveTierUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
+        if (Number(childPrice.tierStart) <= extraConsumption) {
+          const consumptionForTier = (extraConsumption > Number(childPrice.tierEnd) ?
+            (Number(childPrice.tierEnd) === -1 ? extraConsumption : Number(childPrice.tierEnd)) :
+            extraConsumption) - Number(childPrice.tierStart) + 1;
+          eachRespectiveTierValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+        }
+        if (!childPrice.tierStart && !childPrice.tierEnd) {
+          const consumptionForTier = extraConsumption > maxTierForEachRespectiveTierPrice ?
+            extraConsumption - maxTierForEachRespectiveTierPrice : 0;
+          eachRespectiveTierValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+        }
+      });
+    });
+
+    eachRespectiveTierValue /= billingFrequency;
+
+    let highestApplicableTierValue = 0;
+    Object.keys(highestApplicableTierUsageChargePriceList).forEach((key: string) => {
+      const maxTierForHighestApplicableTierPrice = highestApplicableTierUsageChargePriceList[key].length !== 0 ?
+        highestApplicableTierUsageChargePriceList[key].reduce((prev, current) => {
+          if (!current.tierEnd) {
+            return prev;
+          }
+          if (prev.tierEnd > current.tierEnd) {
+            return prev;
+          }
+          return current;
+        }).tierEnd : 0;
+
+      let priceForConsumption = highestApplicableTierUsageChargePriceList[key]
+        .find((childPrice: TmaProductOfferingPrice) =>
+          Number(childPrice.tierStart) <= extraConsumption && (Number(childPrice.tierEnd) >= extraConsumption || Number(childPrice.tierEnd) === -1));
+      priceForConsumption = priceForConsumption ?
+        priceForConsumption : extraConsumption > maxTierForHighestApplicableTierPrice ?
+          highestApplicableTierUsageChargePriceList[key].find((childPrice: TmaProductOfferingPrice) => !childPrice.tierStart && !childPrice.tierEnd) :
+          null;
+
+      highestApplicableTierValue += priceForConsumption ? Number(priceForConsumption.price.value) * extraConsumption : 0;
+    });
+
+    highestApplicableTierValue /= billingFrequency;
+
+    let notApplicablePriceValue = 0;
+    Object.keys(notApplicableUsageChargePriceList).forEach((key: string) => {
+      const maxTierForNotApplicablePrice = notApplicableUsageChargePriceList[key].length !== 0 ?
+        notApplicableUsageChargePriceList[key].reduce((prev, current) => {
+          if (!current.tierEnd) {
+            return prev;
+          }
+          if (prev.tierEnd > current.tierEnd) {
+            return prev;
+          }
+          return current;
+        }).tierEnd : 0;
+
+      notApplicableUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
+        if (Number(childPrice.tierStart) <= extraConsumption) {
+          const consumptionForTier = (extraConsumption > Number(childPrice.tierEnd) ?
+            (Number(childPrice.tierEnd) === -1 ? extraConsumption : Number(childPrice.tierEnd)) :
+            extraConsumption) - Number(childPrice.tierStart) + 1;
+          notApplicablePriceValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+        }
+        if (!childPrice.tierStart && !childPrice.tierEnd) {
+          const consumptionForTier = extraConsumption > maxTierForNotApplicablePrice ?
+            extraConsumption - maxTierForNotApplicablePrice : 0;
+          notApplicablePriceValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+        }
+      });
+    });
+
+    notApplicablePriceValue /= billingFrequency;
+
+    let volumeValue = 0;
+    Object.keys(volumeUsageChargePriceList).forEach((key: string) => {
+      const maxVolumePrice = volumeUsageChargePriceList[key].length !== 0 ?
+        volumeUsageChargePriceList[key].reduce((prev, current) => {
+          if (!current.tierEnd) {
+            return prev;
+          }
+          if (prev.tierEnd > current.tierEnd) {
+            return prev;
+          }
+          return current;
+        }).tierEnd : 0;
+
+      volumeUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
+        if (Number(childPrice.tierStart) <= extraConsumption) {
+          volumeValue += childPrice.price.value ? Number(childPrice.price.value) : 0;
+        }
+        if (!childPrice.tierStart && !childPrice.tierEnd && maxVolumePrice < extraConsumption) {
+          volumeValue += childPrice.price.value ? Number(childPrice.price.value) : 0;
+        }
+      });
+    });
+
+    volumeValue /= billingFrequency;
+
+    const usageChargeValue = eachRespectiveTierValue + highestApplicableTierValue + notApplicablePriceValue + volumeValue;
+
+    averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount) + usageChargeValue;
+    return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
+  }
+
+  /**
+   * Returns the average cost per year based on the consumption and term provided.
+   *
+   * @param product - The product for which the average cost per year will be returned
+   * @param currency - The currency of the price
+   * @param consumption - The consumption for which the average cost per year will be computed
+   * @param term - The duration of te contract
+   * @return A {@link TmaMoney} containing the average cost per year
+   */
+  getAverageCostPerYear(product: TmaProduct, currency: string, consumption: number, term: number): TmaMoney {
+    return {
+      value: (Number(this.getAverageCostPerMonth(product, currency, consumption, term).value) * 12).toFixed(2).toString(),
+      currencyIso: currency
+    };
+  }
+
+  /**
    * Returns the sum of the prices provided.
    *
    * @param productOfferingPriceList - List of prices to be added together
@@ -336,6 +525,7 @@ export class TmaPriceService implements OnDestroy {
   getSumOfPrices(productOfferingPriceList: TmaProductOfferingPrice[]): TmaMoney {
     let sum = 0;
     productOfferingPriceList.forEach((pop: TmaProductOfferingPrice) => sum += Number(pop.price.value));
+
     return { value: sum.toString(), currencyIso: productOfferingPriceList[0].price.currencyIso };
   }
 
@@ -367,6 +557,7 @@ export class TmaPriceService implements OnDestroy {
 
   /**
    * Returns the formatted form of the price provided.
+   *
    * @param price The price to be formatted
    * @return String containing the formatted price
    */
@@ -384,6 +575,41 @@ export class TmaPriceService implements OnDestroy {
       .subscribe((currency: string) => currencySymbol = currency);
 
     return currencySymbol + ' ' + price.value;
+  }
+
+  /**
+   * Returns the formatted form of the contract term provided.
+   *
+   * @param contractTerm The term to be formatted
+   * @return String containing the formatted term
+   */
+  getFormattedContractTerm(contractTerm: TmaProductOfferingTerm): string {
+    if (!contractTerm || !contractTerm.duration || !contractTerm.duration.amount || !contractTerm.duration.units) {
+      return '';
+    }
+
+    let contractTermUnit = contractTerm.duration.amount > 1 ?
+      contractTerm.duration.units.replace(/ly$/, 's') :
+      contractTerm.duration.units.replace(/ly$/, '');
+    contractTermUnit = contractTermUnit[0].toUpperCase() + contractTermUnit.substr(1).toLowerCase();
+
+    return contractTerm.duration.amount + ' ' + contractTermUnit;
+  }
+
+  /**
+   * Returns the usage units for the product provided.
+   *
+   * @param product - The product provided
+   * @return The highest tier end
+   */
+  getUsageUnits(product: TmaProduct): TmaUsageUnit[] {
+    const minimumPrice = this.getMinimumPrice(product);
+    const priceList = this.getAllPriceList(minimumPrice);
+    const usageUnits = priceList
+      .filter((price: TmaProductOfferingPrice) => price.chargeType === TmaPopChargeType.USAGE)
+      .map((price: TmaProductOfferingPrice) => price.usageUnit);
+
+    return usageUnits.filter((n, i) => usageUnits.indexOf(n) === i);
   }
 
   protected flattenPriceTree(price: TmaProductOfferingPrice, parent: TmaProductOfferingPrice): void {
@@ -449,6 +675,45 @@ export class TmaPriceService implements OnDestroy {
     }
 
     return 0;
+  }
+
+  protected getBillingFrequency(contractTerm: TmaProductOfferingTerm): number {
+    if (!contractTerm || !contractTerm.billingPlan || !contractTerm.billingPlan.billingTime) {
+      return 1;
+    }
+
+    const billingFrequency: TmaBillingFrequencyMap = this.billingFrequencyConfig.billingFrequency
+      .find((frequency: TmaBillingFrequencyMap) => frequency.key === contractTerm.billingPlan.billingTime);
+
+    if (billingFrequency) {
+      return billingFrequency.value;
+    }
+
+    return 1;
+  }
+
+  protected getConsumptionIncludedInPlan(price: TmaProductOfferingPrice, product: TmaProduct) {
+    const unitOfMeasure: string = this.getUnitOfMeasure(price);
+    const pscvWithMatchingUnitOfMeasure: TmaProductSpecificationCharacteristicValue = product && product.productSpecCharValues ?
+      product.productSpecCharValues.find((pscv: TmaProductSpecificationCharacteristicValue) => pscv.unitOfMeasure === unitOfMeasure) :
+      null;
+    return pscvWithMatchingUnitOfMeasure ? Number(pscvWithMatchingUnitOfMeasure.value) : 0;
+  }
+
+  protected getUnitOfMeasure(price: TmaProductOfferingPrice): string {
+    if (!price || !price.bundledPop || price.bundledPop.length === 0) {
+      return '';
+    }
+
+    let priceWithUnitOfMeasure = price.bundledPop.find((childPrice: TmaProductOfferingPrice) => childPrice.usageUnit);
+    if (!priceWithUnitOfMeasure) {
+      priceWithUnitOfMeasure = price.bundledPop
+        .find((childPrice: TmaProductOfferingPrice) => childPrice && childPrice.bundledPop ? childPrice.bundledPop
+          .find((bundledPop: TmaProductOfferingPrice) => bundledPop.usageUnit) : false);
+      priceWithUnitOfMeasure = priceWithUnitOfMeasure ?
+        priceWithUnitOfMeasure.bundledPop.find((childPrice: TmaProductOfferingPrice) => childPrice.usageUnit) : null;
+    }
+    return priceWithUnitOfMeasure ? priceWithUnitOfMeasure.usageUnit.id : '';
   }
 
   protected compare(n1: number, n2: number): number {

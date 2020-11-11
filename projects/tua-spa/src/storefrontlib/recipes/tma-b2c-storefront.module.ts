@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import {
   b2cLayoutConfig,
   B2cStorefrontModule,
@@ -20,13 +15,6 @@ import { tmaB2cLayoutConfig } from './config';
 @NgModule({
   imports: [
     StorefrontModule.withConfig({
-      pwa: {
-        enabled: true,
-        addToHomeScreen: true
-      }
-    }),
-
-    TmaStorefrontModule.withConfig({
       pwa: {
         enabled: true,
         addToHomeScreen: true

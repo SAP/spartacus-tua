@@ -1,8 +1,3 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as TmaChecklistActions from '../actions/tma-checklist-action.action';
@@ -24,17 +19,21 @@ export class TmaChecklistActionEffect {
   ) {
   }
 
+  /**
+   * Effect for the checklist action related actions
+   */
   @Effect()
   loadChecklistAction$: Observable<Action> = this.actions$.pipe(
     ofType(TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS),
     map((action: TmaChecklistActions.LoadChecklistActions) => action.payload),
     mergeMap(payload => {
-      return this.tmaChecklistActionConnector.getChecklistActions(payload.baseSiteId, payload.productCode).pipe(
+      return this.tmaChecklistActionConnector.getChecklistActions(payload.baseSiteId, payload.productCode, payload.processType).pipe(
         map((checklistActions: TmaChecklistAction[]) => {
           return new TmaChecklistActions.LoadChecklistActionsSuccess({
             checklistAction: checklistActions,
             productCode: payload.productCode,
-            baseSiteId: payload.baseSiteId
+            baseSiteId: payload.baseSiteId,
+            processType: payload.processType
           });
         }),
         catchError(error =>

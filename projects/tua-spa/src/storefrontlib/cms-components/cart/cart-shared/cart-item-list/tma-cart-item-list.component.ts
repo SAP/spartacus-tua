@@ -1,9 +1,10 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
 import { CartItemListComponent } from '@spartacus/storefront';
 import {
   BaseSiteService,
@@ -27,13 +28,19 @@ import {
   TmaSelectionAction,
   TmaTmfShoppingCart,
   TmaValidationMessage,
-  TmaValidationMessageType
+  TmaValidationMessageType,
+  LogicalResourceType,
+  TmaCharacteristic
 } from '../../../../../core/model';
 import { first, takeUntil } from 'rxjs/operators';
 import { TmaTmfCartService } from '../../../../../core/tmf-cart/facade';
 import { Observable, Subject } from 'rxjs';
-import { TmaGuidedSellingCurrentSelectionsService, TmaGuidedSellingStepsService } from "../../../../../core/guided-selling/facade";
-import { LOCAL_STORAGE } from "../../../../../core/util/constants";
+import {
+  TmaGuidedSellingCurrentSelectionsService,
+  TmaGuidedSellingStepsService
+} from '../../../../../core/guided-selling/facade';
+import { LOCAL_STORAGE } from '../../../../../core/util/constants';
+import { LogicalResourceReservationService } from '../../../../../core/reservation/facade';
 
 const { QUERY, FREE_TEXT, CODE } = LOCAL_STORAGE.SEARCH;
 
@@ -47,9 +54,11 @@ interface TmaGroupedItemMap {
   styleUrls: ['./tma-cart-item-list.component.scss']
 })
 export class TmaCartItemListComponent extends CartItemListComponent implements OnInit, OnDestroy {
-
   @Input()
   shouldReloadCart: boolean;
+
+  @Input()
+  isCartPage?: boolean;
 
   items: TmaItem[];
   groupedItems: TmaGroupedItemMap[];
@@ -57,7 +66,6 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
   protected currentUser: User;
   protected currentBaseSiteId: string;
   protected currentCart: TmaCart;
-
   protected destroyed$ = new Subject();
 
   constructor(
@@ -73,25 +81,31 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
     protected tmfCartService: TmaTmfCartService,
     protected guidedSellingStepsService: TmaGuidedSellingStepsService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
-    protected routingService: RoutingService
+    protected routingService: RoutingService,
+    protected logicalResourceReservationService?: LogicalResourceReservationService
   ) {
     super(cartService, fb, selectiveCartService, featureConfigService);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
+    this.loadReservationsForCartEntries();
 
-    this.userService.get()
+    this.userService
+      .get()
       .pipe(
         first((user: User) => !!user),
-        takeUntil(this.destroyed$))
-      .subscribe((user: User) => this.currentUser = user);
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((user: User) => (this.currentUser = user));
 
-    this.baseSiteService.getActive()
+    this.baseSiteService
+      .getActive()
       .pipe(
         first((baseSiteId: string) => !!baseSiteId),
-        takeUntil(this.destroyed$))
-      .subscribe((baseSiteId: string) => this.currentBaseSiteId = baseSiteId);
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
     this.groupedItems = this.getGroupedItems(this.items);
 
@@ -99,11 +113,13 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
       return;
     }
 
-    this.cartService.getActive()
+    this.cartService
+      .getActive()
       .pipe(takeUntil(this.destroyed$))
-      .subscribe((cart: TmaCart) => this.currentCart = cart);
+      .subscribe((cart: TmaCart) => (this.currentCart = cart));
 
-    this.cartService.getEntries()
+    this.cartService
+      .getEntries()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((entries: TmaItem[]) => {
         this.items = entries;
@@ -114,6 +130,7 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
   }
 
   ngOnDestroy(): void {
+    this.logicalResourceReservationService.clearReservationState();
     this.destroyed$.next();
     this.destroyed$.complete();
   }
@@ -135,10 +152,14 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
   removeBpo(entryGroupNumber: number): void {
     this.guidedSellingStepsService.setFirstStepAsActiveStep();
 
-    const currentUserId: string = this.currentUser && this.currentUser.uid ? this.currentUser.uid : OCC_USER_ID_ANONYMOUS;
+    const currentUserId: string =
+      this.currentUser && this.currentUser.uid
+        ? this.currentUser.uid
+        : OCC_USER_ID_ANONYMOUS;
     const shoppingCart: TmaTmfShoppingCart = {
       id: this.currentCart.code,
-      guid: currentUserId === OCC_USER_ID_ANONYMOUS ? this.currentCart.guid : null,
+      guid:
+        currentUserId === OCC_USER_ID_ANONYMOUS ? this.currentCart.guid : null,
       baseSiteId: this.currentBaseSiteId,
       relatedParty: [
         {
@@ -162,16 +183,31 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
    * @param entryGroupNumber - The entry group number
    * @return List of {@link TmaValidationMessage}
    */
-  getCompatibilityErrorsForEntryGroup(entryGroupNumber: number): TmaValidationMessage[] {
+  getCompatibilityErrorsForEntryGroup(
+    entryGroupNumber: number
+  ): TmaValidationMessage[] {
     if (!entryGroupNumber || !this.hasRootGroups(this.currentCart)) {
       return null;
     }
 
     return this.currentCart.rootGroups
-      .filter((rootGroup: TmaRootGroup) => Number(rootGroup.groupNumber) === Number(entryGroupNumber))
+      .filter(
+        (rootGroup: TmaRootGroup) =>
+          Number(rootGroup.groupNumber) === Number(entryGroupNumber)
+      )
       .map((rootGroup: TmaRootGroup) => rootGroup.validationMessages)
-      .reduce((accumulator: TmaValidationMessage[], currentValue: TmaValidationMessage[]) => accumulator.concat(currentValue), [])
-      .filter((validationMessage: TmaValidationMessage) => validationMessage && validationMessage.code === TmaValidationMessageType.COMPATIBILITY);
+      .reduce(
+        (
+          accumulator: TmaValidationMessage[],
+          currentValue: TmaValidationMessage[]
+        ) => accumulator.concat(currentValue),
+        []
+      )
+      .filter(
+        (validationMessage: TmaValidationMessage) =>
+          validationMessage &&
+          validationMessage.code === TmaValidationMessageType.COMPATIBILITY
+      );
   }
 
   /**
@@ -181,7 +217,11 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
    * @param items - The items part of the entry group
    * @param index - The index of the item currently being processed
    */
-  prepareCgsForEdit(entryGroupNumber: number, items: TmaItem[], index: number): void {
+  prepareCgsForEdit(
+    entryGroupNumber: number,
+    items: TmaItem[],
+    index: number
+  ): void {
     if (index === 0) {
       this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
     }
@@ -192,17 +232,33 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
       return;
     }
 
-    this.productSearchService.search(QUERY + FREE_TEXT + CODE + items[index].product.code, { pageSize: 1 });
-    this.productSearchService.getResults()
+    this.productSearchService.search(
+      QUERY + FREE_TEXT + CODE + items[index].product.code,
+      { pageSize: 1 }
+    );
+    this.productSearchService
+      .getResults()
       .pipe(
         first((productSearchPage: ProductSearchPage) => {
-          return productSearchPage && productSearchPage.products && productSearchPage.products.length !== 0
-            && !!productSearchPage.products.find((product: TmaProduct) => product.code === items[index].product.code)
+          return (
+            productSearchPage &&
+            productSearchPage.products &&
+            productSearchPage.products.length !== 0 &&
+            !!productSearchPage.products.find(
+              (product: TmaProduct) =>
+                product.code === items[index].product.code
+            )
+          );
         }),
-        takeUntil(this.destroyed$))
+        takeUntil(this.destroyed$)
+      )
       .subscribe((productSearchPage: ProductSearchPage) => {
-        this.guidedSellingCurrentSelectionsService.changeSelection(productSearchPage.products.find((product: TmaProduct) =>
-          product.code === items[index].product.code), TmaSelectionAction.ADD);
+        this.guidedSellingCurrentSelectionsService.changeSelection(
+          productSearchPage.products.find(
+            (product: TmaProduct) => product.code === items[index].product.code
+          ),
+          TmaSelectionAction.ADD
+        );
         this.prepareCgsForEdit(entryGroupNumber, items, index + 1);
       });
   }
@@ -211,7 +267,9 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
     const groups: TmaGroupedItemMap[] = [];
 
     for (const item of items) {
-      const groupNr: number = item.entryGroupNumbers[0] ? item.entryGroupNumbers[0] : -1;
+      const groupNr: number = item.entryGroupNumbers[0]
+        ? item.entryGroupNumbers[0]
+        : -1;
       if (!groups[groupNr]) {
         groups[groupNr.toString()] = [];
       }
@@ -228,5 +286,35 @@ export class TmaCartItemListComponent extends CartItemListComponent implements O
 
   protected redirectToCgsPage(bpoCode: string): void {
     this.routingService.go({ cxRoute: 'cgs', params: { code: bpoCode } });
+  }
+
+  /**
+   * This method loads the reservation if any MSISDN is associated with cart entry
+   *
+   **/
+  protected loadReservationsForCartEntries(): void {
+    let isMsisdnAssociated = false;
+    const cartEntryMsisdns = [];
+    if (!this.items) {
+      return;
+    }
+    this.items.forEach((item: TmaItem) => {
+      if (!!item.subscribedProduct && !!item.subscribedProduct.characteristic) {
+        item.subscribedProduct.characteristic.forEach(
+          (logicalResource: TmaCharacteristic) => {
+            if (logicalResource.value !== null && logicalResource.name === LogicalResourceType.MSISDN) {
+              isMsisdnAssociated = true;
+              cartEntryMsisdns.push(logicalResource.value);
+              return;
+            }
+          }
+        );
+      }
+    });
+    if (isMsisdnAssociated) {
+      this.logicalResourceReservationService.loadReservationByUserIdAndResource(
+        cartEntryMsisdns
+      );
+    }
   }
 }

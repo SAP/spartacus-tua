@@ -1,9 +1,3 @@
-<!--
-SPDX-FileCopyrightText: 2020 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
-
-SPDX-License-Identifier: Apache-2.0
--->
-
 <div *ngIf="currentCart$ | async as currentCart">
   <div class="quantity" *ngIf="productCode && showQuantity">
     <label>{{ 'addToCart.quantity' | cxTranslate }}</label>
@@ -21,13 +15,25 @@ SPDX-License-Identifier: Apache-2.0
         : ('addToCart.outOfStock' | cxTranslate)
       }}</span>
   </div>
-  <button
-    *ngIf="hasStock"
-    class="btn btn-primary btn-block"
-    type="button"
-    [disabled]="quantity <= 0 || quantity > maxQuantity"
-    (click)="addSpoToCart(currentCart)"
-  >
-    {{ 'addToCart.addToCart' | cxTranslate }}
-  </button>
+  <ng-container *ngIf="getChecklistActions(productCode) | async as checklistActions">
+    <ng-container *ngIf="shouldDisplayAddToCartButton(checklistActions, (this.currentProduct$ | async)?.productSpecification?.id); else checkAvailability">
+      <button
+        *ngIf="hasStock"
+        class="btn btn-primary btn-block"
+        type="button"
+        [disabled]="quantity <= 0 || quantity > maxQuantity"
+        (click)="addSpoToCart(currentCart)"
+      >
+        {{ 'addToCart.addToCart' | cxTranslate }}
+      </button>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #checkAvailability>
+    <cx-premise-details
+      [productCode]="productCode"
+      [cartEntry$]="cartEntry$"
+    >
+    </cx-premise-details>
+  </ng-template>
 </div>

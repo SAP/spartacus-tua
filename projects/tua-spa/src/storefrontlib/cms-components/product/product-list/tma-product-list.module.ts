@@ -1,18 +1,7 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import {
-  ConfigModule,
-  I18nModule,
-  UrlModule,
-  FeaturesConfigModule
-} from '@spartacus/core';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { ConfigModule, FeaturesConfigModule, I18nModule, UrlModule } from '@spartacus/core';
 import {
   defaultScrollConfig,
   IconModule,
@@ -24,12 +13,14 @@ import {
   StarRatingModule,
   ViewConfigModule
 } from '@spartacus/storefront';
-import { TmaProductListComponent } from './container/tma-product-list.component';
-import { TmaProductListItemComponent } from './product-list-item/tma-product-list-item.component';
-import { TmaProductGridItemComponent } from './product-grid-item/tma-product-grid-item.component';
-import { TmaProductScrollComponent } from './container/product-scroll/tma-product-scroll.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { TmaAddToCartModule } from '../../cart';
+import { TmaPriceModule } from '../price';
+import { TmaProductScrollComponent } from './container/product-scroll/tma-product-scroll.component';
+import { TmaProductListComponent } from './container/tma-product-list.component';
 import { TmaProductFacetNavigationComponent } from './product-facet-navigation/tma-product-facet-navigation.component';
+import { TmaProductGridItemComponent } from './product-grid-item/tma-product-grid-item.component';
+import { TmaProductListItemComponent } from './product-list-item/tma-product-list-item.component';
 import { TmaProductViewComponent } from './product-view/tma-product-view.component';
 
 @NgModule({
@@ -64,7 +55,8 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
     SpinnerModule,
     InfiniteScrollModule,
     ViewConfigModule,
-    FeaturesConfigModule
+    FeaturesConfigModule,
+    TmaPriceModule
   ],
   declarations: [
     TmaProductListComponent,
@@ -84,4 +76,5 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
   ],
   entryComponents: [TmaProductListComponent, TmaProductFacetNavigationComponent]
 })
-export class TmaProductListModule extends ProductListModule { }
+export class TmaProductListModule extends ProductListModule {
+}

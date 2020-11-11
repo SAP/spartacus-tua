@@ -1,9 +1,4 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-import { Cart, CartModification } from '@spartacus/core';
+import { Cart, CartModification, Country, Region } from '@spartacus/core';
 import { TmaCartPrice, TmaOrderEntry } from './tma-cart.entry.model';
 import { TmaProcessType } from './tma-product.model';
 
@@ -47,6 +42,12 @@ export interface TmaPlace {
   id?: string;
   name?: string;
   role?: TmaPlaceRole;
+  country?: Country;
+  region?: Region;
+  line1?: string;
+  line2?: string;
+  town?: string;
+  postalCode?: string;
 }
 
 export interface TmaCart extends Cart {

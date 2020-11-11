@@ -1,16 +1,18 @@
-/*
- * SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company <deborah.cholmeley-jones@sap.com>
- *
- * SPDX-License-Identifier: Apache-2.0
- */
 import { NgModule } from '@angular/core';
-import { TmaProductListModule, TmaProductSummaryModule } from './product';
+import { TmaAddressFormModule } from './address-form';
 import { TmaCartComponentModule } from './cart';
+import { LogicalResourceModule } from './cart/cart-shared/logical-resource';
 import { TmaCheckoutComponentModule } from './checkout';
-import { TmaOrderConfirmationModule } from './order-confirmation';
-import { TmaOrderModule } from './myaccount/order/tma-order.module';
-import { TmaProductTabsModule } from './product/product-tabs';
+import { TmaConsumptionModule } from './consumption';
 import { TmaGuidedSellingModule } from './guided-selling';
+import { JourneyChecklistComponentModule } from './journey-checklist';
+import { SubscriptionComponentModule } from './myaccount';
+import { TmaOrderModule } from './myaccount/order/tma-order.module';
+import { TmaOrderConfirmationModule } from './order-confirmation';
+import { TmaPremiseDetailsModule } from './premise-details';
+import { TmaProductListModule, TmaProductSummaryModule } from './product';
+import { TmaProductTabsModule } from './product/product-tabs';
+
 
 @NgModule({
   imports: [
@@ -19,10 +21,16 @@ import { TmaGuidedSellingModule } from './guided-selling';
     TmaProductTabsModule,
     TmaCartComponentModule,
     TmaCheckoutComponentModule,
+    TmaConsumptionModule,
     TmaOrderConfirmationModule,
     TmaOrderModule,
-    TmaGuidedSellingModule
-  ]
+    TmaGuidedSellingModule,
+    TmaPremiseDetailsModule,
+    SubscriptionComponentModule,
+    TmaGuidedSellingModule,
+    JourneyChecklistComponentModule,
+    TmaAddressFormModule,
+    LogicalResourceModule
+  ],
 })
-export class TmaCmsLibModule {
-}
+export class TmaCmsLibModule {}
