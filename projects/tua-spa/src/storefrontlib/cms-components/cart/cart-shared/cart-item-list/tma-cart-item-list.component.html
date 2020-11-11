@@ -1,0 +1,77 @@
+<div *ngIf="hasHeader" class="d-none d-md-block d-lg-block d-xl-block">
+  <div class="cx-item-list-header row">
+    <div class="cx-item-list-desc col-md-6 col-lg-5 col-xl-6">
+      {{ 'cartItems.description' | cxTranslate }}
+    </div>
+    <div class="cx-item-list-qty col-3">
+      {{ 'cartItems.quantity' | cxTranslate }}
+    </div>
+    <div class="cx-item-list-price col-md-3 col-lg-4 col-xl-3">
+      {{ 'cartItems.price.payOnCheckoutPrice' | cxTranslate }}
+    </div>
+
+    <ng-container *ngIf="isSaveForLaterEnabled() && options.isSaveForLater">
+      <div class="cx-item-list-total col-md-2 col-lg-2 col-xl-2">
+        {{ 'saveForLaterItems.stock' | cxTranslate }}
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<div [formGroup]="form">
+  <div class="cx-item-list-row" *ngFor="let group of groupedItems | keyvalue">
+    <ng-container *ngIf="group.key && group.value">
+      <ng-container *ngIf="group.value[0].rootBpoCode">
+        <div class="row">
+          <div class="col-md-4 col-lg-4 col-xl-4 d-flex justify-content-center">
+            <span class="material-icons pointer-cursor" *ngIf="!isReadOnly" (click)="removeBpo(group.key)">highlight_off</span>
+            <span class="material-icons pointer-cursor" *ngIf="!isReadOnly"
+                  (click)="prepareCgsForEdit(group.key, group.value, 0)">edit</span>
+            <ng-container *ngIf="getProduct(group.value[0].rootBpoCode) | async as bpo">
+              <label class="label text-capitalize">
+                <strong class="h3">&nbsp;&nbsp;{{bpo.name}}</strong>
+              </label>
+            </ng-container>
+          </div>
+        </div>
+        <div class="row d-flex justify-content-center"
+             *ngFor="let compatibilityMessage of getCompatibilityErrorsForEntryGroup(group.key)">
+          <div class="col-md-11 col-lg-11 col-xl-11 text-danger">
+            {{compatibilityMessage.message}}
+          </div>
+        </div>
+        <br/>
+      </ng-container>
+      <div class="cx-item-list-items" *ngFor="let item of group.value">
+        <ng-container *cxFeatureLevel="'!1.5'">
+          <cx-cart-item
+            [isCartPage]="isCartPage"
+            [parent]="form.controls[item.product.code]"
+            [item]="item"
+            [isReadOnly]="isReadOnly"
+            [isRemovable]="item.rootBpoCode == null"
+            [potentialProductPromotions]="getPotentialProductPromotionsForItem(item)"
+            [cartIsLoading]="cartIsLoading"
+            (remove)="removeEntry($event)"
+            (update)="updateEntry($event)">
+          </cx-cart-item>
+        </ng-container>
+
+        <ng-container *cxFeatureLevel="'1.5'">
+          <cx-cart-item
+            [isCartPage]="isCartPage"
+            [parent]="form.controls[item.product.code]"
+            [item]="item"
+            [isReadOnly]="isReadOnly"
+            [promotionLocation]="promotionLocation"
+            [isRemovable]="item.rootBpoCode == null"
+            [cartIsLoading]="cartIsLoading"
+            (remove)="removeEntry($event)"
+            (update)="updateEntry($event)"
+            [options]="options">
+          </cx-cart-item>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</div>

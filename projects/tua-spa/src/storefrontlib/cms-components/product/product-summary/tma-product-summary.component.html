@@ -1,0 +1,105 @@
+<ng-container *ngIf="page$ |async as page else loading">
+  <ng-container *ngIf="product$ | async as product">
+    <ng-container *ngIf="currency$ | async as currency">
+      <ng-template
+        [cxOutlet]="outlets.PRICE"
+        [cxOutletContext]="{ product: product }"
+      >
+
+        <!-- Update consumption link -->
+        <ng-container
+          *ngIf="productSpecificationProductService.isProductSpecificationForAverageCost(product?.productSpecification?.id)">
+          <ng-container *ngIf="priceService.getUsageUnits(product).length <= 1; else warningMessage">
+            <ng-container *ngIf="url$ | async as url">
+              <ng-container *ngIf="getConsumptionComponent(page, product) as consumptionComponent">
+                <div class="col-12 col-lg-7">
+                  <div class="row font-small d-flex justify-content-center">
+                    {{ 'productList.averageCostBaseOnConsumption' | cxTranslate}}:
+                  </div>
+                  <div #consumptionValue class="row font-small d-flex justify-content-center"
+                       *ngFor="let formattedConsumption of getFormattedConsumptionList(consumptionComponent)">
+                    {{formattedConsumption}}
+                  </div>
+                  <div class="row font-small d-flex justify-content-center">
+                    <button class="btn btn-link"
+                            (click)="updateConsumption(product, currency, consumptionComponent, url)">{{ 'productList.updateConsumption' | cxTranslate }}</button>
+                  </div>
+                </div>
+
+                <br/>
+
+                <div class="col-12 col-lg-7">
+                  <div class="row d-flex justify-content-center">
+                    <div #averageCostPerMonth
+                         class="cx-size-large cx-bold">{{ getAverageCostPerMonth(product, currency, consumptionComponent) }}</div>
+                    <div>&nbsp;/ {{ 'productDetails.month' | cxTranslate }}</div>
+                  </div>
+                  <div class="row cx-size-small d-flex justify-content-center">
+                    (
+                    <div #averageCostPerYear>
+                      {{ getAverageCostPerYear(product, currency, consumptionComponent) }}
+                    </div>
+                    / {{ 'productDetails.year' | cxTranslate }}*)
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <ng-template #warningMessage>
+            <!-- Usage unit warning message -->
+            <div class="cx-product-warning font-small">
+              {{ 'productDetails.warningMessage' | cxTranslate }}
+            </div><br/>
+          </ng-template>
+        </ng-container>
+
+        <ng-container
+          *ngIf="!productSpecificationProductService.isProductSpecificationForAverageCost(product?.productSpecification?.id) ||
+            priceService.getUsageUnits(product).length > 1">
+          <div *ngIf="priceService.getMinimumPrice(product) as minimumPrice">
+            <div *ngIf="priceService.getAllPriceList(minimumPrice) as priceList">
+
+              <!-- Pay now price -->
+              <div class="col-12 col-lg-7">
+                <div *ngIf="priceService.getPayNowPrices(priceList) as payNowPriceList">
+                  <cx-one-time-charge
+                    [isMainAreaDisplay]="true"
+                    [priceList]="payNowPriceList && payNowPriceList.length > 0 ? payNowPriceList : [minimumPrice]">
+                  </cx-one-time-charge>
+                </div>
+              </div>
+
+              <br/>
+
+              <!-- Recurring prices -->
+              <div class="col-12">
+                <div *ngIf="priceService.getRecurringPrices(priceList) as recurringPriceList">
+                  <div *ngIf="priceService.getContractTerm(minimumPrice) as contractTerm">
+                    <cx-recurring-charge
+                      [recurringChargeList]="recurringPriceList"
+                      [contractTerm]="contractTerm"
+                      [isMainAreaDisplay]="true">
+                    </cx-recurring-charge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+
+      <ng-template
+        [cxOutlet]="outlets.SUMMARY"
+        [cxOutletContext]="{ product: product }"
+      >
+        <p [innerHTML]="product?.summary" class="summary"></p>
+      </ng-template>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>
+  <div class="cx-spinner">
+    <cx-spinner></cx-spinner>
+  </div>
+</ng-template>

@@ -1,0 +1,96 @@
+<ng-container *ngIf="product$ | async as product">
+  <div class="container" [innerHTML]="product?.description"></div>
+
+  <br/>
+
+  <div class="container" *ngIf="priceService.getMinimumPrice(product) as minimumPrice">
+    <div *ngIf="priceService.getAllPriceList(minimumPrice) as priceList">
+
+      <!-- Contract duration -->
+      <div class="row col-12" *ngIf="priceService.getContractTerm(minimumPrice) as contractTerm">
+        <div *ngIf="contractTerm && isContractTermDisplayNeeded(priceList)">
+          <div class="cx-bold">
+            {{'productDetails.price.contractDuration' | cxTranslate}}:
+            <div class="d-inline-block cx-normal">
+              {{contractTerm?.name}}
+            </div>
+          </div>
+          <br/>
+        </div>
+      </div>
+
+      <br/>
+
+      <!-- One time fees -->
+      <div *ngIf="priceService.getPayNowPrices(priceList) as payNowPriceList">
+        <div *ngIf="priceService.getCancellationFeePrices(priceList) as cancellationFees">
+          <div *ngIf="priceService.getOnFirstBillPrices(priceList) as onFirstFillPrices">
+            <div *ngIf="(payNowPriceList && payNowPriceList.length > 0) ||
+                (cancellationFees && cancellationFees.length > 0) ||
+                (onFirstFillPrices && onFirstFillPrices.length > 0)">
+
+              <div class="cx-bold">
+                {{'productDetails.price.priceTypes.oneTimeFees' | cxTranslate}}:
+              </div>
+              <!-- Pay now price -->
+              <cx-one-time-charge
+                [isMainAreaDisplay]="false"
+                [priceList]="payNowPriceList">
+              </cx-one-time-charge>
+              <!-- Cancellation Fees -->
+              <cx-one-time-charge
+                [isMainAreaDisplay]="false"
+                [priceList]="cancellationFees">
+              </cx-one-time-charge>
+              <!-- On First Bill Fees -->
+              <cx-one-time-charge
+                [isMainAreaDisplay]="false"
+                [priceList]="onFirstFillPrices">
+              </cx-one-time-charge>
+
+              <br/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recurring prices -->
+      <div *ngIf="priceService.getRecurringPrices(priceList) as recurringPriceList">
+        <div *ngIf="priceService.getContractTerm(minimumPrice) as contractTerm">
+          <div *ngIf="(recurringPriceList && recurringPriceList.length > 0)">
+            <div class="cx-bold">
+              {{'productDetails.price.priceTypes.recurringCharges' | cxTranslate}}:
+            </div>
+            <cx-recurring-charge
+              [recurringChargeList]="recurringPriceList"
+              [contractTerm]="contractTerm"
+              [isMainAreaDisplay]="false">
+            </cx-recurring-charge>
+
+            <br/>
+          </div>
+        </div>
+      </div>
+
+      <ng-container
+        *ngIf="priceService.getEachRespectiveTierUsagePrices(priceList) as eachRespectiveTierUsageChargePriceGroupedList">
+        <ng-container
+          *ngIf="priceService.getHighestApplicableTierUsagePrices(priceList) as highestApplicableTierUsageChargePriceGroupedList">
+          <ng-container *ngIf="priceService.getNotApplicableUsagePrices(priceList) as notApplicableUsageChargePriceGroupedList">
+            <ng-container *ngIf="priceService.getVolumeUsagePrices(priceList) as volumeUsageChargePriceGroupedList">
+              <cx-usage-charge
+                [isListingAreaDisplay]="false"
+                [eachRespectiveTierUcList]="eachRespectiveTierUsageChargePriceGroupedList"
+                [highestApplicableTierUcList]="highestApplicableTierUsageChargePriceGroupedList"
+                [notApplicableUcList]="notApplicableUsageChargePriceGroupedList"
+                [volumeChargeList]="volumeUsageChargePriceGroupedList">
+              </cx-usage-charge>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+    </div>
+  </div>
+
+</ng-container>

@@ -1,0 +1,59 @@
+<!-- Usage Prices -->
+
+<ng-container *ngIf="(eachRespectiveTierUcList && (eachRespectiveTierUcList | keyvalue)?.length > 0)
+    || (highestApplicableTierUcList && (highestApplicableTierUcList | keyvalue)?.length > 0)
+    || (notApplicableUcList && (notApplicableUcList | keyvalue)?.length > 0)
+    || (volumeChargeList && (volumeChargeList | keyvalue)?.length > 0)">
+  <div [ngClass]="isListingAreaDisplay && isListMode ? 'row cx-bold' : 'row col-12 cx-bold'">
+    {{'productDetails.price.priceTypes.usageCharges' | cxTranslate}}
+  </div>
+</ng-container>
+
+<!-- Each Respective Tier Usage Charge Price -->
+<ng-container *ngIf="eachRespectiveTierUcList && (eachRespectiveTierUcList | keyvalue)?.length > 0">
+  <ng-container *ngFor="let priceList of eachRespectiveTierUcList | keyvalue">
+    <cx-per-unit-charge
+      [isListingAreaDisplay]="isListingAreaDisplay"
+      [isListMode]="isListMode"
+      [priceList]="priceList.value">
+    </cx-per-unit-charge>
+    <br/>
+  </ng-container>
+</ng-container>
+
+<!-- Highest Applicable Tier Usage Charge Price -->
+<ng-container *ngIf="highestApplicableTierUcList && (highestApplicableTierUcList | keyvalue)?.length > 0">
+  <ng-container *ngFor="let priceList of highestApplicableTierUcList | keyvalue">
+    <cx-per-unit-charge
+      [isListingAreaDisplay]="isListingAreaDisplay"
+      [isListMode]="isListMode"
+      [priceList]="priceList.value">
+    </cx-per-unit-charge>
+    <br/>
+  </ng-container>
+</ng-container>
+
+<!-- Not Applicable Usage Charge Price -->
+<ng-container *ngIf="notApplicableUcList && (notApplicableUcList | keyvalue)?.length > 0">
+  <ng-container *ngFor="let priceList of notApplicableUcList | keyvalue">
+    <cx-per-unit-charge
+      [isListingAreaDisplay]="isListingAreaDisplay"
+      [isListMode]="isListMode"
+      [priceList]="priceList.value">
+    </cx-per-unit-charge>
+    <br/>
+  </ng-container>
+</ng-container>
+
+
+<!-- Volume Usage Charge Price -->
+<ng-container *ngIf="volumeChargeList && (volumeChargeList | keyvalue)?.length > 0">
+  <ng-container *ngFor="let priceList of volumeChargeList | keyvalue">
+    <cx-volume-charge
+      [isListingAreaDisplay]="isListingAreaDisplay"
+      [isListMode]="isListMode"
+      [priceList]="priceList.value">
+    </cx-volume-charge>
+    <br/>
+  </ng-container>
+</ng-container>

@@ -1,0 +1,34 @@
+<ng-container *ngIf="priceList && priceList.length > 0">
+  <div class="row"
+       [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small cx-bold' : 'col-12 cx-size-small cx-bold' : 'col-12 cx-bold'">
+    <div *ngIf="priceList[0].name">
+      {{priceList[0].name}},
+      {{'productDetails.price.usageCharge.charges.charge' | cxTranslate :{context: priceList[0].usageType} }}
+      {{'productDetails.price.usageCharge.usageTypes.usageType' | cxTranslate :{context: priceList[0].usageType} }}:
+    </div>
+    <div *ngIf="!priceList[0].name">
+      {{'productDetails.price.usageCharge.perUnit' | cxTranslate}},
+      {{'productDetails.price.usageCharge.charges.charge' | cxTranslate :{context: priceList[0].usageType} }}
+      {{'productDetails.price.usageCharge.usageTypes.usageType' | cxTranslate :{context: priceList[0].usageType} }}:
+    </div>
+  </div>
+  <ng-container *ngFor="let price of priceList">
+    <div class="row"
+         [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small' : 'col-12 cx-size-small' : 'col-12'">
+      <div *ngIf="price.tierStart">
+        {{'productDetails.price.common.from' | cxTranslate}}
+        {{price.tierStart}}
+        {{'productDetails.price.common.to' | cxTranslate}}
+        {{price.tierEnd}}:&nbsp;
+      </div>
+      <div *ngIf="!price.tierStart">
+        {{'productDetails.price.common.from' | cxTranslate}}
+        {{priceService.getMaximumTierEnd(priceList) + 1}}
+        {{'productDetails.price.common.onwards' | cxTranslate}}:&nbsp;
+      </div>
+      {{priceService.getFormattedPrice(price.price)}}/
+      {{price.usageUnit.name}}
+      {{'productDetails.price.common.each' |cxTranslate}}
+    </div>
+  </ng-container>
+</ng-container>

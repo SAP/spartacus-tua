@@ -1,0 +1,54 @@
+<div *ngIf="getGroupedRecurringChargeList(recurringChargeList, contractTerm) as groupedRecurringChargeList">
+  <ng-container *ngIf="groupedRecurringChargeList?.length >= 1; else noPriceTemplate">
+    <div [ngClass]="isMainAreaDisplay ? 'row' : ''"
+        *ngIf="groupedRecurringChargeList?.length == 1">
+      <div [ngClass]="isMainAreaDisplay ? '' : 'd-none'">
+        {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:&nbsp;
+      </div>
+      <div [ngClass]="isMainAreaDisplay ? 'cx-bold' : '' ||
+                isListingAreaDisplay ? isListMode ? 'row cx-size-small' : 'row col-12 cx-size-small' : ''">
+        {{priceService.getFormattedPrice(groupedRecurringChargeList[0].price)}}
+        /{{getPeriodType(contractTerm)}}
+      </div>
+    </div>
+    <div *ngIf="groupedRecurringChargeList?.length > 1">
+      <div [ngClass]="isMainAreaDisplay ? 'row' : 'd-none'">
+        {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:&nbsp;
+      </div>
+      <ng-container *ngFor="let recurringPriceKeyValue of groupedRecurringChargeList | keyvalue">
+        <div [ngClass]="isMainAreaDisplay ? 'row cx-bold' : '' ||
+                isListingAreaDisplay ? isListMode ? 'row cx-size-small' : 'row col-12 cx-size-small' : ''"
+            *ngIf="recurringPriceKeyValue.key == 0">
+          {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
+          /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
+          {{'productDetails.price.recurringCharges.forFirst' | cxTranslate}}
+          {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
+        </div>
+        <div [ngClass]="isMainAreaDisplay ? 'row cx-bold' : '' ||
+                isListingAreaDisplay ? isListMode ? 'row cx-size-small' : 'row col-12 cx-size-small' : ''"
+            *ngIf="recurringPriceKeyValue.key > 0 && recurringPriceKeyValue.key < groupedRecurringChargeList.length - 1">
+          {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
+          /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
+          {{'productDetails.price.recurringCharges.forNext' | cxTranslate}}
+          {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
+        </div>
+        <div [ngClass]="isMainAreaDisplay ? 'row cx-bold' : '' ||
+                isListingAreaDisplay ? isListMode ? 'row cx-size-small' : 'row col-12 cx-size-small' : ''"
+            *ngIf="recurringPriceKeyValue.key == groupedRecurringChargeList.length - 1">
+          {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
+          /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
+          {{'productDetails.price.recurringCharges.forLast' | cxTranslate}}
+          {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
+        </div>
+      </ng-container>
+    </div>
+  </ng-container>
+
+  <ng-template #noPriceTemplate>
+    <ng-container *ngIf="isListingAreaDisplay">
+      <ng-container *ngIf="currency$ | async as currency">
+        <div class="row">{{ 'common.currencies.currency' | cxTranslate : {context: currency} }}&nbsp;0.0</div>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+</div>

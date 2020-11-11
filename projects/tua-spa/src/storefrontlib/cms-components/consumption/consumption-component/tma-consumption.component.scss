@@ -1,0 +1,8 @@
+.cx-consumption {
+  margin-bottom: 10px;
+}
+
+::ng-deep .nav-pills a.nav-link.active {
+  color: var(--cx-color-inverse);
+  background-color: var(--cx-color-primary);
+}

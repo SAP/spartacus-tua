@@ -1,0 +1,97 @@
+cx-page-slot.SiteContext::after {
+  border: none;
+}
+
+header {
+  background-color: var(--cx-color-inverse);
+  color: var(--cx-color-dark);
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+  background-color: var(--cx-color-dark);
+}
+
+cx-searchbox label {
+  background-color: var(--cx-color-background);
+  border-radius: 5px;
+}
+
+cx-login .cx-login-greet {
+  color: var(--cx-color-dark);
+}
+
+cx-navigation-ui {
+  justify-content: space-around;
+}
+
+.stepper-container {
+  ul[role=tablist] .nav-link.active {
+    background-color: var(--cx-color-inverse);
+    color: var(--cx-color-secondary);
+    border-width: 0 0 5px 0;
+    border-style: solid;
+    padding: 1.1rem;
+    font-size: var(--cx-font-size, 1.125rem);
+    font-weight: var(--cx-font-weight-bold);
+    line-height: var(--cx-line-height, 1.2222222222);
+    min-width: 200px;
+    text-align: center;
+    border-bottom: 0 !important;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6
+  }
+
+  ul[role=tablist] .nav-link {
+    border: none;
+    background-color: #ffffff;
+
+    color: #000000;
+    padding: 1.1rem;
+    font-size: 0.99rem;
+    font-weight: 600;
+    width: 200px;
+    text-align: center;
+  }
+
+  .nav-fill {
+    .nav-item {
+      display: flex !important;
+      justify-content: center !important;
+
+      .nav-link {
+        border: 0 !important;
+        width: 100%;
+      }
+    }
+  }
+}
+
+.stepper-container {
+  input[type=radio]::after {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    left: 4px;
+    top: 4px;
+  }
+  .btn-primary.disabled,
+  .btn-primary:disabled {
+    background-color: var(--cx-color-secondary) !important;
+    border-color: var(--cx-color-secondary) !important;
+  }
+}
+
+.msisdn-container {
+
+  .btn-primary.disabled,
+  .btn-primary:disabled {
+    background-color: var(--cx-color-secondary) !important;
+    border-color: var(--cx-color-secondary) !important;
+  }
+}

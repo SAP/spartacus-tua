@@ -1,0 +1,20 @@
+{
+  "name": "@spartacus/tua-spa",
+  "version": "1.3.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "sass": "node ./src/storefrontstyles/build-styles.js"
+  },
+  "peerDependencies": {
+    "@spartacus/assets": "~1.5.0",
+    "@spartacus/core": "~1.5.0",
+    "@spartacus/schematics": "^1.5.0",
+    "@spartacus/storefront": "~1.5.0",
+    "@spartacus/styles": "~1.5.0",
+    "material-design-icons": "^3.0.1",
+    "ng2-charts": "^2.3.2",
+    "chart.js": "^2.9.3"
+  }
+}

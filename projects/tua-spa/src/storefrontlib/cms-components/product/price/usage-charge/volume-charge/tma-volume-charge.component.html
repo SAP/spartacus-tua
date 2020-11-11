@@ -1,0 +1,32 @@
+<ng-container *ngIf="priceList && priceList.length > 0">
+  <div class="row"
+       [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small cx-bold' : 'col-12 cx-size-small cx-bold' : 'col-12 cx-bold'">
+    <div *ngIf="priceList[0].name">
+      {{priceList[0].name}},
+      {{'productDetails.price.usageCharge.charges.charge' |cxTranslate}}:
+    </div>
+    <div *ngIf="!priceList[0].name">
+      {{'productDetails.price.usageCharge.perVolume' | cxTranslate}},
+      {{'productDetails.price.usageCharge.charges.charge' | cxTranslate}}:
+    </div>
+  </div>
+  <ng-container *ngFor="let volumePrice of priceList">
+    <div class="row"
+         [ngClass]="isListingAreaDisplay ? isListMode ? 'cx-size-small' : 'col-12 cx-size-small' : 'col-12'">
+      <div *ngIf="volumePrice.tierStart">
+        {{'productDetails.price.common.from' | cxTranslate}}
+        {{volumePrice.tierStart}}
+        {{'productDetails.price.common.upTo' | cxTranslate}}
+        {{volumePrice.tierEnd}}
+        {{volumePrice.usageUnit.name}}:&nbsp;
+      </div>
+      <div *ngIf="!volumePrice.tierStart">
+        {{'productDetails.price.common.from' | cxTranslate}}
+        {{priceService.getMaximumTierEnd(priceList) + 1}}
+        {{volumePrice.usageUnit.name}}
+        {{'productDetails.price.common.onwards' | cxTranslate}}:&nbsp;
+      </div>
+      {{priceService.getFormattedPrice(volumePrice.price)}}
+    </div>
+  </ng-container>
+</ng-container>
