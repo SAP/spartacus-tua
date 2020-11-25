@@ -1,0 +1,27 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["esnext", "dom"],
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "paths": {
+      "@spartacus/tua-spa": ["projects/tua-spa/src/public_api"]
+    }
+  },
+  "exclude": [
+    "./dist/**/*.*",
+	"./recipes/**",
+	"./sampledata/**",
+	"./testing/**"
+  ]
+}
