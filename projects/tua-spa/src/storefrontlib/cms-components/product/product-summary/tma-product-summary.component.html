@@ -1,0 +1,31 @@
+<ng-container *ngIf="product$ | async as product">
+  <ng-template
+    [cxOutlet]="outlets.PRICE"
+    [cxOutletContext]="{ product: product }"
+  >
+    <div
+      *ngIf="
+        this.priceService.getHighestPriorityPriceForSPO(
+          product
+        ) as highestPriorityPrice
+      "
+    >
+      <cx-price-display [price]="highestPriorityPrice"></cx-price-display>
+    </div>
+  </ng-template>
+
+  <ng-template
+    [cxOutlet]="outlets.SUMMARY"
+    [cxOutletContext]="{ product: product }"
+  >
+    <p [innerHTML]="product?.summary" class="summary"></p>
+  </ng-template>
+  <!-- @TODO: Temp. Comment out share link while not in use by CMS -->
+  <!-- <ng-container *cxOutlet="outlets.SHARE">
+          <div>
+            <a href="#" class="share btn-link">
+              {{ 'productSummary.share' | cxTranslate }}
+            </a>
+          </div>
+        </ng-container> -->
+</ng-container>
