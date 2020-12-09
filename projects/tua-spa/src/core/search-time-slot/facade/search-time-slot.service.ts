@@ -1,7 +1,12 @@
 import * as SearchTimeSlotActions from '../store/actions/search-time-slot.action';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SearchTimeSlot, TimeSlot } from '../../model';
+import {
+  RelatedPlaceRef,
+  SearchTimeSlot,
+  TimeSlot,
+  GeographicAddress,
+} from '../../model';
 import { Store, select } from '@ngrx/store';
 import * as SearchTimeSlotSelectors from '../store/selectors/search-time-slot.selector';
 import { StateWithSearchTimeSlot } from '../store';
@@ -17,21 +22,27 @@ export class SearchTimeSlotService {
   ) {}
 
   /**
-   * Returns the available time slots.
+   * Returns the available time slots for the requested place.
+   *
+   * @param place
+   *           The installation place of {@link GeographicAddress}
    * @returns Observable<SearchTimeSlot>
    *                the available time slots
    */
-  getAvailableTimeSlots(): Observable<SearchTimeSlot> {
-    this.loadSearchTimeSlot();
+  getAvailableTimeSlots(place?: GeographicAddress): Observable<SearchTimeSlot> {
+    this.loadSearchTimeSlot(place);
     return this.store.pipe(
       select(SearchTimeSlotSelectors.getAllSearchTimeSlots)
     );
   }
 
   /**
-   * Loads the available time slots.
+   * Loads the available time slots for the requested place.
+   *
+   * @param place
+   *            The installation place of {@link GeographicAddress}
    */
-  loadSearchTimeSlot(): void {
+  loadSearchTimeSlot(place: GeographicAddress): void {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setDate(
@@ -48,6 +59,7 @@ export class SearchTimeSlotService {
           },
         },
       ],
+      relatedPlace: this.createPlaceRequest(place),
     };
     this.store.dispatch(
       new SearchTimeSlotActions.LoadSearchTimeSlot({
@@ -57,7 +69,27 @@ export class SearchTimeSlotService {
   }
 
   /**
+   * creates the installation address request.
+   *
+   * @param  place
+   *         The place of {@link GeographicAddress}
+   * @returns the installation place as {@link RelatedPlaceRef}
+   */
+  createPlaceRequest(place: GeographicAddress): RelatedPlaceRef {
+    if (place === undefined || place.id === undefined) {
+      return undefined;
+    }
+    return {
+      id: place.id,
+      name: "client's address",
+      '@referredType': 'GeographicAddress',
+      role: 'interventionAddress',
+    };
+  }
+
+  /**
    * Sets the selected time slot.
+   *
    * @param  timeSlot The selected time slot of {@link TimeSlot}
    */
   setSelectedTimeSlot(timeSlot: TimeSlot): void {
@@ -70,6 +102,7 @@ export class SearchTimeSlotService {
 
   /**
    * Gets the selected time slot
+   *
    * @returns Observable<TimeSlot>
    *                The selected time slot
    */

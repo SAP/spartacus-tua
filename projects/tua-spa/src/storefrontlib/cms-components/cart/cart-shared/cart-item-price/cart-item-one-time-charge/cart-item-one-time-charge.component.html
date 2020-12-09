@@ -1,13 +1,5 @@
-<ng-container *ngIf="currency$ | async as currency">
-<div *ngIf="oneTimeCharge.length">
-    <div class="cx-label">
-      {{ 'cartItems.price.oneTimeCharges' | cxTranslate }}:
-    </div>
-    <div *ngFor="let price of oneTimeCharge">
-      <span class="fontSmall">
-        - {{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ price.taxIncludedAmount.value }}:
-        {{ price.description }}
-      </span>
-    </div>
-  </div>
-</ng-container>
+{{oneTimeCharge.taxIncludedAmount.value}}&nbsp;{{ 'common.currencies.currency' | cxTranslate : {context: oneTimeCharge.taxIncludedAmount.currencyIso} }}
+{{
+'productDetails.price.priceTypes.billingEvents.billingEvent'
+  | cxTranslate: { context: oneTimeCharge.recurringChargePeriod }
+}}

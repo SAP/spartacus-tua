@@ -1,43 +1,39 @@
 import { NgModule } from '@angular/core';
-import {
-  AppointmentModule,
-  AvailabilityCheckModule,
-  JourneyChecklistConfigModule,
-  ReservationModule,
-  SearchTimeSlotModule,
-  TmaAuthModule,
-  TmaBillingFrequencyConfigModule,
-  TmaCartModule,
-  TmaChecklistActionModule,
-  TmaConsumptionConfigModule,
-  TmaPremiseDetailModule,
-  TmaProductSpecificationAverageCostModule,
-  TmaProductSpecificationForViewDetailsConfigModule,
-  TmaTmfCartModule
-} from '../../core';
-import { SubscriptionModule } from '../../core/subscription/subscription.module';
+import { TmaAuthModule } from '../../core/auth';
 import { TmaRoutingModule } from '../cms-structure/routing';
+import { TmaBillingFrequencyConfigModule } from '../../core/billing-frequency/tma-billing-frequency.module';
+import { TmaTmfCartModule } from '../../core/tmf-cart';
+import { SubscriptionModule } from '../../core/subscription/subscription.module';
+import {
+  TmaChecklistActionModule,
+  AppointmentModule,
+  SearchTimeSlotModule,
+  JourneyChecklistConfigModule,
+  GeographicAddressModule,
+  ReservationModule,
+  AvailabilityCheckModule,
+} from '../../core';
+import { TmaProductSpecificationForViewDetailsConfigModule } from '../../core/config';
+import { TmaGlobalMessageModule } from '../../core/global-message/tma-global-message.module';
 
 @NgModule({
   imports: [
     TmaAuthModule.forRoot(),
     TmaRoutingModule.forRoot(),
     TmaBillingFrequencyConfigModule.forRoot(),
-    TmaProductSpecificationAverageCostModule.forRoot(),
-    TmaProductSpecificationForViewDetailsConfigModule.forRoot(),
-    TmaPremiseDetailModule.forRoot(),
     TmaTmfCartModule.forRoot(),
-    TmaChecklistActionModule.forRoot(),
-    TmaCartModule.forRoot(),
     SubscriptionModule,
+    TmaChecklistActionModule.forRoot(),
     AppointmentModule.forRoot(),
     SearchTimeSlotModule.forRoot(),
-    TmaConsumptionConfigModule.forRoot(),
+    JourneyChecklistConfigModule.forRoot(),
+    GeographicAddressModule.forRoot(),
     ReservationModule.forRoot(),
     AvailabilityCheckModule.forRoot(),
-    JourneyChecklistConfigModule.forRoot(),
+    TmaProductSpecificationForViewDetailsConfigModule.forRoot(),
+    TmaGlobalMessageModule.forRoot()
   ],
   exports: [],
-  providers: []
+  providers: [],
 })
 export class TmaStorefrontFoundationModule {}

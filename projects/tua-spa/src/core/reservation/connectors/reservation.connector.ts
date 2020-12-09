@@ -11,26 +11,26 @@ export class ReservationConnector {
   }
 
   /**
-   * This method is used to create reservation
+   * This method is used to create reservation for the logical resource e.g. MSISDN
    *
    * @param reservation
    *          Reservation to be create
-   * @returns Observable<Reservation>
-   *           the Created reservation
+   * @return
+*           the Created reservation
    */
   public createReservation(reservation: Reservation): Observable<Reservation> {
     return this.adapter.createReservation(reservation);
   }
 
   /**
-   * This method is used to update the reservation
+   * This method is used to update the reservation for the logical resource e.g. MSISDN
    *
    * @param updateReservation
    *              Reservation to be update
    * @param reservationId
    *               Id of the reservation
-   * @returns Observable<Reservation>
-   *               Updated reservation
+   * @return
+*           the Updated reservation
    */
   public updateReservation(
     updateReservation: Reservation,
@@ -40,14 +40,14 @@ export class ReservationConnector {
   }
 
   /**
-   * This method is used to get get Reservations for provided user
+   * This method is used to get reservations created for the logical resource e.g. MSISDN for given user
    *
    * @param  userId
-   *              userId
+   *              id of logged in user
    * @param  cartEntryResourceValues
    *              cart entry resource value
-   * @return  Reservation[]
-   *              list of reservations
+   * @return
+*            list of reservations
    */
   public getReservationsByUserId(
     userId: string,

@@ -2,11 +2,28 @@ import {
   Appointment,
   TmaTmfCartItem,
   TmaProduct,
+  RelatedPlaceRef,
+  GeographicAddress,
+  TmaTmfRelatedParty,
+  TimeSlot,
+  TimePeriod,
   LogicalResourceType,
-  TmfProduct
-} from '../../../../core/model';
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+  TmfProduct,
+  TmfProductCharacteristic,
+  TmaPlace,
+  TmaPlaceRole,
+} from "../../../../core/model";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  Input,
+  ViewChild,
+  ElementRef,
+  ChangeDetectorRef,
+  AfterViewChecked,
+} from "@angular/core";
+import { Observable, Subject, Subscriber } from "rxjs";
 import {
   TmaChecklistAction,
   TmaOrderEntry,
@@ -16,47 +33,71 @@ import {
   TmaProcessTypeEnum,
   TmaTmfShoppingCart,
   TmaTmfActionType,
+  TmaGuidedSellingCurrentSelectionsService,
+  LOCAL_STORAGE,
+  GeographicAddressService,
+  SearchTimeSlotService,
   Reservation,
   ReservationStateType,
-  LOCAL_STORAGE
-} from '../../../../core';
-import { take, filter, last, first, takeUntil } from 'rxjs/operators';
-import { TmaAddedToCartDialogComponent } from '../../cart/add-to-cart/added-to-cart-dialog/tma-added-to-cart-dialog.component';
-import { ModalRef, ModalService } from '@spartacus/storefront';
-import { AppointmentService } from '../../../../core/appointment/facade';
+} from "../../../../core";
+import { take, filter, last, first, takeUntil } from "rxjs/operators";
+import { TmaAddedToCartDialogComponent } from "../../cart/add-to-cart/added-to-cart-dialog/tma-added-to-cart-dialog.component";
+import { ModalRef, ModalService } from "@spartacus/storefront";
+import { AppointmentService } from "../../../../core/appointment/facade";
 import {
   OCC_USER_ID_ANONYMOUS,
   User,
   UserService,
   BaseSiteService,
-  ProductService
-} from '@spartacus/core';
-import { NgbTabsetConfig } from '@ng-bootstrap/ng-bootstrap';
-import { NgxSpinnerService } from 'ngx-spinner';
+  ProductService,
+  CxDatePipe,
+} from "@spartacus/core";
+import { NgbTabsetConfig, NgbTabset } from "@ng-bootstrap/ng-bootstrap";
+import { NgxSpinnerService } from "ngx-spinner";
 import {
   LogicalResourceReservationService,
-  MsisdnReservationService
-} from '../../../../core/reservation/facade';
+  MsisdnReservationService,
+} from "../../../../core/reservation/facade";
+import { TmaGuidedSellingAddedToCartDialogComponent } from "../../guided-selling/guided-selling-current-selection/guided-selling-added-to-cart-dialog/tma-guided-selling-added-to-cart-dialog.component";
+import { FormGroup } from "@angular/forms";
 
 const { CHECKLIST_ACTION_TYPE_APPOINTMENT } = LOCAL_STORAGE.APPOINTMENT;
+const {
+  CHECKLIST_ACTION_TYPE_INSTALLATION_ADDRESS,
+} = LOCAL_STORAGE.INSTALLATION_ADDRESS;
 const { CHECKLIST_ACTION_TYPE_MSISDN } = LOCAL_STORAGE.MSISDN_RESERVATION;
 
 @Component({
-  selector: 'cx-journey-checklist-step',
-  templateUrl: './journey-checklist-step.component.html',
-  styleUrls: ['./journey-checklist-step.component.scss'],
-  providers: [NgbTabsetConfig]
+  selector: "cx-journey-checklist-step",
+  templateUrl: "./journey-checklist-step.component.html",
+  styleUrls: ["./journey-checklist-step.component.scss"],
+  providers: [NgbTabsetConfig],
 })
-export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
+export class JourneyChecklistStepComponent
+  implements AfterViewChecked, OnInit, OnDestroy {
   @Input()
   checklistActions: TmaChecklistAction[];
+
+  @Input()
+  productOfferingCodes: string[];
+
+  @Input()
+  quantity: number;
+
+  @Input()
+  bpoCode: string;
 
   @Input()
   productCode: string;
 
   @Input()
-  quantity: number;
+  currentAddress?: TmaPlace;
 
+  @ViewChild("addToCartButton", { static: false })
+  addToCartButton: ElementRef;
+
+  cartEntries: TmaOrderEntry[];
+  isEdit: boolean;
   increment = false;
   currentCart$: Observable<TmaCart>;
   error: string;
@@ -65,6 +106,18 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
   shoppingCart: TmaTmfShoppingCart;
   msisdnValueSelected: string;
   logicalResourceError: any;
+  addressError: boolean;
+  parentBpo: TmaProduct;
+  currentSelectedTimePeriod?: TimePeriod;
+  currentSelectedStartDate: Date;
+  currentAppointmentId: string;
+  timeSlotChanged: boolean;
+  selectedAvailableTimeSlot: any = null;
+  checklistActionsTypes: TmaChecklistAction[] = [];
+  uniqueActionTypes: string[] = [];
+  installationAddressForm: FormGroup;
+  errPatch: any;
+
   protected currentUser: User;
   protected currentBaseSiteId: string;
   protected modalRef: ModalRef;
@@ -72,6 +125,7 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
 
   constructor(
     config: NgbTabsetConfig,
+    public geographicAddressService: GeographicAddressService,
     protected modalService: ModalService,
     protected activeCartService: TmaActiveCartService,
     protected baseSiteService: BaseSiteService,
@@ -79,17 +133,27 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
     protected tmaTmfCartService: TmaTmfCartService,
     protected userService: UserService,
     protected spinner: NgxSpinnerService,
-    protected logicalResourceReservationService: LogicalResourceReservationService,
     protected productService: ProductService,
-    protected msisdnReservationService: MsisdnReservationService
+    protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
+    protected tmaSearchTimeSlotService: SearchTimeSlotService,
+    protected tmfAppointmentService: AppointmentService,
+    protected logicalResourceReservationService: LogicalResourceReservationService,
+    protected msisdnReservationService: MsisdnReservationService,
+    protected datePipe: CxDatePipe,
+    private cdRef?: ChangeDetectorRef
   ) {
-    // customize default values of tabsets used by this component tree
-    config.justify = 'center';
-    config.type = 'pills';
+    // customize default values of tabSets used by this component tree
+    config.justify = "center";
+    config.type = "pills";
+  }
+
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
   }
 
   ngOnInit() {
     this.isMsisdnSelected = false;
+    this.timeSlotChanged = true;
     this.currentCart$ = this.activeCartService.getActive();
     this.userService
       .get()
@@ -105,12 +169,42 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
+
+    if (this.bpoCode) {
+      this.productService
+        .get(this.bpoCode)
+        .pipe(
+          first((product: TmaProduct) => product !== null),
+          takeUntil(this.destroyed$)
+        )
+        .subscribe((product: TmaProduct) => (this.parentBpo = product));
+    }
+
+    this.uniqueActionTypes = [
+      ...new Set(
+        this.checklistActions
+          .map(
+            (checklistAction: TmaChecklistAction) => checklistAction.actionType
+          )
+          .sort()
+          .reverse()
+      ),
+    ];
+
+    this.uniqueActionTypes.forEach((uniqueActionType: string) => {
+      const actionType: TmaChecklistAction = {
+        actionType: uniqueActionType,
+      };
+      this.checklistActionsTypes.push(actionType);
+    });
   }
 
   ngOnDestroy() {
     this.appointmentService.clearAppointmentState();
     this.appointmentService.clearCreatedAppointmentState();
     this.appointmentService.clearAppointmentError();
+    this.geographicAddressService.clearGeographicAddressError();
+    this.geographicAddressService.clearCreatedGeographicAddressState();
     this.logicalResourceReservationService.clearCreatedReservationState();
     this.logicalResourceReservationService.clearReservationError();
     this.destroyed$.next();
@@ -118,14 +212,14 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
   }
 
   closeModal(): void {
-    this.modalService.dismissActiveModal('close stepper component');
+    this.modalService.dismissActiveModal("close stepper component");
   }
 
   submit(currentCart: TmaCart): void {
     this.spinner.show();
     this.addCartEntryWithChecklistActions(currentCart);
     const newEntry$: Observable<TmaOrderEntry> = this.activeCartService.getSpoWithHighestEntryNumber(
-      this.productCode
+      this.productOfferingCodes[0]
     );
     newEntry$
       .pipe(
@@ -136,7 +230,7 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
       )
       .subscribe((newEntry: TmaOrderEntry) => {
         this.increment = newEntry.quantity > 1;
-        this.modalService.closeActiveModal('close stepper component');
+        this.modalService.closeActiveModal("close stepper component");
         this.openAddToCartModal(newEntry$);
       });
   }
@@ -144,24 +238,42 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
   addCartEntryWithChecklistActions(currentCart: TmaCart): void {
     let appointmentRequired = false;
     let msisdnRequired = false;
-    this.checklistActions.forEach((checklistAction: TmaChecklistAction) => {
-      if (checklistAction.actionType === CHECKLIST_ACTION_TYPE_APPOINTMENT) {
-        appointmentRequired = true;
-        this.appointmentService.createAppointmentForTimeSlot();
+    let installationRequired = false;
+    this.checklistActionsTypes.forEach(
+      (checklistAction: TmaChecklistAction) => {
+        if (checklistAction.actionType === CHECKLIST_ACTION_TYPE_APPOINTMENT) {
+          appointmentRequired = true;
+          this.appointmentService.createAppointmentForTimeSlot();
+        }
+        if (
+          checklistAction.actionType ===
+          CHECKLIST_ACTION_TYPE_INSTALLATION_ADDRESS
+        ) {
+          installationRequired = true;
+          this.geographicAddressService
+            .getSelectedInstallationAddress()
+            .pipe(take(2), takeUntil(this.destroyed$))
+            .subscribe((result: GeographicAddress) => {
+              if (Object.keys(result).length === 0) {
+                this.createInstallationAddress();
+              }
+            });
+        }
+        if (checklistAction.actionType === LogicalResourceType.MSISDN) {
+          msisdnRequired = true;
+          this.productService
+            .get(this.productOfferingCodes[0])
+            .pipe(
+              take(2),
+              filter((product: TmaProduct) => product != null),
+              takeUntil(this.destroyed$)
+            )
+            .subscribe((product: TmaProduct) => {
+              this.msisdnReservationService.createReservationForMsisdn(product);
+            });
+        }
       }
-      if (checklistAction.actionType === LogicalResourceType.MSISDN) {
-        msisdnRequired = true;
-        this.productService
-          .get(this.productCode)
-          .pipe(
-            first((product: TmaProduct) => product != null),
-            takeUntil(this.destroyed$)
-          )
-          .subscribe((product: TmaProduct) => {
-            this.msisdnReservationService.createReservationForMsisdn(product);
-          });
-      }
-    });
+    );
     if (appointmentRequired) {
       this.appointmentService
         .getCreateAppointmentError()
@@ -183,7 +295,32 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
           takeUntil(this.destroyed$)
         )
         .subscribe((result: Appointment) => {
-          this.addToCart(currentCart, result.id, undefined);
+          this.addToCart(currentCart, result.id, result.relatedPlace);
+        });
+    } else if (installationRequired) {
+      this.geographicAddressService
+        .hasGeographicAddressError()
+        .pipe(
+          take(2),
+          filter((result: boolean) => result != null && result),
+          takeUntil(this.destroyed$)
+        )
+        .subscribe((result: boolean) => {
+          this.spinner.hide();
+          this.addressError = result;
+          return;
+        });
+      this.geographicAddressService
+        .getSelectedInstallationAddress()
+        .pipe(
+          take(2),
+          filter(
+            (result: GeographicAddress) => Object.keys(result).length !== 0
+          ),
+          takeUntil(this.destroyed$)
+        )
+        .subscribe((result: GeographicAddress) => {
+          this.addToCart(currentCart, undefined, result);
         });
     }
     if (msisdnRequired) {
@@ -193,13 +330,64 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
 
   addToCart(
     currentCart: TmaCart,
-    appointmentId: string,
-    msisdnValue: Reservation
+    appointmentId?: string,
+    installationAddress?: RelatedPlaceRef | GeographicAddress,
+    msisdnValue?: Reservation
   ): void {
+    const installationAddressId = installationAddress
+      ? installationAddress.id
+      : undefined;
+    let shoppingCart: TmaTmfShoppingCart;
     const currentUserId: string =
       this.currentUser && this.currentUser.uid
         ? this.currentUser.uid
         : OCC_USER_ID_ANONYMOUS;
+    if (this.bpoCode) {
+      shoppingCart = this.addBpoToCart(
+        currentCart,
+        appointmentId,
+        currentUserId,
+        installationAddressId
+      );
+      this.tmaTmfCartService.updateCart(shoppingCart);
+      this.modalService.dismissActiveModal("close appointment component");
+
+      this.prepareDataForModal(currentCart);
+      this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
+    } else {
+      shoppingCart = this.addSpoToCart(
+        currentCart,
+        appointmentId,
+        currentUserId,
+        installationAddressId,
+        msisdnValue
+      );
+      this.tmaTmfCartService.updateCart(shoppingCart);
+      const newEntry$: Observable<TmaOrderEntry> = this.activeCartService.getSpoWithHighestEntryNumber(
+        this.productOfferingCodes[0]
+      );
+
+      newEntry$
+        .pipe(
+          take(2),
+          filter((newEntry: TmaOrderEntry) => !!newEntry),
+          last()
+        )
+        .subscribe((newEntry: TmaOrderEntry) => {
+          this.increment = newEntry.quantity > 1;
+          this.modalService.closeActiveModal("close stepper component");
+          this.openAddToCartModal(newEntry$);
+        });
+    }
+  }
+
+  addSpoToCart(
+    currentCart: TmaCart,
+    appointmentId: string,
+    currentUserId: string,
+    installationAddress: string,
+    msisdnValue: Reservation
+  ): TmaTmfShoppingCart {
     if (
       msisdnValue !== undefined &&
       !!msisdnValue.reservationItem[0] &&
@@ -213,14 +401,81 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
       id: currentCart.code,
       guid: currentUserId === OCC_USER_ID_ANONYMOUS ? currentCart.guid : null,
       baseSiteId: this.currentBaseSiteId,
-      cartItem: this.createCartItemList(appointmentId, msisdnValue),
+      cartItem: [
+        {
+          action: TmaTmfActionType.ADD,
+          processType: {
+            id: TmaProcessTypeEnum.ACQUISITION,
+          },
+          productOffering: {
+            id: this.productOfferingCodes[0],
+          },
+          quantity: this.quantity,
+          appointment: this.populateAppointment(appointmentId),
+          product: this.populateTmfProduct(msisdnValue, installationAddress),
+        },
+      ],
       relatedParty: [
         {
-          id: currentUserId
-        }
-      ]
+          id: currentUserId,
+        },
+      ],
     };
-    this.tmaTmfCartService.updateCart(shoppingCart);
+    return shoppingCart;
+  }
+
+  addBpoToCart(
+    currentCart: TmaCart,
+    appointmentId: string,
+    currentUserId: string,
+    installationAddress: string
+  ): TmaTmfShoppingCart {
+    const shoppingCart: TmaTmfShoppingCart = {
+      id: currentCart.code,
+      guid: currentUserId === OCC_USER_ID_ANONYMOUS ? currentCart.guid : null,
+      baseSiteId: this.currentBaseSiteId,
+      cartItem: [
+        {
+          processType: {
+            id: TmaProcessTypeEnum.ACQUISITION,
+          },
+          productOffering: {
+            id: this.bpoCode,
+          },
+          cartItem: this.createCartItemList(
+            this.productOfferingCodes,
+            appointmentId,
+            installationAddress
+          ),
+        },
+      ],
+      relatedParty: [
+        {
+          id: currentUserId,
+        },
+      ],
+    };
+    return shoppingCart;
+  }
+
+  createCartItem(
+    code: string,
+    cartItemList: TmaTmfCartItem[],
+    appointmentId?: string,
+    installationAddress?: string
+  ): TmaTmfCartItem[] {
+    cartItemList.push({
+      action: TmaTmfActionType.ADD,
+      productOffering: {
+        id: code,
+      },
+      quantity: 1,
+      appointment: this.populateAppointment(appointmentId),
+      product: {
+        place: this.populateInstallationAddress(installationAddress),
+      },
+    });
+    return cartItemList;
   }
 
   getchecklistActionType_Appointment(): string {
@@ -231,12 +486,239 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
     return CHECKLIST_ACTION_TYPE_MSISDN;
   }
 
+  getChecklistActionTypeInstallationAddress(): string {
+    return CHECKLIST_ACTION_TYPE_INSTALLATION_ADDRESS;
+  }
+
   setLogicalResourceError(event: string) {
     this.logicalResourceError = event;
   }
 
   onMsisdnSelection({ msisdnSelection }: { msisdnSelection: boolean }) {
     this.isMsisdnSelected = msisdnSelection;
+  }
+
+  getInputAddress(): GeographicAddress {
+    const user: TmaTmfRelatedParty = {
+      id: "",
+    };
+    this.addressError = false;
+    this.geographicAddressService.clearGeographicAddressError();
+    user.id = this.currentUser.uid;
+    const address: GeographicAddress = {};
+    address.relatedParty = user;
+    address.isShippingAddress = false;
+    address.isInstallationAddress = true;
+    address.streetName =
+      this.installationAddressForm["controls"].installationAddress["controls"]
+        .buildingNumber.value +
+      "," +
+      this.installationAddressForm["controls"].installationAddress["controls"]
+        .streetName.value;
+    address.streetNr = this.installationAddressForm[
+      "controls"
+    ].installationAddress["controls"].apartmentNumber.value;
+    address.postcode = this.installationAddressForm[
+      "controls"
+    ].installationAddress["controls"].postalCode.value;
+    address.city = this.installationAddressForm["controls"].installationAddress[
+      "controls"
+    ].city.value;
+    address.stateOfProvince =
+      this.installationAddressForm["controls"].installationAddress["controls"]
+        .region.value["isocode"] !== null
+        ? this.installationAddressForm["controls"].installationAddress[
+            "controls"
+          ].region.value["isocode"]
+        : null;
+    address.country = this.installationAddressForm[
+      "controls"
+    ].installationAddress["controls"].country.value["isocode"];
+    return address;
+  }
+
+  updateInstallationAddress(tabSet: NgbTabset, tabId: string): void {
+    this.geographicAddressService.updateGeographicAddress(
+      this.currentBaseSiteId,
+      this.currentAddress.id,
+      this.getInputAddress()
+    );
+    this.hasGeographicAddressError(tabSet, tabId);
+  }
+
+  createInstallationAddress(tabSet?: NgbTabset, tabId?: string): void {
+    this.geographicAddressService.createGeographicAddress(
+      this.currentBaseSiteId,
+      this.getInputAddress()
+    );
+    this.hasGeographicAddressError(tabSet, tabId);
+  }
+
+  hasGeographicAddressError(tabSet: NgbTabset, tabId: string): void {
+    this.geographicAddressService
+      .hasGeographicAddressError()
+      .pipe(
+        take(2),
+        filter((result: boolean) => result !== undefined),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((result: boolean) => {
+        this.addressError = result;
+        if (!this.addressError && tabSet) {
+          tabSet.select(tabId);
+          this.currentAddress = undefined;
+        }
+      });
+  }
+
+  getAddressForm(form: FormGroup): void {
+    this.installationAddressForm = form;
+  }
+
+  update(currentCart: TmaCart): void {
+    if (this.currentAddress) {
+      this.geographicAddressService.updateGeographicAddress(
+        this.currentBaseSiteId,
+        this.currentAddress.id,
+        this.getInputAddress()
+      );
+
+      this.geographicAddressService
+        .hasGeographicAddressError()
+        .pipe(
+          take(2),
+          filter((result: boolean) => result != null && result),
+          takeUntil(this.destroyed$)
+        )
+        .subscribe((result: boolean) => {
+          this.addressError = result;
+          return;
+        });
+
+      this.geographicAddressService
+        .getSelectedInstallationAddress()
+        .pipe(
+          take(2),
+          filter((result) => Object.keys(result).length !== 0),
+          takeUntil(this.destroyed$)
+        )
+        .subscribe((result: GeographicAddress) => {
+          if (this.currentAppointmentId === undefined) {
+            this.updateToCart(currentCart, undefined, result.id);
+          }
+          this.closeModal();
+        });
+    }
+    if (this.currentAppointmentId) {
+      this.tmfAppointmentService.updateAppointment(
+        this.cartEntries[0].appointment.id
+      );
+      const selectedTimeSlot = this.getTimeSlot();
+      if (
+        this.cartEntries[0].appointment.id === "CALL_TO_SCHEDULE" ||
+        selectedTimeSlot.id === "CALL_TO_SCHEDULE"
+      ) {
+        this.tmfAppointmentService
+          .getCreateAppointmentError()
+          .pipe(
+            take(2),
+            filter((result: string) => result != null),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((result: string) => {
+            this.errPatch = result;
+            return;
+          });
+
+        this.tmfAppointmentService
+          .getCreatedAppointment()
+          .pipe(
+            take(2),
+            filter((result) => Object.keys(result).length !== 0),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((result: Appointment) => {
+            const appointmentId = result.id;
+            const installationPlace = result.relatedPlace
+              ? result.relatedPlace.id
+              : undefined;
+            this.updateToCart(currentCart, appointmentId, installationPlace);
+            this.closeModal();
+          });
+      } else {
+        this.tmfAppointmentService
+          .getUpdateAppointmentError(this.cartEntries[0].appointment.id)
+          .pipe(
+            take(2),
+            filter((result: string) => !!result),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((result: string) => {
+            this.errPatch = result;
+            return;
+          });
+        this.tmfAppointmentService
+          .getAppointmentById(this.cartEntries[0].appointment.id)
+          .pipe(
+            take(2),
+            filter((result: Appointment) => !!result),
+            last(),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((result: Appointment) => {
+            const appointmentId = result.id;
+            const installationPlace = result.relatedPlace
+              ? result.relatedPlace.id
+              : undefined;
+            this.updateToCart(currentCart, appointmentId, installationPlace);
+            this.closeModal();
+          });
+      }
+    }
+  }
+
+  updateToCart(
+    currentCart: TmaCart,
+    appointmentId?: string,
+    installationAddress?: string
+  ): void {
+    const currentUserId: string =
+      this.currentUser && this.currentUser.uid
+        ? this.currentUser.uid
+        : OCC_USER_ID_ANONYMOUS;
+    const shoppingCart: TmaTmfShoppingCart = {
+      baseSiteId: this.currentBaseSiteId,
+      cartItem: this.createUpdateCartItemList(
+        currentCart,
+        appointmentId,
+        installationAddress
+      ),
+      relatedParty: [
+        {
+          id: currentUserId,
+        },
+      ],
+    };
+    this.tmaTmfCartService.updateCart(shoppingCart);
+  }
+
+  selectedTimeSlot(timeSlot: TimeSlot): void {
+    if (this.currentAppointmentId) {
+      if (
+        timeSlot.id === this.currentAppointmentId ||
+        this.currentSelectedStartDate ===
+          (timeSlot.validFor !== undefined
+            ? timeSlot.validFor.startDateTime
+            : undefined)
+      ) {
+        this.timeSlotChanged = false;
+        return;
+      }
+      this.tmaSearchTimeSlotService.setSelectedTimeSlot(timeSlot);
+      this.timeSlotChanged = true;
+      return;
+    }
+    this.tmaSearchTimeSlotService.setSelectedTimeSlot(timeSlot);
   }
 
   protected addToCartWithMsisdnReservation(currentCart: TmaCart): void {
@@ -261,50 +743,41 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
       )
       .subscribe((result: Reservation) => {
         if (
-          result.reservationState ===
-          (ReservationStateType.REJECTED || ReservationStateType.CANCELLED)
+          result.reservationState.toUpperCase() ===
+          (ReservationStateType.REJECTED.toUpperCase() ||
+            ReservationStateType.CANCELLED.toUpperCase())
         ) {
           this.spinner.hide();
           this.errorResult = result.reservationState;
           return;
         }
-        this.addToCart(currentCart, undefined, result);
+        this.addToCart(currentCart, undefined, undefined, result);
       });
   }
 
-  protected createCartItemList(
-    appointmentId: string,
-    msisdnValue: Reservation
-  ): TmaTmfCartItem[] {
-    const cartItemList: TmaTmfCartItem[] = [];
-    cartItemList.push({
-      action: TmaTmfActionType.ADD,
-      processType: {
-        id: TmaProcessTypeEnum.ACQUISITION
-      },
-      productOffering: {
-        id: this.productCode
-      },
-      appointment: this.populateAppointment(appointmentId),
-      product: this.populateTmfProduct(msisdnValue),
-      quantity: this.quantity
-    });
-    return cartItemList;
+  protected populateTmfProduct(
+    msisdnValue: Reservation,
+    addressId: string
+  ): TmfProduct {
+    return {
+      place: this.populateInstallationAddress(addressId),
+      characteristic: this.populateMsisdn(msisdnValue),
+    };
   }
 
-  protected populateTmfProduct(msisdnValue: Reservation): TmfProduct {
+  protected populateMsisdn(
+    msisdnValue: Reservation
+  ): TmfProductCharacteristic[] {
     if (!msisdnValue) {
       return undefined;
     }
-    return {
-      characteristic: [
-        {
-          id: msisdnValue.id,
-          name: LogicalResourceType.MSISDN,
-          value: this.msisdnValueSelected
-        }
-      ]
-    };
+    return [
+      {
+        id: msisdnValue.id,
+        name: LogicalResourceType.MSISDN,
+        value: this.msisdnValueSelected,
+      },
+    ];
   }
 
   protected populateAppointment(id: string): Appointment {
@@ -312,8 +785,24 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
       return undefined;
     }
     return {
-      id: id
+      id: id,
     };
+  }
+
+  protected populateInstallationAddress(
+    addressId: string,
+    hasInstallationAddressForEntry?: boolean
+  ): RelatedPlaceRef[] {
+    if (!addressId || hasInstallationAddressForEntry === false) {
+      return undefined;
+    }
+    return [
+      {
+        id: addressId,
+        "@referredType": "GeographicAddress",
+        role: "INSTALLATION_ADDRESS",
+      },
+    ];
   }
 
   protected openAddToCartModal(entry$: Observable<TmaOrderEntry>): void {
@@ -321,15 +810,179 @@ export class JourneyChecklistStepComponent implements OnInit, OnDestroy {
     let modalInstance: any;
     this.modalRef = this.modalService.open(TmaAddedToCartDialogComponent, {
       centered: true,
-      size: 'lg',
-      keyboard: true
+      size: "lg",
+      keyboard: true,
     });
 
     modalInstance = this.modalRef.componentInstance;
     modalInstance.entry$ = entry$;
     modalInstance.cart$ = this.activeCartService.getActive();
-    modalInstance.loaded$ = this.activeCartService.getLoaded();
+    modalInstance.loaded$ = this.activeCartService.isStable();
     modalInstance.quantity = this.quantity;
     modalInstance.increment = this.increment;
+  }
+
+  protected createUpdateCartItemList(
+    currentCart: TmaCart,
+    appointmentId?: string,
+    installationAddress?: string
+  ): TmaTmfCartItem[] {
+    const cartItemList: TmaTmfCartItem[] = [];
+    this.cartEntries.forEach((entry: TmaOrderEntry) => {
+      cartItemList.push({
+        id: currentCart.code + "_" + entry.entryNumber + "_" + "SPO",
+        appointment: this.populateAppointment(appointmentId),
+        product: {
+          place: this.populateInstallationAddress(
+            installationAddress,
+            this.hasInstallationAddressForEntry(entry)
+          ),
+        },
+      });
+    });
+    return cartItemList;
+  }
+  protected hasInstallationAddressForEntry(entry: TmaOrderEntry): boolean {
+    if (entry.subscribedProduct && entry.subscribedProduct.place) {
+      const installationAddress: TmaPlace = entry.subscribedProduct.place.find(
+        (place: TmaPlace) => {
+          return place.role === TmaPlaceRole.INSTALLATION_ADDRESS;
+        }
+      );
+
+      return installationAddress !== undefined;
+    }
+    return false;
+  }
+  protected prepareDataForModal(currentCart: TmaCart): void {
+    this.activeCartService
+      .getActive()
+      .pipe(
+        first(
+          (cart: TmaCart) =>
+            cart &&
+            cart.entries &&
+            cart.entries.length >
+              (currentCart && currentCart.entries
+                ? currentCart.entries.length
+                : 0)
+        ),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((newCart: TmaCart) => {
+        const newlyAddedEntries: TmaOrderEntry[] = this.tmaTmfCartService.getNewlyAddedEntries(
+          currentCart,
+          newCart
+        );
+
+        if (newlyAddedEntries) {
+          this.spinner.hide();
+          this.openModal(newlyAddedEntries);
+        }
+      });
+  }
+
+  protected openModal(entries: TmaOrderEntry[]): void {
+    let modalInstance: any;
+    this.modalRef = this.modalService.open(
+      TmaGuidedSellingAddedToCartDialogComponent,
+      {
+        centered: true,
+        size: "lg",
+        backdrop: "static",
+        keyboard: false,
+      }
+    );
+
+    modalInstance = this.modalRef.componentInstance;
+    modalInstance.entry$ = new Observable(
+      (subscriber: Subscriber<TmaOrderEntry>) => subscriber.next(entries[0])
+    );
+    modalInstance.entries = entries;
+    modalInstance.parentBpo = this.parentBpo;
+    modalInstance.cart$ = this.activeCartService.getActive();
+    modalInstance.loaded$ = this.activeCartService.isStable();
+    modalInstance.quantity = 1;
+    modalInstance.increment = false;
+  }
+
+  protected createCartItemList(
+    productCodes: string[],
+    appointmentId: string,
+    installationAddress?: string
+  ): TmaTmfCartItem[] {
+    const cartItemList: TmaTmfCartItem[] = [];
+    const appointmentProductCodes: string[] = this.checklistActions
+      .filter(
+        (checklistAction: TmaChecklistAction) =>
+          checklistAction.actionType === CHECKLIST_ACTION_TYPE_APPOINTMENT
+      )
+      .map((checklist: TmaChecklistAction) => checklist.productOffering[0].id);
+
+    const installationProductCodes: string[] = this.checklistActions
+      .filter(
+        (checklistAction: TmaChecklistAction) =>
+          checklistAction.actionType ===
+          CHECKLIST_ACTION_TYPE_INSTALLATION_ADDRESS
+      )
+      .map((checklist: TmaChecklistAction) => checklist.productOffering[0].id);
+
+    const productsWithoutCheckList: string[] = productCodes.filter(
+      (code: string) =>
+        !appointmentProductCodes.includes(code) &&
+        !installationProductCodes.includes(code)
+    );
+
+    const productCodeWithAppointmentAndInstallation: string[] = productCodes.filter(
+      (code: string) =>
+        installationProductCodes.includes(code) &&
+        appointmentProductCodes.includes(code)
+    );
+
+    const productCodeWithAppointment: string[] = productCodes.filter(
+      (code: string) =>
+        !installationProductCodes.includes(code) &&
+        appointmentProductCodes.includes(code)
+    );
+
+    const productWithInstallation: string[] = productCodes.filter(
+      (code: string) =>
+        installationProductCodes.includes(code) &&
+        !appointmentProductCodes.includes(code)
+    );
+
+    productsWithoutCheckList.forEach((code: string) =>
+      this.createCartItem(code, cartItemList)
+    );
+    productCodeWithAppointmentAndInstallation.forEach((code: string) =>
+      this.createCartItem(
+        code,
+        cartItemList,
+        appointmentId,
+        installationAddress
+      )
+    );
+    productWithInstallation.forEach((code: string) =>
+      this.createCartItem(code, cartItemList, undefined, installationAddress)
+    );
+    productCodeWithAppointment.forEach((code: string) =>
+      this.createCartItem(code, cartItemList, appointmentId, undefined)
+    );
+    return cartItemList;
+  }
+
+  private getTimeSlot(): TimeSlot {
+    let selectedTimeSlot: TimeSlot;
+    this.tmaSearchTimeSlotService
+      .getSelectedTimeSlot()
+      .pipe(
+        take(1),
+        filter((result: TimeSlot) => !!result),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((result: TimeSlot) => {
+        selectedTimeSlot = result;
+      });
+    return selectedTimeSlot;
   }
 }

@@ -9,7 +9,7 @@ import {
   SEARCH_TIME_SLOT_FEATURE,
 } from '../search-time-slot.state';
 import { SearchTimeSlot, TimeSlot } from '../../../model';
-import { LoaderState, StateLoaderSelectors } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 
 export const getTmfSearchTimeSlotFeatureState: MemoizedSelector<
   StateWithSearchTimeSlot,
@@ -18,7 +18,7 @@ export const getTmfSearchTimeSlotFeatureState: MemoizedSelector<
 
 export const getSearchTimeSlotsState: MemoizedSelector<
   StateWithSearchTimeSlot,
-  LoaderState<SearchTimeSlot>
+  StateUtils.LoaderState<SearchTimeSlot>
 > = createSelector(
   getTmfSearchTimeSlotFeatureState,
   (state: SearchTimeSlotState) => state.searchTimeSlots
@@ -29,7 +29,7 @@ export const getAllSearchTimeSlots: MemoizedSelector<
   SearchTimeSlot
 > = createSelector(
   getSearchTimeSlotsState,
-  StateLoaderSelectors.loaderValueSelector
+  StateUtils.loaderValueSelector
 );
 
 export const getSelectedTimeSlots: MemoizedSelector<

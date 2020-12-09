@@ -9,21 +9,22 @@ import {
 } from '@spartacus/core';
 import {
   AddToCartModule,
-  AutoFocusDirectiveModule,
   IconModule,
   ItemCounterModule,
   PromotionsModule,
-  SpinnerModule
+  SpinnerModule,
 } from '@spartacus/storefront';
-import { JourneyChecklistComponentModule } from '../../journey-checklist/journey-checklist.module';
-import { TmaPremiseDetailsModule } from '../../premise-details';
-import { TmaCartSharedModule } from '../cart-shared';
-import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { TmaAddToCartComponent } from './tma-add-to-cart.component';
+import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
+import { TmaCartSharedModule } from '../cart-shared';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { JourneyChecklistComponentModule } from '../../journey-checklist';
+import { AppointmentDetailsComponentModule } from '../cart-shared/appointment-details';
 
 @NgModule({
   imports: [
     TmaCartSharedModule,
+    AppointmentDetailsComponentModule,
     CommonModule,
     RouterModule,
     SpinnerModule,
@@ -41,9 +42,8 @@ import { TmaAddToCartComponent } from './tma-add-to-cart.component';
     IconModule,
     I18nModule,
     ItemCounterModule,
-    AutoFocusDirectiveModule,
-    TmaPremiseDetailsModule,
-    JourneyChecklistComponentModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
   entryComponents: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],

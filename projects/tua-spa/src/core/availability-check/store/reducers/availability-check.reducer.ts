@@ -16,8 +16,8 @@ export const errorInitialState: string = null;
  *          state of initialState
  * @param  action
  *           action of AvailabilityCheckActions
- * @returns AvailabilityCheckMap[]
- *           List of AvailabilityCheckMap
+ * @return
+ *       List of AvailabilityCheckMap
  */
 export function availabilityCheckReducer(
   state = initialState,
@@ -46,8 +46,8 @@ export function availabilityCheckReducer(
  *          state of selectedLogicalResourceInitialState
  * @param  action
  *           action of AvailabilityCheckActions
- * @returns ResourceRef
- *           selected ResourceRef
+ * @return
+ *       selected ResourceRef
  */
 export function selectedLogicalResourceReducer(
   state = selectedLogicalResourceInitialState,
@@ -68,8 +68,8 @@ export function selectedLogicalResourceReducer(
  *          state of errorInitialState
  * @param  action
  *           action of AvailabilityCheckActions
- * @returns string
- *           error message
+ * @return
+ *        error message
  */
 export function availabilityCheckErrorReducer(
   state = errorInitialState,

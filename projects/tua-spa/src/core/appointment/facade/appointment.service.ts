@@ -1,16 +1,23 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { Observable, Subject, of } from 'rxjs';
-import { UserService, User } from '@spartacus/core';
-import { take, tap, filter, takeUntil } from 'rxjs/operators';
+import { Injectable, OnDestroy } from "@angular/core";
+import { Store, select } from "@ngrx/store";
+import { Observable, Subject, of } from "rxjs";
+import { UserService, User } from "@spartacus/core";
+import { take, tap, filter, takeUntil } from "rxjs/operators";
 import {
   StateWithAppointment,
   AppointmentSelectors,
   AppointmentActions,
-} from '../store';
-import { TmaTmfRelatedParty, Appointment, TimeSlot } from '../../model';
-import { LOCAL_STORAGE } from '../../util';
-import { SearchTimeSlotService } from '../../search-time-slot/facade';
+} from "../store";
+import {
+  TmaTmfRelatedParty,
+  Appointment,
+  TimeSlot,
+  GeographicAddress,
+  AppointmentStateType,
+} from "../../model";
+import { LOCAL_STORAGE } from "../../util";
+import { SearchTimeSlotService } from "../../search-time-slot/facade";
+import { GeographicAddressService } from "../../geographic-address";
 
 const { CALL_TO_SCHEDULE } = LOCAL_STORAGE.APPOINTMENT;
 
@@ -23,6 +30,7 @@ export class AppointmentService implements OnDestroy {
     protected store: Store<StateWithAppointment>,
     protected userService: UserService,
     protected searchTimeSlotService: SearchTimeSlotService,
+    protected geographicAddressService: GeographicAddressService
   ) {
     this.userService
       .get()
@@ -30,7 +38,7 @@ export class AppointmentService implements OnDestroy {
       .subscribe((user: User) => {
         this.currentCustomer = {
           id: user.uid,
-          role: 'CUSTOMER',
+          role: "CUSTOMER",
           name: user.name,
         };
       });
@@ -83,12 +91,14 @@ export class AppointmentService implements OnDestroy {
    */
   createAppointmentForTimeSlot(): void {
     const selectedTimeSlot: TimeSlot = this.getTimeSlot();
+    const selectedInstallationAddress: GeographicAddress = this.getInstallationAddress();
     if (selectedTimeSlot.id === CALL_TO_SCHEDULE) {
-      this.createDefaultAppointment();
+      this.createDefaultAppointment(selectedInstallationAddress);
       return;
     }
     const appointmentrequest: Appointment = this.populateAppointmentRequest(
-      selectedTimeSlot
+      selectedTimeSlot,
+      selectedInstallationAddress
     );
     this.store.dispatch(
       new AppointmentActions.CreateAppointment({
@@ -115,17 +125,35 @@ export class AppointmentService implements OnDestroy {
       return;
     }
     const selectedTimeSlot: TimeSlot = this.getTimeSlot();
+    const installationAddress: GeographicAddress = this.getInstallationAddress();
     if (selectedTimeSlot.id === CALL_TO_SCHEDULE) {
       this.createDefaultAppointment();
       return;
     }
     const appointmentrequest: Appointment = this.populateAppointmentRequest(
-      selectedTimeSlot
+      selectedTimeSlot,
+      installationAddress
     );
     this.store.dispatch(
       new AppointmentActions.UpdateAppointment({
         id: oldAppointmentId,
         appointment: appointmentrequest,
+      })
+    );
+  }
+
+  /**
+   * This method cancels the appointment.
+   *
+   * @param appointmentId The id of the appointment which needs to be cancelled
+   */
+  cancelAppointment(appointmentId: string): void {
+    this.store.dispatch(
+      new AppointmentActions.UpdateAppointment({
+        id: appointmentId,
+        appointment: {
+          status: AppointmentStateType.CANCELLED,
+        },
       })
     );
   }
@@ -194,9 +222,14 @@ export class AppointmentService implements OnDestroy {
     );
   }
 
-  protected createDefaultAppointment(): void {
+  protected createDefaultAppointment(
+    selectedInstallationAddress?: GeographicAddress
+  ): void {
     const appointment: Appointment = {
       id: CALL_TO_SCHEDULE,
+      relatedPlace: this.searchTimeSlotService.createPlaceRequest(
+        selectedInstallationAddress
+      ),
     };
     this.store.dispatch(
       new AppointmentActions.CreateAppointmentSuccess({
@@ -206,7 +239,8 @@ export class AppointmentService implements OnDestroy {
   }
 
   protected populateAppointmentRequest(
-    selectedTimeSlot: TimeSlot
+    selectedTimeSlot: TimeSlot,
+    selectedInstallationAddress?: GeographicAddress
   ): Appointment {
     return {
       validFor: {
@@ -225,6 +259,9 @@ export class AppointmentService implements OnDestroy {
           name: this.currentCustomer.name,
         },
       ],
+      relatedPlace: this.searchTimeSlotService.createPlaceRequest(
+        selectedInstallationAddress
+      ),
     };
   }
 
@@ -241,5 +278,20 @@ export class AppointmentService implements OnDestroy {
         selectedTimeSlot = result;
       });
     return selectedTimeSlot;
+  }
+
+  private getInstallationAddress(): GeographicAddress {
+    let selectedInstallationAddress: GeographicAddress;
+    this.geographicAddressService
+      .getSelectedInstallationAddress()
+      .pipe(
+        take(1),
+        filter((result: GeographicAddress) => !!result),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((result: GeographicAddress) => {
+        selectedInstallationAddress = result;
+      });
+    return selectedInstallationAddress;
   }
 }

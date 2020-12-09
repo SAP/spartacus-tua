@@ -17,6 +17,9 @@ export class TmaAddressFormComponent implements OnInit {
 
     @Input()
     isDialog: boolean;
+    
+    @Input()
+    isEdit?: boolean;
 
     @Output()
     countrySelected = new EventEmitter<any>();
@@ -59,7 +62,11 @@ export class TmaAddressFormComponent implements OnInit {
                 }
             })
         );
-
+        
+        if(this.isEdit) {
+          this.installationAddress.get('country.isocode').disable();
+        }
+  
         // Fetching regions
         this.regions$ = this.selectedCountry$.pipe(
             switchMap((country: Country) => this.userAddressService.getRegions(country.isocode)),
@@ -82,6 +89,9 @@ export class TmaAddressFormComponent implements OnInit {
      * @param country - the selected country
      */
     onCountrySelected(country: Country): void {
+       this.installationAddress['controls'].region[
+        'controls'
+      ].isocode.reset();
         this.installationAddress['controls'].country['controls'].isocode.setValue(
             country.isocode
         );

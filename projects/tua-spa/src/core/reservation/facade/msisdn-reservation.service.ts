@@ -29,7 +29,7 @@ export class MsisdnReservationService extends LogicalResourceReservationService 
   }
 
   /**
-   * Create reservation for selected MSISDN by customer from the list of available MSISDNs
+   * This method is used to create reservation for logical resource selected by user from the list of available logical resources
    *
    * @param product - The product for which the MSISDN will be reserved
    */
@@ -75,10 +75,7 @@ export class MsisdnReservationService extends LogicalResourceReservationService 
       reservation = {
         relatedParty: [
           {
-            id:
-              this.currentUser.id === undefined
-                ? OCC_USER_ID_ANONYMOUS
-                : this.currentUser.id,
+            id: this.currentUser.id,
             role: this.currentUser.role
           }
         ],

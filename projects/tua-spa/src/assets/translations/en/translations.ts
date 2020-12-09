@@ -1,23 +1,34 @@
 import { TranslationResources } from '@spartacus/core';
-import { AddressBookComponent } from '@spartacus/storefront';
 
 export const tmaTranslations: TranslationResources = {
   en: {
     product: {
       productDetails: {
+        loginNeeded: 'Please Login to proceed with add to cart.',
         price: {
           contractDuration: 'Contract Duration',
           common: {
+            off:'OFF',
+            hierarchical_price:'Hierarchical Price',
             from: 'From',
             to: 'to',
             upTo: 'up to',
             onwards: 'onwards',
             each: 'each',
+            discount: 'You Save',
+            applicableDiscount : 'Discounts / ',
+            for: 'for'
           },
           priceTypes: {
             payNow: 'Pay Now',
             recurringCharges: 'Recurring Charges',
             billingEvents: {
+              billingEvent_paynow: 'On Checkout',
+              billingEvent_oncancellation: 'On Cancellation',
+              billingEvent_onfirstbill: 'On First Bill',
+              billingEvent_monthly: 'monthly',
+              billingEvent_yearly: 'yearly',
+              billingEvent_quarterly: 'quarterly',
               oneTime: 'Pay Now',
               oneTime_paynow: 'Pay Now',
               oneTime_oncancellation: 'cancellation',
@@ -51,24 +62,19 @@ export const tmaTranslations: TranslationResources = {
               charge_highest_applicable_tier: 'Charged By',
             },
             usageTypes: {
-              usageType_each_respective_tier: 'Each Respective Tier',
-              usageType_highest_applicable_tier: 'Highest Applicable Tier',
-              usageType: 'Each Respective Tier',
+              usageType_each_respective_tier: 'Charged By Each Respective Tier',
+              usageType_highest_applicable_tier: 'Charged By Highest Applicable Tier',
             },
             perUnit: 'Per Unit',
             perVolume: 'Per Volume',
           },
         },
-        loginNeeded: 'You need to login before adding product to cart.',
-      },
-      productList: {
-        viewDetails: 'View Details'
       },
     },
     cart: {
       cartItems: {
         contractStartDate: 'Contract Start Date',
-        installationAddress: 'Installation Address',
+        installationAddress: 'Installation Address:',
         meterNo: 'Meter NO',
         appointment: 'Appointment:',
         defaultAppointment: 'Please call to Schedule',
@@ -117,6 +123,7 @@ export const tmaTranslations: TranslationResources = {
         continue: 'Continue',
         update: 'Update',
         optional: 'Optional',
+        priceInformation: 'Price Information',
         currencies: {
           currency: '$',
           currency_USD: '$',
@@ -138,87 +145,34 @@ export const tmaTranslations: TranslationResources = {
         currentSelection: {
           newContract: '(with new contract)',
           offer: 'Offer',
-          startingFrom: 'Starting From'
-        }
-      }
+          startingFrom: 'Starting From',
+          bestApplicable: 'Best Applicable Price',
+        },
+        edit: {
+          previousAppointmentDeleted:
+            'Previously selected Installation details are no longer valid.',
+        },
+      },
     },
-    addressInputs: {
-      addressInputs: {
-        buildingNumber: {
-          label: 'House/Building Number',
-          placeholder: 'House/Building Number'
+    priceheadLine: {
+      priceheadLine: {
+        productListPriceHeadline: {
+          bestApplicable: 'Best Applicable Price',
         },
-        streetName: {
-          label: 'Street',
-          placeholder: 'Street'
-        },
-        apartmentNumber: {
-          label: 'Apartment/Unit/Suite',
-          placeholder: 'Apartment/Unit/Suite'
-        },
-        city: {
-          label: 'City',
-          placeholder: 'City'
-        },
-        country: {
-          label: 'Country',
-          placeholder: 'Country'
-        },
-        state: {
-          label: 'State/Province',
-          placeholder: 'State/Province'
-        },
-        postalCode: {
-          label: 'Zip/Postal Code',
-          placeholder: 'Postal Code'
-        }
-      }
+      },
     },
-    premiseDetails: {
-      premiseDetails: {
-        checkAvailability: 'Check availability',
-        checkAvailabilityErrorMessage: 'Wrong configuration! Product does not have \'INSTALLATION_ADDRESS\' checklist action and\/or \'meter_id\' configurable product specification characteristic.',
-        provideDetails: 'Please provide premise details',
-        detailValidation: 'Validate premise details',
-        updateDetails: 'Update premise details',
-        visitProductListingPage: 'Visit product listing page',
-        premiseAddress: {
-          title: 'Premise Address'
-        },
-        meterDetails: {
-          title: 'Meter details',
-          meterId: {
-            label: 'Meter ID',
-            placeholder: 'Meter ID'
-          }
-        },
-        premiseDetailsValidation: {
-          success: 'Current product offering can be successfully installed at this premise. Would you like to add the product offering to cart?',
-          fail: 'Current premise is not valid for current product offering installation. Please contact support on number +100244243.'
-        }
-      }
-    },
-    purchaseReason: {
-      purchaseReason: {
-        reasonForPurchase: 'Reason For Purchase?',
-        move: 'Moving/Moved',
-        switchProvider: 'Switching Providers',
-        desiredContractStartDate: 'Desired Contract Start Date',
-        desiredChangeDate: 'Desired Change Date',
-        previousEnergySupplier: 'Previous Energy Supplier',
-        saveEnergySupplies: 'Set Energy Supplier'
-      }
-    },
+
     resource: {
       resource: {
         type_MSISDN: 'Phone Number',
       },
     },
-
     stepper: {
       stepper: {
         stepper_MSISDN: 'Select your desired Phone Number',
         stepper_APPOINTMENT: 'Select a suitable time for an appointment',
+        stepper_INSTALLATION_ADDRESS:
+          'Select suitable details for your installation address',
       },
     },
     availabilityCheckError: {
@@ -246,6 +200,9 @@ export const tmaTranslations: TranslationResources = {
           call_to_schedule: 'Please Call to Schedule',
           patchError:
             'Could not update the appointment at this time. Select "Call to Schedule" option to have an appointment booked for you.',
+        },
+        installationAddress: {
+          headline: 'Select suitable details for your installation address',
         },
         msisdn: {
           headline: 'Select your desired Phone Number',
@@ -296,9 +253,41 @@ export const tmaTranslations: TranslationResources = {
           unit: 'Unit',
           replacements: 'Replacements',
           gbps: 'GBPS',
-          mbps: 'MBPS'
-        }
-      }
-    }
-  }
+          mbps: 'MBPS',
+        },
+      },
+    },
+    addressInputs: {
+      addressInputs: {
+        buildingNumber: {
+          label: 'House/Building Number',
+          placeholder: 'House/Building Number',
+        },
+        streetName: {
+          label: 'Street',
+          placeholder: 'Street',
+        },
+        apartmentNumber: {
+          label: 'Apartment/Unit/Suite',
+          placeholder: 'Apartment/Unit/Suite',
+        },
+        city: {
+          label: 'City',
+          placeholder: 'City',
+        },
+        country: {
+          label: 'Country',
+          placeholder: 'Country',
+        },
+        state: {
+          label: 'State/Province',
+          placeholder: 'State/Province',
+        },
+        postalCode: {
+          label: 'Zip/Postal Code',
+          placeholder: 'Postal Code',
+        },
+      },
+    },
+  },
 };

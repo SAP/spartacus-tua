@@ -15,8 +15,8 @@ export class AvailabilityCheckConnector {
    *
    * @param resourceCapacityDemand
    *            The amount of capacity that is planned to be consumed or has been consumed
-   * @returns Observable<AppliedCapacityAmount>
-   *            The logical resource values that would be consumed are bundled in applied capacity amount
+   * @return
+*           The logical resource values that would be consumed are bundled in applied capacity amount
    */
   public getLogicalResources(
     resourceCapacityDemand: ResourceCapacityDemand

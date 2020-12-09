@@ -11,7 +11,7 @@ import {
   AppointmentError,
 } from '../appointment-state';
 import { Appointment } from '../../../model';
-import { LoaderState, StateLoaderSelectors } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 import { AppointmentStateType } from '../../../model/appointment.model';
 
 export const getAppointmentsFeatureState: MemoizedSelector<
@@ -21,7 +21,7 @@ export const getAppointmentsFeatureState: MemoizedSelector<
 
 export const getAppointmentsState: MemoizedSelector<
   StateWithAppointment,
-  LoaderState<Appointment[]>
+  StateUtils.LoaderState<Appointment[]>
 > = createSelector(
   getAppointmentsFeatureState,
   (state: AppointmentState) => state.appointments
@@ -32,7 +32,7 @@ export const getAllAppointments: MemoizedSelector<
   Appointment[]
 > = createSelector(
   getAppointmentsState,
-  StateLoaderSelectors.loaderValueSelector
+  StateUtils.loaderValueSelector
 );
 
 export const getAppointmentById: MemoizedSelectorWithProps<
@@ -47,7 +47,7 @@ export const getAppointmentById: MemoizedSelectorWithProps<
 
 export const getAllAppointmentError: MemoizedSelector<
   StateWithAppointment,
-  LoaderState<AppointmentError[]>
+  StateUtils.LoaderState<AppointmentError[]>
 > = createSelector(
   getAppointmentsFeatureState,
   (state: AppointmentState) => state.error
@@ -55,7 +55,7 @@ export const getAllAppointmentError: MemoizedSelector<
 
 export const getCreatedAppointmentState: MemoizedSelector<
   StateWithAppointment,
-  LoaderState<Appointment>
+  StateUtils.LoaderState<Appointment>
 > = createSelector(
   getAppointmentsFeatureState,
   (state: AppointmentState) => state.newAppointment
@@ -66,7 +66,7 @@ export const getCreatedAppointment: MemoizedSelector<
   Appointment
 > = createSelector(
   getCreatedAppointmentState,
-  StateLoaderSelectors.loaderValueSelector
+  StateUtils.loaderValueSelector
 );
 
 export const getAppointmentErrorForAppointmentID: MemoizedSelectorWithProps<
@@ -75,7 +75,7 @@ export const getAppointmentErrorForAppointmentID: MemoizedSelectorWithProps<
   string
 > = createSelector(
   getAllAppointmentError,
-  (state: LoaderState<AppointmentError[]>, props) => {
+  (state: StateUtils.LoaderState<AppointmentError[]>, props) => {
     const appointmentError = state
       ? state.value.find(
           (errorMap: AppointmentError) => errorMap.appointmentId === props.id
@@ -92,7 +92,7 @@ export const getCreateAppointmentError: MemoizedSelector<
   string
 > = createSelector(
   getAllAppointmentError,
-  (state: LoaderState<AppointmentError[]>) => {
+  (state: StateUtils.LoaderState<AppointmentError[]>) => {
     const createAppointmentError = state.value[0] ? state.value[0] : undefined;
     if (!!createAppointmentError) {
       return createAppointmentError.appointmentError;
@@ -105,7 +105,7 @@ export const getAppointmentError: MemoizedSelector<
   boolean
 > = createSelector(
   getAllAppointmentError,
-  (state: LoaderState<AppointmentError[]>) => {
+  (state: StateUtils.LoaderState<AppointmentError[]>) => {
     const hasAppointmentError = state.value.length > 0 ? true : false;
     return hasAppointmentError;
   }
@@ -125,7 +125,7 @@ export const getCancelledAppointment: MemoizedSelector<
 
 export const getUpdateAppointmentErrorState: MemoizedSelector<
   StateWithAppointment,
-  LoaderState<AppointmentError>
+  StateUtils.LoaderState<AppointmentError>
 > = createSelector(
   getAppointmentsFeatureState,
   (state: AppointmentState) => state.updateAppointmentError
@@ -137,7 +137,7 @@ export const getUpdateAppointmentError: MemoizedSelectorWithProps<
   string
 > = createSelector(
   getUpdateAppointmentErrorState,
-  (state: LoaderState<AppointmentError>, props) => {
+  (state: StateUtils.LoaderState<AppointmentError>, props) => {
     return state.value.appointmentId === props.id
       ? state.value.appointmentError
       : undefined;

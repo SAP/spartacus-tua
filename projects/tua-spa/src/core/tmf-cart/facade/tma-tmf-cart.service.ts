@@ -6,14 +6,14 @@ import {
   MultiCartService,
   OCC_CART_ID_CURRENT,
   OCC_USER_ID_ANONYMOUS,
-  ProcessesLoaderState,
   StateWithMultiCart
 } from '@spartacus/core';
 import { select, Store } from '@ngrx/store';
 import * as TmaCartActions from '../store/actions/tma-tmf-cart.action';
-import { TmaTmfShoppingCart } from '../../model';
+import { TmaTmfShoppingCart, TmaCart, TmaOrderEntry } from '../../model';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
+import { ProcessesLoaderState } from '@spartacus/core/src/state/utils/utils-group';
 
 
 @Injectable({
@@ -75,6 +75,45 @@ export class TmaTmfCartService implements OnDestroy {
           new TmaCartActions.UpdateCart({ shoppingCart: shoppingCart })
         );
       });
+  }
+
+   /**
+   * Gets the newly added entries of the cart by comparing the entries before and after add to cart
+   *
+   * @param oldCart - Cart before add to cart
+   * @param newCart - Cart after add to cart 
+   * @return - TmaOrderEntry[] The newly added entries of the cart
+   */
+  public getNewlyAddedEntries(
+    oldCart: TmaCart,
+    newCart: TmaCart
+  ): TmaOrderEntry[] {
+    const entriesWithLastAdded: number[] = [];
+    const entriesWithoutLastAdded: number[] = [];
+    newCart.entries.forEach((entry: TmaOrderEntry) =>
+      entriesWithLastAdded.push(entry.entryNumber)
+    );
+
+    if (oldCart.entries) {
+      oldCart.entries.forEach((entry: TmaOrderEntry) =>
+        entriesWithoutLastAdded.push(entry.entryNumber)
+      );
+    }
+
+    const newlyAddedEntryIds: number[] = entriesWithLastAdded.filter(
+      (entryNumber: number) => entriesWithoutLastAdded.indexOf(entryNumber) < 0
+    );
+
+    const newlyAddedEntries: TmaOrderEntry[] = [];
+    newlyAddedEntryIds.forEach((entryNumber: number) =>
+      newlyAddedEntries.push(
+        newCart.entries.find(
+          (entry: TmaOrderEntry) => entry.entryNumber === entryNumber
+        )
+      )
+    );
+
+    return newlyAddedEntries;
   }
 
   protected requireLoadedCart(customCartSelector$?: Observable<ProcessesLoaderState<Cart>>): Observable<ProcessesLoaderState<Cart>> {

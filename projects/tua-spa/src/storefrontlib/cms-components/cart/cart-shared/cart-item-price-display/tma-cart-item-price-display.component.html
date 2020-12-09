@@ -1,0 +1,32 @@
+<div class="row mx-auto ht-250">
+  <ul [ngClass]="{'listNone': list.length === 1 && !list[0].cartPrice}">
+    <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: list}"></ng-container>
+  </ul>
+<ng-template #recursiveListTmpl let-list="list">
+  <li *ngFor="let item of getSortedList(list)">
+    <span *ngIf="item.cartPrice">{{'productDetails.price.common.hierarchical_price' | cxTranslate}}
+      <span *ngIf="item.usageChargeType">
+      ({{'productDetails.price.usageCharge.usageTypes.usageType' | cxTranslate : {context:item.usageChargeType} }})
+    </span>
+    </span>
+    <span *ngIf="!item.cartPrice">
+      <span *ngIf="item.chargeType === 'oneTime'">
+      <cx-cart-item-one-time-charge [oneTimeCharge]="item"></cx-cart-item-one-time-charge>
+      </span>
+      <span *ngIf="item.chargeType === 'recurring'">
+        <cx-cart-item-recurring-charge [recurringCharge]="item"></cx-cart-item-recurring-charge>
+      </span>
+      <span *ngIf="item.chargeType === 'usage'">
+        <cx-cart-item-usage-charge [usageCharge]="item"></cx-cart-item-usage-charge>
+      </span>
+    </span>
+    <ul *ngIf="item.cartPrice && item.cartPrice.length > 0">
+      <ng-container *ngTemplateOutlet="recursiveListTmpl; context:{ list: item.cartPrice}">
+      </ng-container>
+      <li *ngIf="item.priceAlteration">
+        <cx-cart-item-alteration-details [alterations]="item.priceAlteration"></cx-cart-item-alteration-details>
+      </li>
+    </ul>
+  </li>
+</ng-template>
+</div>

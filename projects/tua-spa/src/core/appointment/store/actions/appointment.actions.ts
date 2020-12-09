@@ -1,4 +1,4 @@
-import { StateLoaderActions } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 import { APPOINTMENT_DATA } from '../appointment-state';
 
 export enum AppointmentActionTypes {
@@ -16,63 +16,63 @@ export enum AppointmentActionTypes {
   CLEAR_APPOINTMENT_ERROR = '[Appointment] Clear Appointment Error',
 }
 
-export class LoadAppointment extends StateLoaderActions.LoaderLoadAction {
+export class LoadAppointment extends StateUtils.LoaderLoadAction {
   readonly type = AppointmentActionTypes.LOAD_APPOINTMENT;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class LoadAppointmentSuccess extends StateLoaderActions.LoaderSuccessAction {
+export class LoadAppointmentSuccess extends StateUtils.LoaderSuccessAction {
   readonly type = AppointmentActionTypes.LOAD_APPOINTMENT_SUCCESS;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class LoadAppointmentFail extends StateLoaderActions.LoaderFailAction {
+export class LoadAppointmentFail extends StateUtils.LoaderFailAction {
   readonly type = AppointmentActionTypes.LOAD_APPOINTMENT_FAIL;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class CreateAppointment extends StateLoaderActions.LoaderLoadAction {
+export class CreateAppointment extends StateUtils.LoaderLoadAction {
   readonly type = AppointmentActionTypes.CREATE_APPOINTMENT;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class CreateAppointmentSuccess extends StateLoaderActions.LoaderSuccessAction {
+export class CreateAppointmentSuccess extends StateUtils.LoaderSuccessAction {
   readonly type = AppointmentActionTypes.CREATE_APPOINTMENT_SUCCESS;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class CreateAppointmentFail extends StateLoaderActions.LoaderFailAction {
+export class CreateAppointmentFail extends StateUtils.LoaderFailAction {
   readonly type = AppointmentActionTypes.CREATE_APPOINTMENT_FAIL;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class UpdateAppointment extends StateLoaderActions.LoaderFailAction {
+export class UpdateAppointment extends StateUtils.LoaderFailAction {
   readonly type = AppointmentActionTypes.UPDATE_APPOINTMENT;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class UpdateAppointmentSuccess extends StateLoaderActions.LoaderFailAction {
+export class UpdateAppointmentSuccess extends StateUtils.LoaderFailAction {
   readonly type = AppointmentActionTypes.UPDATE_APPOINTMENT_SUCCESS;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);
   }
 }
 
-export class UpdateAppointmentFail extends StateLoaderActions.LoaderFailAction {
+export class UpdateAppointmentFail extends StateUtils.LoaderFailAction {
   readonly type = AppointmentActionTypes.UPDATE_APPOINTMENT_FAIL;
   constructor(public payload: any) {
     super(APPOINTMENT_DATA);

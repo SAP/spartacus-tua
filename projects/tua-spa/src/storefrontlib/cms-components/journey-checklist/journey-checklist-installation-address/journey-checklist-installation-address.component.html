@@ -1,0 +1,23 @@
+<div class="row mx-auto py-3 d-flex justify-content-center">
+  <span class="fontLabel-bold">
+    {{ 'checkList.installationAddress.headline' | cxTranslate }}
+  </span>
+</div>
+<div [formGroup]="installationAddressDetails">
+  <cx-address-form
+    [address]="installationAddress"
+    [isDialog]="false"
+    [isEdit]="isEdit"
+    (countrySelected)="onCountrySelected($event)"
+    (regionSelected)="onRegionSelected($event)"
+  >
+  </cx-address-form>
+
+  <p>&nbsp;</p>
+  <div class="cx-checkout-btns row">
+    <div
+      *ngIf="isValid(installationAddressDetails.invalid)"
+      class="col-md-12 col-lg-12"
+    ></div>
+  </div>
+</div>
