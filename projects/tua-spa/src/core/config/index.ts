@@ -1,0 +1,1 @@
+export * from './product-specification-for-view-details/index';
