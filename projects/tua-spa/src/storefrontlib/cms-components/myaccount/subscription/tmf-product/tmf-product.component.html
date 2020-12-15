@@ -75,25 +75,7 @@
                             </div>
                           </ng-template>
                           <ng-template ngbPanelContent>
-                            <div class="cx-costs px-3">
-                              <div class="row mx-auto">
-                                <div class="my-2" *ngIf="cartItemPrice.recurringPrices.length">
-                                  <!-- Reccuring Charges Prices -->
-                                  <cx-cart-item-recurring-charge [recurringCharge]="cartItemPrice.recurringPrices">
-                                  </cx-cart-item-recurring-charge>
-                                </div>
-                              </div>
-                              <div class="row mx-auto">
-                                <!-- One Time Charges -->
-                                <cx-cart-item-one-time-charge [oneTimeCharge]="cartItemPrice.oneTimeChargePrices">
-                                </cx-cart-item-one-time-charge>
-                              </div>
-                              <div class="row mx-auto my-2">
-                                <!-- Usage Charges -->
-                                <cx-cart-item-usage-charge [usageCharge]="cartItemPrice.usageChargePrices">
-                                </cx-cart-item-usage-charge>
-                              </div>
-                            </div>
+                            <cx-cart-item-price-display [price]="orderEntry.cartPrice"></cx-cart-item-price-display>
                           </ng-template>
                         </ngb-panel>
                       </ngb-accordion>

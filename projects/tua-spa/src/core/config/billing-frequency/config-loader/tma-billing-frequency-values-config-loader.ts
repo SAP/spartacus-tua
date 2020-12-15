@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../config';
+import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../config/tma-billing-frequency-config';
 
 @Injectable({ providedIn: 'root' })
 export class TmaBillingFrequencyValuesConfigLoader {

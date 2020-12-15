@@ -5,9 +5,9 @@
       <div class="cx-list-status">
         <span *ngIf="consignment">
           {{
-            'orderDetails.deliveryStatus'
-              | cxTranslate: {context: consignment.status}
-            }}
+          'orderDetails.deliveryStatus'
+            | cxTranslate: {context: consignment.status}
+          }}
         </span>
       </div>
       <div *ngIf="consignment?.statusDate" class="cx-list-date">
@@ -23,14 +23,21 @@
         </ng-container>
       </ng-container>
 
-      <cx-cart-item-list [items]="consignment.entries" [isReadOnly]="true"></cx-cart-item-list>
+      <cx-cart-item-list
+        [items]="consignment.entries"
+        [readonly]="true"
+        [isPremiseDetailsReadOnly]="true"
+      ></cx-cart-item-list>
     </div>
   </div>
   <!-- unconsigned entries -->
   <div *ngIf="order.unconsignedEntries?.length" class="cx-list row">
     <div class="cx-list-header col-12">
       <div class="cx-list-status">
-        {{ 'orderDetails.pending' | cxTranslate }}
+        {{
+        'orderDetails.statusDisplay'
+          | cxTranslate: {context: order.statusDisplay}
+        }}
       </div>
     </div>
     <div class="cx-list-item col-12">
@@ -38,7 +45,11 @@
         <cx-promotions [promotions]="orderPromotions"></cx-promotions>
       </ng-container>
 
-      <cx-cart-item-list [items]="order?.unconsignedEntries" [isReadOnly]="true"></cx-cart-item-list>
+      <cx-cart-item-list
+        [items]="order?.unconsignedEntries"
+        [readonly]="true"
+        [isPremiseDetailsReadOnly]="true"
+      ></cx-cart-item-list>
     </div>
   </div>
 </ng-container>

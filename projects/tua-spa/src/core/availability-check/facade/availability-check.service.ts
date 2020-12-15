@@ -20,14 +20,14 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * Get Resource Check Availability
+   * This method is used to get list of available resources of the given logical resource type.
    *
    * @param capacityDemandAmount
    *          The amount of capacity that is planned to be consumed or has been consumed
    * @param  type
    *           Type of Logical Resource
-   * @returns Observable<ResourceRef[]>
-   *           List of ResourceRef
+   * @return
+   *           List of Available Resources
    */
   getResourceCheckAvailability(
     capacityDemandAmount: number,
@@ -60,7 +60,7 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * This method is used to set the logical resource.
+   * This method is used to set the logical resource selected by user.
    *
    * @param resource
    *          The ResourceRef that is selected
@@ -76,8 +76,8 @@ export class AvailabilityCheckService implements OnDestroy {
   /**
    * This method is used to get the selected logical resource.
    *
-   * @returns ResourceRef
-   *               the selected logical resource from Msisdn popup
+   * @return
+*          the selected logical resource
    */
   getSelectedLogicalResource(): ResourceRef {
     let selectedLogicalResource: ResourceRef;
@@ -95,10 +95,10 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * This method is used to determine if any error is there for fetching the availability check details.
+   * This method is used to determine if any error is there in fetching the availability check details.
    *
-   * @returns Observable<string>
-   *           the error message indicating error occurred in fetching the availability check details
+   * @return
+*           the error message indicating error occurred in fetching the availability check details
    */
   getAvailabilityCheckError(): Observable<string> {
     return this.store.pipe(

@@ -8,8 +8,8 @@ export abstract class AvailabilityCheckAdapter {
    *
    * @param resourceCapacityDemand
    *           The resourceCapacityDemand to retrieve logical resources
-   * @returns Observable<AppliedCapacityAmount>
-   *          applied capacity amount
+   * @return
+   *       applied capacity amount
    */
   abstract getLogicalResources(
     resourceCapacityDemand: ResourceCapacityDemand

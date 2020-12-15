@@ -1,7 +1,7 @@
 export const stepper = {
   stepper: {
-    MSISDN: 'Select Your desired Phone Number',
-    APPOINTMENT: 'Select a suitable time for an appointment',
-    INSTALLATION_ADDRESS: 'Select your Installation Address',
+    stepper_MSISDN: 'Select your desired Phone Number',
+    stepper_APPOINTMENT: 'Select a suitable time for an appointment',
+    stepper_INSTALLATION_ADDRESS: 'Select suitable details for your installation address'
   }
 };

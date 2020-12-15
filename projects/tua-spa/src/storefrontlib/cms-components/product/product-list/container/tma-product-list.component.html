@@ -13,8 +13,8 @@
                       (sortListEvent)="sortList($event)"
                       [selectedOption]="model.pagination.sort"
                       placeholder="{{
-                      'productList.sortByRelevance' | cxTranslate
-                    }}"
+                        'productList.sortByRelevance' | cxTranslate
+                      }}"
                     ></cx-sorting>
                   </div>
                 </div>
@@ -22,7 +22,7 @@
                 <!-- Update consumption link -->
                 <ng-container *ngIf="url$ | async as url">
                   <ng-container *ngIf="getConsumptionComponent(page) as consumptionComponent">
-                    <div class="col-12 col-lg-4">
+                    <div class="col-12 col-lg-6">
                       <div class="row font-small d-flex justify-content-center">
                         {{ 'productList.averageCostBaseOnConsumption' | cxTranslate}}:
                       </div>
@@ -45,7 +45,8 @@
                   >
                     <cx-pagination
                       [pagination]="model.pagination"
-                      (viewPageEvent)="viewPage($event)"
+                      queryParam="currentPage"
+                      [defaultPage]="0"
                     ></cx-pagination>
                   </div>
                 </div>
@@ -99,8 +100,8 @@
                       (sortListEvent)="sortList($event)"
                       [selectedOption]="model.pagination.sort"
                       placeholder="{{
-                      'productList.sortByRelevance' | cxTranslate
-                    }}"
+                        'productList.sortByRelevance' | cxTranslate
+                      }}"
                     ></cx-sorting>
                   </div>
                 </div>
@@ -112,7 +113,8 @@
                   <div class="cx-pagination">
                     <cx-pagination
                       [pagination]="model.pagination"
-                      (viewPageEvent)="viewPage($event)"
+                      queryParam="currentPage"
+                      [defaultPage]="0"
                     ></cx-pagination>
                   </div>
                 </div>

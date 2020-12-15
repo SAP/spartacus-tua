@@ -8,15 +8,15 @@
 
         <!-- Update consumption link -->
         <ng-container
-          *ngIf="productSpecificationProductService.isProductSpecificationForAverageCost(product?.productSpecification?.id)">
-          <ng-container *ngIf="priceService.getUsageUnits(product).length <= 1; else warningMessage">
+          *ngIf="productService.isProductSpecificationForAverageCost(product?.productSpecification?.id)">
+          <ng-container *ngIf="priceService.getUsageUnits(product).length <= 1; else costEstimationWarningMessage">
             <ng-container *ngIf="url$ | async as url">
               <ng-container *ngIf="getConsumptionComponent(page, product) as consumptionComponent">
                 <div class="col-12 col-lg-7">
-                  <div class="row font-small d-flex justify-content-center">
+                  <div class="row font-small text-center d-flex justify-content-center">
                     {{ 'productList.averageCostBaseOnConsumption' | cxTranslate}}:
                   </div>
-                  <div #consumptionValue class="row font-small d-flex justify-content-center"
+                  <div #consumptionValue class="row font-small cx-bold d-flex justify-content-center"
                        *ngFor="let formattedConsumption of getFormattedConsumptionList(consumptionComponent)">
                     {{formattedConsumption}}
                   </div>
@@ -45,48 +45,24 @@
               </ng-container>
             </ng-container>
           </ng-container>
-          <ng-template #warningMessage>
+          <ng-template #costEstimationWarningMessage>
             <!-- Usage unit warning message -->
-            <div class="cx-product-warning font-small">
-              {{ 'productDetails.warningMessage' | cxTranslate }}
-            </div><br/>
+            <div class="text-warning cx-size-small">
+              {{ 'productDetails.costEstimationWarningMessage' | cxTranslate }}
+            </div>
+            <br/>
           </ng-template>
         </ng-container>
 
         <ng-container
-          *ngIf="!productSpecificationProductService.isProductSpecificationForAverageCost(product?.productSpecification?.id) ||
-            priceService.getUsageUnits(product).length > 1">
-          <div *ngIf="priceService.getMinimumPrice(product) as minimumPrice">
-            <div *ngIf="priceService.getAllPriceList(minimumPrice) as priceList">
-
-              <!-- Pay now price -->
-              <div class="col-12 col-lg-7">
-                <div *ngIf="priceService.getPayNowPrices(priceList) as payNowPriceList">
-                  <cx-one-time-charge
-                    [isMainAreaDisplay]="true"
-                    [priceList]="payNowPriceList && payNowPriceList.length > 0 ? payNowPriceList : [minimumPrice]">
-                  </cx-one-time-charge>
-                </div>
-              </div>
-
-              <br/>
-
-              <!-- Recurring prices -->
-              <div class="col-12">
-                <div *ngIf="priceService.getRecurringPrices(priceList) as recurringPriceList">
-                  <div *ngIf="priceService.getContractTerm(minimumPrice) as contractTerm">
-                    <cx-recurring-charge
-                      [recurringChargeList]="recurringPriceList"
-                      [contractTerm]="contractTerm"
-                      [isMainAreaDisplay]="true">
-                    </cx-recurring-charge>
-                  </div>
-                </div>
-              </div>
-            </div>
+          *ngIf="!productService.isProductSpecificationForAverageCost(product?.productSpecification?.id) ||
+              priceService.getUsageUnits(product).length > 1">
+          <div *ngIf="this.priceService.getHighestPriorityPriceForSPO(product) as highestPriorityPrice">
+            <cx-price-display [price]="highestPriorityPrice"></cx-price-display>
           </div>
         </ng-container>
       </ng-template>
+
 
       <ng-template
         [cxOutlet]="outlets.SUMMARY"
@@ -94,6 +70,14 @@
       >
         <p [innerHTML]="product?.summary" class="summary"></p>
       </ng-template>
+      <!-- @TODO: Temp. Comment out share link while not in use by CMS -->
+      <!-- <ng-container *cxOutlet="outlets.SHARE">
+              <div>
+                <a href="#" class="share btn-link">
+                  {{ 'productSummary.share' | cxTranslate }}
+                </a>
+              </div>
+            </ng-container> -->
     </ng-container>
   </ng-container>
 </ng-container>

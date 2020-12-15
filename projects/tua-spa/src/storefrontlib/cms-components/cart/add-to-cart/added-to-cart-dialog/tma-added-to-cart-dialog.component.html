@@ -6,7 +6,8 @@
         {{
           (increment
             ? 'addToCart.itemsIncrementedInYourCart'
-            : 'addToCart.itemsAddedToYourCart') | cxTranslate
+            : 'addToCart.itemsAddedToYourCart'
+          ) | cxTranslate
         }}
       </div>
       <button
@@ -26,17 +27,15 @@
         <div class="cx-dialog-item col-sm-12 col-md-6">
           <cx-cart-item
             [item]="entry"
-            [compact]="true"
-            [isReadOnly]="false"
             [isRemovable]="true"
-            [displayPrices]="false"
-            [parent]="form.controls[entry.product.code]"
-            [cartIsLoading]="form.dirty"
+            [compact]="true"
+            [isPremiseDetailsReadOnly]="true"
+            [quantityControl]="getQuantityControl() | async"
             [promotionLocation]="promotionLocation"
-            (remove)="removeEntry($event)"
-            (update)="updateEntry($event)"
             (view)="dismissModal('Product selected')"
-          ></cx-cart-item>
+            [displayPrices]="false"
+          >
+          </cx-cart-item>
         </div>
         <!-- Separator -->
         <div
@@ -51,21 +50,18 @@
                   | cxTranslate: { count: cart.deliveryItemsQuantity }
               }}
             </div>
-
-            <ng-container *ngIf="currency$ | async as currency">
-              <div>{{ 'common.currencies.currency' | cxTranslate : {context: currency} }}{{ cartPriceService.computeSubTotalCartPrice(cart) }}</div>
-            </ng-container>
+            <div>
+              {{ cart.subTotal?.formattedValue }}
+            </div>
           </div>
 
           <!-- Promotions -->
-          <ng-container *cxFeatureLevel="'1.5'">
-            <div
-              class="cx-dialog-promotions"
-              *ngIf="orderPromotions$ | async as orderPromotions"
-            >
-              <cx-promotions [promotions]="orderPromotions"></cx-promotions>
-            </div>
-          </ng-container>
+          <div
+            class="cx-dialog-promotions"
+            *ngIf="orderPromotions$ | async as orderPromotions"
+          >
+            <cx-promotions [promotions]="orderPromotions"></cx-promotions>
+          </div>
 
           <!-- Actions -->
           <div class="cx-dialog-buttons">
@@ -85,6 +81,9 @@
               >{{ 'addToCart.proceedToCheckout' | cxTranslate }}</a
             >
           </div>
+        </div>
+        <div class="cx-dialog-item col-sm-12 col-md-6" *ngIf="entryHaveInstallationDetails(entry) && !hasPremise">
+          <cx-appointment-details class="w-100" [groupItems]="appointmentEntries"></cx-appointment-details>
         </div>
       </div>
     </div>
@@ -109,7 +108,9 @@
     <!-- Modal Body -->
     <div class="cx-dialog-body modal-body">
       <div class="cx-dialog-row">
-        <div class="col-sm-12"><cx-spinner></cx-spinner></div>
+        <div class="col-sm-12">
+          <cx-spinner></cx-spinner>
+        </div>
       </div>
     </div>
   </ng-template>

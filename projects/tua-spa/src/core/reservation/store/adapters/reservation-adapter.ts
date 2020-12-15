@@ -8,8 +8,8 @@ export abstract class ReservationAdapter {
    *
    * @param reservation
    *          Reservation to be create
-   * @returns Observable<Reservation>
-   *          Created reservation
+   * @return
+   *       Created reservation
    */
   abstract createReservation(reservation: Reservation): Observable<Reservation>;
 
@@ -20,8 +20,8 @@ export abstract class ReservationAdapter {
    *              Reservation to be update
    * @param reservationId
    *               Id of the reservation
-   * @returns Observable<Reservation>
-   *               Updated reservation
+   * @return
+   *        Updated reservation
    */
   abstract updateReservation(
     updateReservation: Reservation,
@@ -35,8 +35,8 @@ export abstract class ReservationAdapter {
    *        user id
    * @param  cartEntryResourceValues
    *              cart entry resource value
-   * @returns Reservation[]
-   *         List of Reservations
+   * @return
+   *       List of Reservations
    */
   abstract getReservationsByUserId(
     userId: string,

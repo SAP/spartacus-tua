@@ -5,6 +5,8 @@ import { NgModule } from '@angular/core';
 import { AppointmentAdapter } from '../../../appointment/store';
 import { TmfAppointmentAdapter } from './tmf-appointment.adapter';
 import { defaultTmfAppointmentAdapterConfig } from './default-tmf-appointment-adapter-config';
+import { APPOINTMENT_NORMALIZER } from '../../../appointment/connectors';
+import { TmfAppointmentNormalizer } from './converters';
 
 @NgModule({
   imports: [
@@ -16,6 +18,11 @@ import { defaultTmfAppointmentAdapterConfig } from './default-tmf-appointment-ad
     {
       provide: AppointmentAdapter,
       useClass: TmfAppointmentAdapter,
+    },
+    {
+      provide: APPOINTMENT_NORMALIZER,
+      useExisting: TmfAppointmentNormalizer,
+      multi: true,
     },
   ],
 })

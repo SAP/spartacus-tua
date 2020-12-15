@@ -1,8 +1,7 @@
-import { TmaProcessTypeEnum } from './../../model/tma-product.model';
+import { TmaProcessTypeEnum, TmaChecklistAction } from '../../model';
 import { Injectable } from '@angular/core';
-import { TmaChecklistActionAdapter } from '../store/adapters/tma-checklist-action-adapter';
+import { TmaChecklistActionAdapter } from '../store/adapters';
 import { Observable } from 'rxjs';
-import { TmaChecklistAction } from '../../model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +9,14 @@ import { TmaChecklistAction } from '../../model';
 export class TmaChecklistActionConnector {
   constructor(protected adapter: TmaChecklistActionAdapter) {}
 
+  /**
+   * Retrives the checklist actions for single product offering
+   *
+   * @param baseSiteId The identifier of the base site
+   * @param productCode The identifier of the product offering
+   * @param  processType The identifier of the processType
+   * @return The TmaChecklistAction as {@link Observable}
+   */
   public getChecklistActions(
     baseSiteId: string,
     productCode: string,
@@ -18,6 +25,26 @@ export class TmaChecklistActionConnector {
     return this.adapter.getChecklistActions(
       baseSiteId,
       productCode,
+      processType
+    );
+  }
+
+  /**
+   * Retrives the checklist actions for multiple product offerings
+   *
+   * @param baseSiteId The identifier of the base site
+   * @param productOfferingCodes The list of product offering code
+   * @param processType The identifier of the processType
+   * @return The checklist actions as {@link Observable} of {@link TmaChecklistAction}
+   */
+  public getChecklistActionsFor(
+    baseSiteId: string,
+    productOfferingCodes: string[],
+    processType?: TmaProcessTypeEnum
+  ): Observable<TmaChecklistAction[]> {
+    return this.adapter.getChecklistActionsFor(
+      baseSiteId,
+      productOfferingCodes,
       processType
     );
   }

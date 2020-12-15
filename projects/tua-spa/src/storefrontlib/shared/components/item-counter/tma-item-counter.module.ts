@@ -1,4 +1,4 @@
-import { ItemCounterModule, OnlyNumberDirectiveModule } from '@spartacus/storefront';
+import { ItemCounterModule } from '@spartacus/storefront';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -9,7 +9,6 @@ import { TmaItemCounterComponent } from './tma-item-counter.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    OnlyNumberDirectiveModule
   ],
   declarations: [TmaItemCounterComponent],
   exports: [TmaItemCounterComponent]

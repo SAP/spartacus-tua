@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   Address,
+  AuthService,
   GlobalMessageService,
   GlobalMessageType,
   OrderEntry,
@@ -56,8 +57,8 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   validationResult$: Observable<TmaTechnicalResources>;
   activeUser$: Observable<User>;
+  isUserLoggedIn$: Observable<boolean>;
   product$: Observable<TmaProduct>;
-  addresses$: Observable<Address[]>;
 
   protected modalRef: ModalRef;
   protected destroyed$ = new Subject();
@@ -66,6 +67,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
   constructor(
     protected premiseDetailService: TmaPremiseDetailService,
     protected userService: UserService,
+    protected authService: AuthService,
     protected globalMessageService: GlobalMessageService,
     protected translationService: TranslationService,
     protected userAddressService: TmaUserAddressService,
@@ -76,14 +78,14 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
     protected windowRef: WindowRef,
     protected routingService: RoutingService,
     protected location: Location
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.activeUser$ = this.userService.get();
+    this.isUserLoggedIn$ = this.authService.isUserLoggedIn();
     this.product$ = this.productService.get(this.productCode);
-    this.premiseDetailsStep = "premiseCheckButton";
-    this.userAddressService.loadAddresses();
-    this.addresses$ = this.userAddressService.getAddresses();
+    this.premiseDetailsStep = 'premiseCheckButton';
     this.isMoveIn = true;
 
     this.cartEntry$ = this.cartService.getEntry(this.productCode);
@@ -96,14 +98,14 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Validates the provided premise details.
-   * 
+   *
    * @param premiseDetails - The premise details
    * @param product - The product offering
    */
   validatePremiseDetails(premiseDetails: TmaPremiseDetail, product: TmaProduct): void {
     this.premiseDetails = premiseDetails;
     this.premiseDetails.meter.type = this.getMeterType(product);
-    this.premiseDetailsStep = "premiseValidationResult";
+    this.premiseDetailsStep = 'premiseValidationResult';
     this.validationResult$ = this.premiseDetailService.validatePremiseDetails(premiseDetails);
   }
 
@@ -119,7 +121,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Updates the contract start date
-   * 
+   *
    * @param contractStartDate - the contract start date
    */
   updateContractStartDate(contractStartDate: string): void {
@@ -128,7 +130,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Updating the energy supplier
-   * 
+   *
    * @param supplier - edited supplier
    */
   energySupplierEdited(supplier: string): void {
@@ -141,8 +143,28 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Loads and returns the user addresses.
+   *
+   * @return List of {@link Address} as a {@link Observable}
+   */
+  getUserAddresses(): Observable<Address[]> {
+    this.userAddressService.loadAddresses();
+    return this.userAddressService.getAddresses();
+  }
+
+  /**
+   * Adds the selected product to cart for an anonymous user.
+   */
+  anonymousAddToCart(): void {
+    this.translationService.translate('productDetails.loginNeeded').pipe(
+      tap((translatedMessage: string) => this.globalMessageService.add(translatedMessage, GlobalMessageType.MSG_TYPE_ERROR)),
+      takeUntil(this.destroyed$)
+    ).subscribe();
+  }
+
+  /**
    * Adding the selected product to cart
-   * 
+   *
    * @param activeUser - logged in user
    * @param addresses - premise addresses
    */
@@ -174,8 +196,8 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
         addresses.forEach((a: Address) => addressesIds.push(a.id));
         const addedAddressId: string = addressesAllIds.filter(item => addressesIds.indexOf(item) < 0)[0];
         if (addedAddressId) {
-          this.openModal(addedAddressId);
           this.cartService.addCartEntry(this.createCartEntry(addedAddressId));
+          this.openModal(addedAddressId);
         }
       });
   }
@@ -198,7 +220,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
    * Shows the premise details form on the page
    */
   onChangePremiseDetailsStep(): void {
-    this.premiseDetailsStep = "premiseDetailsStep";
+    this.premiseDetailsStep = 'premiseDetailsStep';
   }
 
   /**
@@ -214,7 +236,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Verifies that the premise validation is successful
-   * 
+   *
    * @param validationResult - the premise validation result
    */
   verifyPremiseResultValidity(validationResult: TmaTechnicalResources): boolean {
@@ -223,7 +245,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Creates a cart entry
-   * 
+   *
    * @param addressId - the address id
    * @returns The created cart entry {@link TmaOrderEntry}
    */
@@ -282,7 +304,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the related party
-   * 
+   *
    * @returns A {@link TmaRelatedParty}
    */
   protected getServiceProvider(): TmaRelatedParty {
@@ -295,7 +317,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the type of the meter for a given product
-   * 
+   *
    * @param product - the product
    * @returns The meter type as a {@link string}
    */
@@ -305,7 +327,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Opens the popup modal
-   * 
+   *
    * @param addedAddressId - entered address id
    */
   protected openModal(addedAddressId: string): void {
@@ -314,21 +336,22 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$),
         first((addr: OrderEntry[]) => addr !== null))
       .subscribe((addr: OrderEntry[]) => {
-        if (addr) {
-          let modalInstance: any;
-          this.modalRef = this.modalService.open(TmaAddedToCartDialogComponent, {
-            centered: true,
-            size: 'lg'
-          });
+          if (addr) {
+            let modalInstance: any;
+            this.modalRef = this.modalService.open(TmaAddedToCartDialogComponent, {
+              centered: true,
+              size: 'lg'
+            });
 
-          modalInstance = this.modalRef.componentInstance;
-          modalInstance.entry$ = this.cartEntry$;
-          modalInstance.cart$ = this.cartService.getActive();
-          modalInstance.loaded$ = this.cartService.getLoaded();
-          modalInstance.quantity = 1;
-          modalInstance.increment = false;
+            modalInstance = this.modalRef.componentInstance;
+            modalInstance.entry$ = this.cartEntry$;
+            modalInstance.cart$ = this.cartService.getActive();
+            modalInstance.loaded$ = this.cartService.isStable();
+            modalInstance.quantity = 1;
+            modalInstance.increment = false;
+            modalInstance.hasPremise = true;
+          }
         }
-      }
       );
   }
 }

@@ -1,5 +1,17 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import {
   TmaCart,
   TmaOrderEntry,
@@ -9,22 +21,48 @@ import {
   TmaSelectionAction,
   TmaTmfActionType,
   TmaTmfCartItem,
-  TmaTmfShoppingCart
+  TmaTmfShoppingCart,
+  TmaChecklistAction,
 } from '../../../../../core/model';
 import { Observable, Subject, Subscriber } from 'rxjs';
 import {
   TmaGuidedSellingCurrentSelectionsService,
-  TmaGuidedSellingStepsService
+  TmaGuidedSellingStepsService,
 } from '../../../../../core/guided-selling/facade';
 import { TmaPriceService } from '../../../../../core/product/facade';
-import { BaseSiteService, OCC_USER_ID_ANONYMOUS, ProductService, User, UserService } from '@spartacus/core';
-import { first, takeUntil } from 'rxjs/operators';
-import { TmaTmfCartService } from '../../../../../core/tmf-cart/facade';
+import {
+  BaseSiteService,
+  OCC_USER_ID_ANONYMOUS,
+  ProductService,
+  User,
+  UserService,
+  TranslationService,
+  GlobalMessageService,
+  GlobalMessageType,
+} from '@spartacus/core';
+import {
+  first,
+  takeUntil,
+  take,
+  filter,
+  distinctUntilChanged,
+  map,
+  tap,
+} from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { ModalRef, ModalService } from '@spartacus/storefront';
 import { TmaGuidedSellingAddedToCartDialogComponent } from '../guided-selling-added-to-cart-dialog/tma-guided-selling-added-to-cart-dialog.component';
-import { LOCAL_STORAGE, TmaConstantResourceModel } from '../../../../../core/util/constants';
-import { TmaActiveCartService } from '../../../../../core/cart/facade';
+import {
+  LOCAL_STORAGE,
+  TmaConstantResourceModel,
+} from '../../../../../core/util/constants';
+import { JourneyChecklistStepComponent } from '../../../journey-checklist';
+import {
+  JourneyChecklistConfig,
+  TmaChecklistActionService,
+  TmaTmfCartService,
+  TmaActiveCartService
+} from '../../../../../core';
 
 const { CURRENT_SELECTION } = LOCAL_STORAGE.GUIDED_SELLING;
 
@@ -34,16 +72,15 @@ const { CURRENT_SELECTION } = LOCAL_STORAGE.GUIDED_SELLING;
   styleUrls: ['./tma-guided-selling-current-selection.component.scss'],
   animations: [
     trigger('slideInOut', [
-      state('false', style({ height: '0px', 'overflow': 'hidden' })),
+      state('false', style({ height: '0px', overflow: 'hidden' })),
       state('true', style({ height: '*' })),
       transition('1 => 0', animate('500ms ease-in')),
-      transition('0 => 1', animate('500ms ease-out'))
-    ])
-  ]
+      transition('0 => 1', animate('500ms ease-out')),
+    ]),
+  ],
 })
-
-export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDestroy {
-
+export class TmaGuidedSellingCurrentSelectionComponent
+  implements OnInit, OnDestroy {
   @ViewChild('addToCartButton', { static: false })
   addToCartButton: ElementRef;
 
@@ -52,6 +89,8 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
   parentBpo: TmaProduct;
 
   currentCart$: Observable<TmaCart>;
+  priceValue: TmaProductOfferingPrice[];
+  discount: number;
 
   protected isCurrentSelectionExpended: boolean;
   protected bpoCode: string;
@@ -71,7 +110,11 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
     protected priceService: TmaPriceService,
     protected tmaTmfCartService: TmaTmfCartService,
     protected productService: ProductService,
-    protected modalService: ModalService
+    protected modalService: ModalService,
+    protected tmaChecklistActionService: TmaChecklistActionService,
+    protected config?: JourneyChecklistConfig,
+    protected translationService?: TranslationService,
+    protected globalMessageService?: GlobalMessageService
   ) {
     this.currentSelections = this.guidedSellingCurrentSelectionsService.getCurrentSelections();
     this.currentSelectionTotal = CURRENT_SELECTION.DASH;
@@ -83,35 +126,47 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
 
     this.currentCart$ = this.activeCartService.getActive();
 
-    this.productService.get(this.bpoCode)
+    this.productService
+      .get(this.bpoCode)
       .pipe(
         first((product: TmaProduct) => product != null),
-        takeUntil(this.destroyed$))
-      .subscribe((product: TmaProduct) => this.parentBpo = product);
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((product: TmaProduct) => (this.parentBpo = product));
 
-    this.userService.get()
+    this.userService
+      .get()
       .pipe(
         first((user: User) => user != null),
-        takeUntil(this.destroyed$))
-      .subscribe((user: User) => this.currentUser = user);
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((user: User) => (this.currentUser = user));
 
-    this.baseSiteService.getActive()
+    this.baseSiteService
+      .getActive()
       .pipe(
         first((baseSiteId: string) => baseSiteId != null),
-        takeUntil(this.destroyed$))
-      .subscribe((baseSiteId: string) => this.currentBaseSiteId = baseSiteId);
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
     this.guidedSellingCurrentSelectionsService.selection$
       .pipe(takeUntil(this.destroyed$))
-      .subscribe(_ => {
+      .subscribe((_) => {
         this.currentSelections = this.guidedSellingCurrentSelectionsService.getCurrentSelections();
-        this.currentSelectionTotal = this.calculateTotal(this.currentSelections);
+        this.currentSelectionTotal = this.calculateTotal(
+          this.currentSelections
+        );
       });
   }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
+  }
+
+  availableDiscount(discounts: number): void {
+    this.discount = discounts;
   }
 
   /**
@@ -143,7 +198,10 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
    * @param product - The product which will be removed
    */
   removeProductFromCurrentSelection(product: TmaProduct): void {
-    this.guidedSellingCurrentSelectionsService.changeSelection(product, TmaSelectionAction.REMOVE);
+    this.guidedSellingCurrentSelectionsService.changeSelection(
+      product,
+      TmaSelectionAction.REMOVE
+    );
   }
 
   /**
@@ -152,17 +210,21 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
    * @param price - The product's list of prices
    * @return String containing the formatted price
    */
-  getPayNowPrice(price: TmaProductOfferingPrice[]): string {
+  getPayNowPrice(
+    price: TmaProductOfferingPrice[]
+  ): TmaProductOfferingPrice[] | string {
     if (!price || price.length === 0) {
       return CURRENT_SELECTION.DASH;
     }
-
-    const oneTimePrices: TmaProductOfferingPrice[] = this.priceService.getOneTimeCharges(price[0]);
+    this.priceValue = this.priceService.getAllPriceList(price[0]);
+    const oneTimePrices: TmaProductOfferingPrice[] = this.priceService.getPayNowPrices(
+      this.priceValue
+    );
     if (!oneTimePrices || oneTimePrices.length === 0) {
       return CURRENT_SELECTION.DASH;
     }
 
-    return this.priceService.getFormattedPrice(this.priceService.getSumOfPrices(oneTimePrices));
+    return oneTimePrices;
   }
 
   /**
@@ -171,17 +233,26 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
    * @param price - The product's list of prices
    * @return String containing the formatted price
    */
-  getRecurringPrice(price: TmaProductOfferingPrice[]): string {
+  getRecurringPrice(
+    price: TmaProductOfferingPrice[]
+  ): TmaProductOfferingPrice[] | string {
     if (!price || price.length === 0 || !price[0].bundledPop) {
       return CURRENT_SELECTION.DASH;
     }
 
-    const recurringPrices: TmaProductOfferingPrice[] = this.priceService.getRecurringPrices(price[0].bundledPop);
-    if (!recurringPrices || recurringPrices.length === 0 || !recurringPrices[0].price) {
+    this.priceValue = this.priceService.getAllPriceList(price[0]);
+    const recurringPrices: TmaProductOfferingPrice[] = this.priceService.getRecurringPrices(
+      this.priceValue
+    );
+    if (
+      !recurringPrices ||
+      recurringPrices.length === 0 ||
+      !recurringPrices[0].price
+    ) {
       return CURRENT_SELECTION.DASH;
     }
 
-    return this.priceService.getFormattedPrice(recurringPrices[0].price);
+    return recurringPrices;
   }
 
   /**
@@ -190,34 +261,41 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
    * @param currentCart - The cart in which the BPO will be added
    */
   addBpoToCart(currentCart: TmaCart): void {
-    const currentUserId: string = this.currentUser && this.currentUser.uid ? this.currentUser.uid : OCC_USER_ID_ANONYMOUS;
-    const shoppingCart: TmaTmfShoppingCart = {
-      id: currentCart.code,
-      guid: currentUserId === OCC_USER_ID_ANONYMOUS ? currentCart.guid : null,
-      baseSiteId: this.currentBaseSiteId,
-      cartItem: [
-        {
-          processType: {
-            id: TmaProcessTypeEnum.ACQUISITION
-          },
-          productOffering: {
-            id: this.bpoCode
-          },
-          cartItem: this.createCartItemList()
-        }
-      ],
-      relatedParty: [
-        {
-          id: currentUserId
-        }
-      ]
-    };
+    const productOfferingIds: string[] = [];
+    this.currentSelections.forEach((product: TmaProduct) => {
+      productOfferingIds.push(product.code);
+    });
 
-    this.tmaTmfCartService.updateCart(shoppingCart);
-
-    this.addToCartButton.nativeElement.disabled = true;
-    this.prepareDataForModal(currentCart);
-    this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
+    this.tmaChecklistActionService
+      .getChecklistActionsFor(
+        this.currentBaseSiteId,
+        productOfferingIds,
+        TmaProcessTypeEnum.ACQUISITION
+      )
+      .pipe(
+        take(2),
+        filter((checklistResult: TmaChecklistAction[]) => !!checklistResult),
+        distinctUntilChanged(),
+        takeUntil(this.destroyed$),
+        map((checklistResult: TmaChecklistAction[]) => {
+          if (checklistResult.length === 0) {
+            this.addBpoCart(currentCart);
+          } else {
+            const journeyCheckLists: TmaChecklistAction[] = checklistResult.filter(
+              (checklist: TmaChecklistAction) =>
+                this.config.journeyChecklist.journeyChecklistSteps.includes(
+                  checklist.actionType
+                )
+            );
+            if (Object.keys(journeyCheckLists).length === 0) {
+              this.addBpoCart(currentCart);
+            } else {
+              this.addToCartWithChecklist(journeyCheckLists);
+            }
+          }
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -228,11 +306,35 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
     this.guidedSellingStepsService.setFirstStepAsActiveStep();
   }
 
+  protected openStepperModal(checklistActions: TmaChecklistAction[]): void {
+    let modalInstance: any;
+    this.modalRef = this.modalService.open(JourneyChecklistStepComponent, {
+      centered: true,
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    });
+
+    modalInstance = this.modalRef.componentInstance;
+    modalInstance.checklistActions = checklistActions;
+    modalInstance.bpoCode = this.bpoCode;
+    modalInstance.quantity = 1;
+    modalInstance.productOfferingCodes = this.currentSelections.map(
+      (currentSelection) => currentSelection.code
+    );
+  }
+
   protected calculateTotal(currentSelections: TmaProduct[]): string {
     let oneTimePrices: TmaProductOfferingPrice[] = [];
     currentSelections.forEach((product: TmaProduct) => {
-      if (product && product.productOfferingPrice && product.productOfferingPrice.length !== 0) {
-        oneTimePrices = oneTimePrices.concat(this.priceService.getOneTimeCharges(product.productOfferingPrice[0]));
+      if (
+        product &&
+        product.productOfferingPrice &&
+        product.productOfferingPrice.length !== 0
+      ) {
+        oneTimePrices = oneTimePrices.concat(
+          this.priceService.getOneTimeCharges(product.productOfferingPrice[0])
+        );
       }
     });
 
@@ -240,51 +342,46 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
       return CURRENT_SELECTION.DASH;
     }
 
-    return this.priceService.getFormattedPrice(this.priceService.getSumOfPrices(oneTimePrices));
+    return this.priceService.getFormattedPrice(
+      this.priceService.getSumOfPrices(oneTimePrices)
+    );
   }
 
   protected createCartItemList(): TmaTmfCartItem[] {
     const cartItemList: TmaTmfCartItem[] = [];
     this.currentSelections.forEach((product: TmaProduct) =>
-      cartItemList.push(
-        {
-          action: TmaTmfActionType.ADD,
-          productOffering: {
-            id: product.code
-          },
-          quantity: 1
-        }
-      )
+      cartItemList.push({
+        action: TmaTmfActionType.ADD,
+        productOffering: {
+          id: product.code,
+        },
+        quantity: 1,
+      })
     );
 
     return cartItemList;
   }
 
-  protected getNewlyAddedEntries(oldCart: TmaCart, newCart: TmaCart): TmaOrderEntry[] {
-    const entriesWithLastAdded: number[] = [];
-    const entriesWithoutLastAdded: number[] = [];
-    newCart.entries.forEach((entry: TmaOrderEntry) => entriesWithLastAdded.push(entry.entryNumber));
-
-    if (oldCart.entries) {
-      oldCart.entries.forEach((entry: TmaOrderEntry) => entriesWithoutLastAdded.push(entry.entryNumber));
-    }
-
-    const newlyAddedEntryIds: number[] = entriesWithLastAdded.filter((entryNumber: number) => entriesWithoutLastAdded.indexOf(entryNumber) < 0);
-
-    const newlyAddedEntries: TmaOrderEntry[] = [];
-    newlyAddedEntryIds.forEach((entryNumber: number) => newlyAddedEntries.push(newCart.entries.find((entry: TmaOrderEntry) => entry.entryNumber === entryNumber)));
-
-    return newlyAddedEntries;
-  }
-
   protected prepareDataForModal(currentCart: TmaCart): void {
-    this.activeCartService.getActive()
+    this.activeCartService
+      .getActive()
       .pipe(
-        first((cart: TmaCart) => cart && cart.entries && cart.entries.length > (currentCart && currentCart.entries ?
-          currentCart.entries.length : 0)),
-        takeUntil(this.destroyed$))
+        first(
+          (cart: TmaCart) =>
+            cart &&
+            cart.entries &&
+            cart.entries.length >
+              (currentCart && currentCart.entries
+                ? currentCart.entries.length
+                : 0)
+        ),
+        takeUntil(this.destroyed$)
+      )
       .subscribe((newCart: TmaCart) => {
-        const newlyAddedEntries: TmaOrderEntry[] = this.getNewlyAddedEntries(currentCart, newCart);
+        const newlyAddedEntries: TmaOrderEntry[] = this.tmaTmfCartService.getNewlyAddedEntries(
+          currentCart,
+          newCart
+        );
 
         if (newlyAddedEntries) {
           this.openModal(newlyAddedEntries);
@@ -294,21 +391,80 @@ export class TmaGuidedSellingCurrentSelectionComponent implements OnInit, OnDest
 
   protected openModal(entries: TmaOrderEntry[]): void {
     let modalInstance: any;
-    this.modalRef = this.modalService.open(TmaGuidedSellingAddedToCartDialogComponent, {
-      centered: true,
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false
-    });
+    this.modalRef = this.modalService.open(
+      TmaGuidedSellingAddedToCartDialogComponent,
+      {
+        centered: true,
+        size: 'lg',
+        backdrop: 'static',
+        keyboard: false,
+      }
+    );
 
     modalInstance = this.modalRef.componentInstance;
-    modalInstance.entry$ = new Observable((subscriber: Subscriber<TmaOrderEntry>) => subscriber.next(entries[0]));
+    modalInstance.entry$ = new Observable(
+      (subscriber: Subscriber<TmaOrderEntry>) => subscriber.next(entries[0])
+    );
     modalInstance.entries = entries;
     modalInstance.parentBpo = this.parentBpo;
     modalInstance.cart$ = this.activeCartService.getActive();
-    modalInstance.loaded$ = this.activeCartService.getLoaded();
+    modalInstance.loaded$ = this.activeCartService.isStable();
     modalInstance.quantity = 1;
     modalInstance.increment = false;
+  }
+
+  protected addToCartWithChecklist(
+    journeyCheckLists: TmaChecklistAction[]
+  ): void {
+    if (this.currentUser && this.currentUser.uid) {
+      this.openStepperModal(journeyCheckLists);
+    } else {
+      this.translationService
+        .translate('productDetails.loginNeeded')
+        .pipe(
+          tap((translatedMessage: string) =>
+            this.globalMessageService.add(
+              translatedMessage,
+              GlobalMessageType.MSG_TYPE_ERROR
+            )
+          )
+        )
+        .subscribe()
+        .unsubscribe();
+    }
+  }
+
+  private addBpoCart(currentCart: TmaCart) {
+    const currentUserId: string =
+      this.currentUser && this.currentUser.uid
+        ? this.currentUser.uid
+        : OCC_USER_ID_ANONYMOUS;
+    const shoppingCart: TmaTmfShoppingCart = {
+      id: currentCart.code,
+      guid: currentUserId === OCC_USER_ID_ANONYMOUS ? currentCart.guid : null,
+      baseSiteId: this.currentBaseSiteId,
+      cartItem: [
+        {
+          processType: {
+            id: TmaProcessTypeEnum.ACQUISITION,
+          },
+          productOffering: {
+            id: this.bpoCode,
+          },
+          cartItem: this.createCartItemList(),
+        },
+      ],
+      relatedParty: [
+        {
+          id: currentUserId,
+        },
+      ],
+    };
+
+    this.tmaTmfCartService.updateCart(shoppingCart);
+    this.addToCartButton.nativeElement.disabled = true;
+    this.prepareDataForModal(currentCart);
+    this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
   }
 
   get constants(): TmaConstantResourceModel {

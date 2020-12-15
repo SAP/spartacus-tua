@@ -1,18 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, UrlSegment } from '@angular/router';
 import { CmsService, ContentSlotComponentData, Page } from '@spartacus/core';
-import {
-  ModalRef,
-  ModalService,
-  PageLayoutService,
-  ProductListComponent,
-  ProductListComponentService,
-  ViewConfig
-} from '@spartacus/storefront';
+import { ModalRef, ModalService, PageLayoutService, ProductListComponent, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
+import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionConfig, TmaConsumptionValue } from '../../../../../core';
 import { Observable, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
-import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionValue } from '../../../../../core/model';
 import { TmaConsumptionDialogComponent } from '../../../consumption';
 
 @Component({
@@ -36,12 +28,12 @@ export class TmaProductListComponent extends ProductListComponent implements OnI
 
   constructor(
     protected pageService: PageLayoutService,
-    protected productListService: ProductListComponentService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected activatedRoute: ActivatedRoute,
-    protected cmsService: CmsService,
-    protected viewConfig: ViewConfig,
-    protected modalService: ModalService
+    protected productListService: ProductListComponentService, 
+    protected viewConfig?: ViewConfig,
+    protected consumptionConfig?: TmaConsumptionConfig,
+    protected activatedRoute?: ActivatedRoute,
+    protected cmsService?: CmsService,
+    protected modalService?: ModalService
   ) {
     super(pageService, productListService, viewConfig);
   }

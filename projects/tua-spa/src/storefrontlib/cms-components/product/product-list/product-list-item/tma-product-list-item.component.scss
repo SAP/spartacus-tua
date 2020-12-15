@@ -1,5 +1,9 @@
 .cx-size-small {
-  font-size: var(--cx-font-size, 0.875rem);
+  font-size: var(--cx-font-size, 0.875rem) !important;
+}
+
+.cx-line-height-regular {
+  line-height: var(--cx-line-height, 1) !important;
 }
 
 .cx-size-medium {
@@ -12,10 +16,6 @@
 
 .cx-bold {
   font-weight: var(--cx-font-weight-bold);
-}
-
-.cx-product-warning {
-  color: var(--cx-color-warning);
 }
 
 .close {

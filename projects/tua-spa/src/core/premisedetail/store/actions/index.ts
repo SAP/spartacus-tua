@@ -1,3 +1,3 @@
-import * as TmaPremiseDetailActions from './tma-premise-details.actions';
+import * as TmaPremiseDetailActions from './tma-premise-detail.actions';
 
 export { TmaPremiseDetailActions };

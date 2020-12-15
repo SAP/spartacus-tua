@@ -29,10 +29,7 @@ export class LogicalResourceComponent implements OnInit, OnDestroy {
   item: TmaItem;
 
   @Input()
-  isReadOnly: boolean;
-
-  @Input()
-  isCartPage: boolean;
+  cartPage: boolean;
 
   reservationError$: Observable<boolean>;
   protected modalRef: ModalRef;
@@ -76,7 +73,7 @@ export class LogicalResourceComponent implements OnInit, OnDestroy {
   /**
    * This method is used to checks whether the logical resource type is MSISDN or not
    *
-   * @returns true if LogicalResourceType matches MSISDN
+   * @return true if LogicalResourceType matches MSISDN
    */
   public isResourceTypeMsisdn(
     logicalResourceType: LogicalResourceType

@@ -4,15 +4,17 @@
   </span>
 </ng-container>
 <ng-template #checkCancelledReservation>
-  <ng-container *ngIf="
+  <ng-container *ngIf="logicalResources && logicalResources.length > 0">
+    <ng-container *ngIf="
       logicalResourceReservationService.hasCancelledReservationForEntry(
         logicalResources[0].value
       ) | async;
       else displayLogicalResource
     ">
-    <span class="text-danger">
-      {{ 'msisdnReservationError.cancelledReservationError' | cxTranslate }}
-    </span>
+      <span class="text-danger">
+        {{ 'msisdnReservationError.cancelledReservationError' | cxTranslate }}
+      </span>
+    </ng-container>
   </ng-container>
 </ng-template>
 <ng-template #displayLogicalResource>
@@ -25,9 +27,9 @@
       <div class="col-12 cx-font-md px-0">
         {{ resource.value }}
         &nbsp;
-        <ng-container *ngIf="isCartPage">
+        <ng-container *ngIf="cartPage">
           <ng-container *ngIf="isResourceTypeMsisdn(resource.type)">
-            <span (click)="editMsisdn()" *ngIf="!isReadOnly" class="material-icons clickable cx-font-md">edit</span>
+            <span (click)="editMsisdn()" class="material-icons clickable cx-font-md">edit</span>
           </ng-container>
         </ng-container>
       </div>

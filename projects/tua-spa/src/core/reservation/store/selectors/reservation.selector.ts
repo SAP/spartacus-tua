@@ -58,8 +58,8 @@ export const hasReservationCancelled: MemoizedSelectorWithProps<StateWithReserva
   getReservationByLogicalResourceValue,
   (state: Reservation) => {
     return state
-      ? state.reservationState === ReservationStateType.CANCELLED ||
-      state.reservationState === ReservationStateType.REJECTED
+      ? state.reservationState.toUpperCase() === ReservationStateType.CANCELLED.toUpperCase()||
+      state.reservationState.toUpperCase() === ReservationStateType.REJECTED.toUpperCase()
       : false;
   }
 );
@@ -86,8 +86,8 @@ export const hasCancelledReservations: MemoizedSelector<StateWithReservation,
   boolean> = createSelector(getAllReservation, (state: Reservation[]) => {
   return !!state.find(
     (reservation: Reservation) =>
-      reservation.reservationState === ReservationStateType.CANCELLED ||
-      reservation.reservationState === ReservationStateType.REJECTED
+      reservation.reservationState.toUpperCase() === ReservationStateType.CANCELLED.toUpperCase() ||
+      reservation.reservationState.toUpperCase() === ReservationStateType.REJECTED.toUpperCase()
   );
 });
 

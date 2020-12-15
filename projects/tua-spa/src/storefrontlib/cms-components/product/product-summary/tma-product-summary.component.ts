@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } fro
 import { ActivatedRoute, UrlSegment } from '@angular/router';
 import { CmsService, ContentSlotComponentData, CurrencyService, Page } from '@spartacus/core';
 import { CurrentProductService, ModalRef, ModalService, ProductSummaryComponent } from '@spartacus/storefront';
+import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap, TmaConsumptionConfig } from '../../../../core';
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../../../core/config/billing-frequency/config';
-import { TmaConsumptionConfig } from '../../../../core/config/consumption/config';
 import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionValue, TmaProduct, TmaUsageUnit } from '../../../../core/model';
-import { TmaPriceService, TmaProductService } from '../../../../core';
+import { TmaPriceService, TmaProductService } from '../../../../core/product/facade';
 import { TmaConsumptionDialogComponent } from '../../consumption';
 
 @Component({
@@ -31,20 +30,29 @@ export class TmaProductSummaryComponent extends ProductSummaryComponent implemen
   url$: Observable<UrlSegment[]>;
   page$: Observable<Page>;
   currency$: Observable<string>;
+  discount: number;
 
   protected consumption: number;
   protected modalRef: ModalRef;
 
+  /**
+   * @deprecated since 2.1
+   */
+  constructor(
+    priceService: TmaPriceService,
+    currentProductService: CurrentProductService
+  );
+
   constructor(
     public priceService: TmaPriceService,
-    public productSpecificationProductService: TmaProductService,
     protected currentProductService: CurrentProductService,
-    protected activatedRoute: ActivatedRoute,
-    protected cmsService: CmsService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected modalService: ModalService,
-    protected currencyService: CurrencyService,
-    protected billingFrequencyConfig: TmaBillingFrequencyConfig
+    protected tmaProductService?: TmaProductService,
+    protected activatedRoute?: ActivatedRoute,
+    protected cmsService?: CmsService,
+    protected consumptionConfig?: TmaConsumptionConfig,
+    protected modalService?: ModalService,
+    protected currencyService?: CurrencyService,
+    protected billingFrequencyConfig?: TmaBillingFrequencyConfig
   ) {
     super(currentProductService);
   }
@@ -53,6 +61,10 @@ export class TmaProductSummaryComponent extends ProductSummaryComponent implemen
     this.url$ = this.activatedRoute.url;
     this.page$ = this.cmsService.getCurrentPage();
     this.currency$ = this.currencyService.getActive();
+  }
+
+  availableDiscount(discounts: number): void {
+    this.discount = discounts;
   }
 
   /**
@@ -277,11 +289,11 @@ export class TmaProductSummaryComponent extends ProductSummaryComponent implemen
     }
 
     const keyForConsumptionComponent = keyValueList.find((keyValue: string) => {
-      if (consumptionComponent.searchByConsumptionComponents[keyValue].productSpecification) {
-        return consumptionComponent.searchByConsumptionComponents[keyValue].productSpecification.id === product.productSpecification.id;
+        if (consumptionComponent.searchByConsumptionComponents[keyValue].productSpecification) {
+          return consumptionComponent.searchByConsumptionComponents[keyValue].productSpecification.id === product.productSpecification.id;
+        }
+        return null;
       }
-      return null;
-    }
     );
 
     if (keyForConsumptionComponent &&
@@ -292,5 +304,9 @@ export class TmaProductSummaryComponent extends ProductSummaryComponent implemen
     }
 
     return null;
+  }
+
+  get productService(): TmaProductService {
+    return this.tmaProductService;
   }
 }

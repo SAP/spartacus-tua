@@ -9,9 +9,8 @@ import {
   UserActions,
   UserAddressService
 } from '@spartacus/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import * as TmaUserAddressSelector from '../store/selectors/tma-user-address.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,7 @@ export class TmaUserAddressService extends UserAddressService {
 
   constructor(
     protected store: Store<StateWithUser | StateWithProcess<void>>,
-    protected authService?: AuthService
+    protected authService: AuthService
   ) {
     super(store, authService);
   }

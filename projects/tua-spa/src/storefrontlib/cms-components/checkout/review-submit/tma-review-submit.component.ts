@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-  CartService,
+  ActiveCartService,
   CheckoutDeliveryService,
   CheckoutPaymentService,
   TranslationService,
@@ -19,11 +19,11 @@ export class TmaReviewSubmitComponent extends ReviewSubmitComponent {
     protected checkoutDeliveryService: CheckoutDeliveryService,
     protected checkoutPaymentService: CheckoutPaymentService,
     protected userAddressService: UserAddressService,
-    protected cartService: CartService,
+    protected activeCartService: ActiveCartService,
     protected translation: TranslationService,
     protected checkoutConfigService: CheckoutConfigService,
     protected promotionService: PromotionService
   ) {
-    super(checkoutDeliveryService, checkoutPaymentService, userAddressService, cartService, translation, checkoutConfigService, promotionService);
+    super(checkoutDeliveryService, checkoutPaymentService, userAddressService, activeCartService, translation, checkoutConfigService, promotionService);
   }
 }

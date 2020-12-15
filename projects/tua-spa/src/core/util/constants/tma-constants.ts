@@ -23,5 +23,21 @@ export const LOCAL_STORAGE: TmaConstantResourceModel = {
     END_DATE_OF_TIMESLOTS: 3,
     CHECKLIST_ACTION_TYPE_APPOINTMENT: 'APPOINTMENT',
   },
-  JOURNEY_CHECKLIST: ['APPOINTMENT', 'MSISDN'],
+  USAGE_TYPE: {
+    EACH_RESPECTIVE_TIER: 'each_respective_tier',
+    HIGHEST_APPLICABLE_TIER: 'highest_applicable_tier'
+  },
+  DECIMAL: {
+    RANGE: 2,
+  },
+  INSTALLATION_ADDRESS: {
+    CHECKLIST_ACTION_TYPE_INSTALLATION_ADDRESS: 'INSTALLATION_ADDRESS',
+  },
+  PAGES: {
+    CART_PAGE: 'cartPage',
+    CHECKOUT_REVIEW_PAGE: 'CheckoutReviewOrder',
+  },
+  ORDER_PROCESSING: {
+    ORDER_PROCESSING_ERROR: 'OrderProcessingError'
+  }
 };

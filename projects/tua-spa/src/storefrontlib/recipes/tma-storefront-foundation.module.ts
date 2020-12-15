@@ -1,22 +1,26 @@
 import { NgModule } from '@angular/core';
+import { TmaAuthModule } from '../../core/auth';
+import { TmaRoutingModule } from '../cms-structure/routing';
 import {
-  AppointmentModule,
-  AvailabilityCheckModule,
-  JourneyChecklistConfigModule,
-  ReservationModule,
-  SearchTimeSlotModule,
-  TmaAuthModule,
   TmaBillingFrequencyConfigModule,
   TmaCartModule,
-  TmaChecklistActionModule,
   TmaConsumptionConfigModule,
   TmaPremiseDetailModule,
   TmaProductSpecificationAverageCostModule,
-  TmaProductSpecificationForViewDetailsConfigModule,
-  TmaTmfCartModule
+  TmaProductSpecificationForViewDetailsConfigModule
 } from '../../core';
+import { TmaTmfCartModule } from '../../core/tmf-cart';
 import { SubscriptionModule } from '../../core/subscription/subscription.module';
-import { TmaRoutingModule } from '../cms-structure/routing';
+import {
+  TmaChecklistActionModule,
+  AppointmentModule,
+  SearchTimeSlotModule,
+  JourneyChecklistConfigModule,
+  ReservationModule,
+  AvailabilityCheckModule
+} from '../../core';
+import { TmaGlobalMessageModule } from '../../core/global-message/tma-global-message.module';
+import { GeographicAddressModule } from '../../core/geographic-address';
 
 @NgModule({
   imports: [
@@ -27,17 +31,20 @@ import { TmaRoutingModule } from '../cms-structure/routing';
     TmaProductSpecificationForViewDetailsConfigModule.forRoot(),
     TmaPremiseDetailModule.forRoot(),
     TmaTmfCartModule.forRoot(),
-    TmaChecklistActionModule.forRoot(),
-    TmaCartModule.forRoot(),
     SubscriptionModule,
+    TmaChecklistActionModule.forRoot(),
     AppointmentModule.forRoot(),
     SearchTimeSlotModule.forRoot(),
-    TmaConsumptionConfigModule.forRoot(),
+    JourneyChecklistConfigModule.forRoot(),
+    GeographicAddressModule.forRoot(),
     ReservationModule.forRoot(),
     AvailabilityCheckModule.forRoot(),
-    JourneyChecklistConfigModule.forRoot(),
+    TmaGlobalMessageModule.forRoot(),
+    TmaConsumptionConfigModule.forRoot(),
+    TmaCartModule.forRoot()
   ],
   exports: [],
   providers: []
 })
-export class TmaStorefrontFoundationModule {}
+export class TmaStorefrontFoundationModule {
+}

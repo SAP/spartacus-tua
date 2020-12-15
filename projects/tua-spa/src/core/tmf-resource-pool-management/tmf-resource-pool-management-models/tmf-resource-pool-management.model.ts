@@ -70,7 +70,7 @@ export interface TmfResourceRef {
   href?: string;
   value: string;
   type?: string;
-  '@referredType': string;
+  referredType: string;
 }
 
 export interface TmfRelatedParty {

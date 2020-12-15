@@ -2,15 +2,14 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ConfigModule, I18nModule } from '@spartacus/core';
 import { OutletModule, ProductSummaryModule, SpinnerModule } from '@spartacus/storefront';
-import { TmaPriceModule } from '../price';
 import { TmaProductSummaryComponent } from './tma-product-summary.component';
+import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
 
 @NgModule({
   imports: [
     CommonModule,
     OutletModule,
     I18nModule,
-    TmaPriceModule,
     SpinnerModule,
     ConfigModule.withConfig({
       cmsComponents: {
@@ -18,7 +17,8 @@ import { TmaProductSummaryComponent } from './tma-product-summary.component';
           component: TmaProductSummaryComponent
         }
       }
-    })
+    }),
+    TmaPriceDisplayModule,
   ],
   declarations: [TmaProductSummaryComponent],
   entryComponents: [TmaProductSummaryComponent],

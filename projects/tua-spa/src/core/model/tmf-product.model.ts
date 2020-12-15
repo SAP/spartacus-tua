@@ -1,4 +1,5 @@
 import { TmaTmfRelatedParty } from './tma-tmf-related-party.model';
+import { RelatedPlaceRef } from './appointment.model';
 
 export interface TmfProduct {
   id?: string;
@@ -9,6 +10,7 @@ export interface TmfProduct {
   relatedParty?: TmaTmfRelatedParty[];
   productOrder?: TmfProductOrder[];
   productRelationship?: TmfProductRelationship[];
+  place?: RelatedPlaceRef[];
   characteristic?: TmfProductCharacteristic[];
 }
 

@@ -55,10 +55,10 @@
             (click)="saveConsumption()"
             [disabled]="consumptionForm.invalid"
             [routerLink]="
-           {
-              cxRoute: 'category',
-              params: {code: poConsumption.productSpecification.id}
-           } | cxUrl"
+             {
+                cxRoute: 'category',
+                params: {code: poConsumption.productSpecification.id}
+             } | cxUrl"
             [queryParams]="queryParams">
             {{ getButtonText() | cxTranslate }}
           </button>

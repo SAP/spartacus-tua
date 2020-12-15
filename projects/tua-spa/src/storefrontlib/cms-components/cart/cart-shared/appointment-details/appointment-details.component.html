@@ -1,0 +1,77 @@
+<div class="p-0 col-8">
+  <div class="px-0 w-100">
+    <!--  [ngClass]="{'col-6':cartPage,'col-12':!cartPage}" -->
+    <div
+      class="card w-100 px-0"
+      *ngIf="
+        appointmentEntries.length > 0 || installationAddressEntries.length > 0
+      "
+    >
+      <div class="card-body p-2">
+        <div
+          class="col-12 px-0"
+          *ngIf="appointmentEntries && appointmentEntries.length > 0"
+        >
+          <cx-appointment
+            class="w-100"
+            [cartPage]="cartPage"
+            [appointmentEntries]="appointmentEntries"
+            (appointment)="getAppointment($event)"
+          ></cx-appointment>
+        </div>
+
+        <div
+          class="col-12 px-0"
+          *ngIf="
+            installationAddressEntries && installationAddressEntries.length > 0
+          "
+        >
+          <cx-installation-address
+            class="w-100"
+            class="px-0 col-12"
+            [installationAddressEntries]="installationAddressEntries"
+          ></cx-installation-address>
+        </div>
+      </div>
+      <div class="card-footer p-2" *ngIf="cartPage">
+        <ng-container
+          *ngIf="
+            cartPage &&
+            (appointmentEntries.length > 0 ||
+              installationAddressEntries.length > 0)
+          "
+        >
+          <ng-container
+            *ngIf="
+              appointmentEntries.length > 0 &&
+                appointmentEntries[0].appointment.id &&
+                appointmentService.getAppointmentErrorForID(
+                  appointmentEntries[0].appointment.id
+                ) | async as errorMessage;
+              else displayAppointmentDetails
+            "
+          >
+          </ng-container>
+          <ng-template #displayAppointmentDetails>
+            <div class="row mx-auto d-flex justify-content-end">
+              <span
+                (click)="
+                  edit(
+                    installationAddressEntries.length > 0
+                      ? installationAddressEntries[0].subscribedProduct.place[0]
+                      : undefined,
+                    appointmentEntries.length > 0
+                      ? appointmentEntries[0].appointment
+                      : undefined
+                  )
+                "
+                class="material-icons clickable edit_icon"
+                >edit</span
+              >
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

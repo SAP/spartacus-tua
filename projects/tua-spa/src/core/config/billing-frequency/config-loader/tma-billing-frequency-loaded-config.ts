@@ -1,4 +1,4 @@
-import { TmaBillingFrequencyMap } from '../config';
+import { TmaBillingFrequencyMap } from '../../billing-frequency/config/tma-billing-frequency-config';
 
 export interface TmaBillingFrequencyLoadedConfig {
   /**

@@ -9,21 +9,23 @@ import {
 } from '@spartacus/core';
 import {
   AddToCartModule,
-  AutoFocusDirectiveModule,
   IconModule,
   ItemCounterModule,
   PromotionsModule,
   SpinnerModule
 } from '@spartacus/storefront';
-import { JourneyChecklistComponentModule } from '../../journey-checklist/journey-checklist.module';
-import { TmaPremiseDetailsModule } from '../../premise-details';
-import { TmaCartSharedModule } from '../cart-shared';
-import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { TmaAddToCartComponent } from './tma-add-to-cart.component';
+import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
+import { TmaCartSharedModule } from '../cart-shared';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { JourneyChecklistComponentModule } from '../../journey-checklist';
+import { TmaPremiseDetailsModule } from '../../premise-details';
+import { AppointmentDetailsComponentModule } from '../cart-shared/appointment-details';
 
 @NgModule({
   imports: [
     TmaCartSharedModule,
+    AppointmentDetailsComponentModule,
     CommonModule,
     RouterModule,
     SpinnerModule,
@@ -33,20 +35,21 @@ import { TmaAddToCartComponent } from './tma-add-to-cart.component';
     ConfigModule.withConfig({
       cmsComponents: {
         ProductAddToCartComponent: {
-          component: TmaAddToCartComponent,
-        },
-      },
+          component: TmaAddToCartComponent
+        }
+      }
     }),
     UrlModule,
     IconModule,
     I18nModule,
     ItemCounterModule,
-    AutoFocusDirectiveModule,
-    TmaPremiseDetailsModule,
-    JourneyChecklistComponentModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TmaPremiseDetailsModule
   ],
   declarations: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
   entryComponents: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
-  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
+  exports: [TmaAddToCartComponent, TmaAddedToCartDialogComponent]
 })
-export class TmaAddToCartModule extends AddToCartModule {}
+export class TmaAddToCartModule extends AddToCartModule {
+}

@@ -1,17 +1,21 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { BaseSiteService, GlobalMessageService, GlobalMessageType, TranslationService } from '@spartacus/core';
 import { AddToCartComponent, CurrentProductService, ModalService } from '@spartacus/storefront';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, first, last, map, take, takeUntil } from 'rxjs/operators';
-import { LOCAL_STORAGE, TmaProductService } from '../../../../core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { TmaActiveCartService, TmaCartService } from '../../../../core/cart/facade';
-import { TmaChecklistActionService } from '../../../../core/checklistaction/facade';
-import { JourneyChecklistConfig } from '../../../../core/journey-checklist-config/config';
-import { TmaCart, TmaChecklistAction, TmaChecklistActionType, TmaOrderEntry, TmaProcessTypeEnum, TmaProduct } from '../../../../core/model';
-import { JourneyChecklistStepComponent } from '../../journey-checklist/journey-checklist-step/journey-checklist-step.component';
 import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
-
-const { JOURNEY_CHECKLIST } = LOCAL_STORAGE;
+import { Observable, Subject } from 'rxjs';
+import {
+  TmaCart,
+  TmaChecklistAction,
+  TmaChecklistActionType,
+  TmaOrderEntry,
+  TmaProcessTypeEnum,
+  TmaProduct
+} from '../../../../core/model';
+import { distinctUntilChanged, filter, first, last, map, take, takeUntil, tap } from 'rxjs/operators';
+import { BaseSiteService, GlobalMessageService, GlobalMessageType, TranslationService, User, UserService } from '@spartacus/core';
+import { JourneyChecklistStepComponent } from '../../journey-checklist';
+import { TmaChecklistActionService } from '../../../../core/checklistaction/facade';
+import { JourneyChecklistConfig, TmaProductService } from '../../../../core';
 
 @Component({
   selector: 'cx-add-to-cart',
@@ -19,69 +23,49 @@ const { JOURNEY_CHECKLIST } = LOCAL_STORAGE;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TmaAddToCartComponent extends AddToCartComponent implements OnInit, OnDestroy {
-  currentCart$: Observable<TmaCart>;
+
   currentProduct$: Observable<TmaProduct>;
+  currentCart$: Observable<TmaCart>;
 
   productCode: string;
   processType?: TmaProcessTypeEnum;
 
-  protected activeBaseSiteId: string;
+  protected baseSiteId: string;
   protected destroyed$ = new Subject();
+  protected currentUser: User;
 
   constructor(
-    cartService: TmaCartService,
-    modalService: ModalService,
-    currentProductService: CurrentProductService,
-    changeDetectorRef: ChangeDetectorRef,
-    activeCartService: TmaActiveCartService,
-    checklistActionService: TmaChecklistActionService,
-    baseSiteService: BaseSiteService,
-    commodityProductService: TmaProductService,
-    globalMessageService: GlobalMessageService,
-    translationService: TranslationService
-  );
-
-  /**
-   *
-   * @deprecated Since 1.1.0.
-   */
-  constructor(
-    cartService: TmaCartService,
-    modalService: ModalService,
-    currentProductService: CurrentProductService,
-    changeDetectorRef: ChangeDetectorRef,
-    activeCartService: TmaActiveCartService
-  );
-
-  constructor(
-    protected cartService: TmaCartService,
     protected modalService: ModalService,
     protected currentProductService: CurrentProductService,
     protected changeDetectorRef: ChangeDetectorRef,
+    protected cartService: TmaCartService,
     protected activeCartService: TmaActiveCartService,
-    protected checklistActionService?: TmaChecklistActionService,
-    protected baseSiteService?: BaseSiteService,
     protected productSpecificationProductService?: TmaProductService,
     protected globalMessageService?: GlobalMessageService,
     protected translationService?: TranslationService,
+    protected baseSiteService?: BaseSiteService,
     protected tmaChecklistActionService?: TmaChecklistActionService,
-    protected config?: JourneyChecklistConfig
+    protected config?: JourneyChecklistConfig,
+    protected userService?: UserService
   ) {
-    super(cartService, modalService, currentProductService, changeDetectorRef);
-  }
+    super(modalService, currentProductService, changeDetectorRef, cartService);
 
-  ngOnInit(): void {
-    super.ngOnInit();
-
-    this.currentCart$ = this.activeCartService.getActive();
     this.currentProduct$ = this.currentProductService.getProduct();
-
-    this.baseSiteService.getActive()
+    this.currentCart$ = this.activeCartService.getActive();
+    this.baseSiteService
+      .getActive()
       .pipe(
         first((baseSiteId: string) => !!baseSiteId),
+        takeUntil(this.destroyed$))
+      .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
+
+    this.userService
+      .get()
+      .pipe(
+        first((user: User) => user != null),
         takeUntil(this.destroyed$)
       )
-      .subscribe((baseSiteId: string) => this.activeBaseSiteId = baseSiteId);
+      .subscribe((user: User) => (this.currentUser = user));
   }
 
   ngOnDestroy(): void {
@@ -91,24 +75,22 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
 
   /**
    * Adds a SPO to the cart.
-   * 
-   * @param currentCart - The cart in which the SPO will be added
    */
-  addSpoToCart(currentCart: TmaCart): void {
+  addSpoToCart(): void {
     if (!this.productCode || this.quantity <= 0) {
       return;
     }
     this.tmaChecklistActionService
       .getChecklistActionForProductCode(
-        this.activeBaseSiteId,
+        this.baseSiteId,
         this.productCode,
         TmaProcessTypeEnum.ACQUISITION
       )
       .pipe(
-        takeUntil(this.destroyed$),
         take(2),
         filter((checklistResult: TmaChecklistAction[]) => !!checklistResult),
         distinctUntilChanged(),
+        takeUntil(this.destroyed$),
         map((checklistResult: TmaChecklistAction[]) => {
           if (Object.keys(checklistResult).length !== 0) {
             const journeyCheckLists: TmaChecklistAction[] = checklistResult.filter(
@@ -134,9 +116,7 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
 
   addCartEntry(): void {
     this.cartService.addEntry(this.productCode, this.quantity);
-    const newEntry$: Observable<TmaOrderEntry> = this.activeCartService.getSpoWithHighestEntryNumber(
-      this.productCode
-    );
+    const newEntry$: Observable<TmaOrderEntry> = this.activeCartService.getSpoWithHighestEntryNumber(this.productCode);
     newEntry$
       .pipe(
         take(2),
@@ -152,17 +132,17 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
 
   /**
    * Returns the checklist actions for the provided product code
-   * 
+   *
    * @param productCode - product code
    * @return List of {@link TmaChecklistAction} as an {@link Observable}
    */
   getChecklistActions(productCode: string): Observable<TmaChecklistAction[]> {
-    return this.checklistActionService.getChecklistActionForProductCode(this.activeBaseSiteId, productCode);
+    return this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, productCode);
   }
 
   /**
    * Checks if the Add To Cart button should be displayed
-   * 
+   *
    * @param checklistActions - list of checklist actions
    * @param productSpecificationId - product specification id
    */
@@ -178,11 +158,13 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
     this.translationService.translate('premiseDetails.checkAvailabilityErrorMessage')
       .pipe(
         first((translation: string) => !!translation))
-      .subscribe((translation: string) => this.globalMessageService.add(translation, GlobalMessageType.MSG_TYPE_ERROR)).unsubscribe();
+      .subscribe((translation: string) => this.globalMessageService.add(translation, GlobalMessageType.MSG_TYPE_ERROR))
+      .unsubscribe();
     return true;
   }
 
   protected openStepperModal(checklistActions: TmaChecklistAction[]): void {
+    const productOfferingCodes: string[] = [this.productCode];
     let modalInstance: any;
     this.modalRef = this.modalService.open(JourneyChecklistStepComponent, {
       centered: true,
@@ -194,7 +176,7 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
     modalInstance = this.modalRef.componentInstance;
     modalInstance.checklistActions = checklistActions;
     modalInstance.quantity = this.quantity;
-    modalInstance.productCode = this.productCode;
+    modalInstance.productOfferingCodes = productOfferingCodes;
   }
 
   protected openAddToCartModal(entry$: Observable<TmaOrderEntry>): void {
@@ -207,8 +189,30 @@ export class TmaAddToCartComponent extends AddToCartComponent implements OnInit,
     modalInstance = this.modalRef.componentInstance;
     modalInstance.entry$ = entry$;
     modalInstance.cart$ = this.cartService.getActive();
-    modalInstance.loaded$ = this.cartService.getLoaded();
+    modalInstance.loaded$ = this.cartService.isStable();
     modalInstance.quantity = this.quantity;
     modalInstance.increment = this.increment;
+  }
+
+  protected addToCartWithChecklist(
+    journeyCheckLists: TmaChecklistAction[]
+  ): void {
+    if (this.currentUser && this.currentUser.uid) {
+      this.openStepperModal(journeyCheckLists);
+    }
+    else {
+      this.translationService
+        .translate('productDetails.loginNeeded')
+        .pipe(
+          tap((translatedMessage: string) =>
+            this.globalMessageService.add(
+              translatedMessage,
+              GlobalMessageType.MSG_TYPE_ERROR
+            )
+          )
+        )
+        .subscribe()
+        .unsubscribe();
+    }
   }
 }

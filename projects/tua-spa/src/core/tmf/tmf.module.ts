@@ -12,6 +12,7 @@ import {
 } from '../auth/http-interceptors';
 import { TmfSubscriptionModule } from './adapters/subscription';
 import { TmaTmfShoppingCartModule } from './adapters/cart';
+import { TmfGeographicAddressModule } from './adapters/geographic-address';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { TmaTmfShoppingCartModule } from './adapters/cart';
     TmfSubscriptionModule,
     TmaTmfShoppingCartModule,
     TmfConfigLoaderModule.forRoot(),
+    TmfGeographicAddressModule
   ],
 })
 export class TmfModule {

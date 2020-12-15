@@ -7,18 +7,23 @@ import { TMA_CHECKLIST_ACTION_FEATURE } from './tma-checklist-action.state';
 import { EffectsModule } from '@ngrx/effects';
 import { RouterModule } from '@angular/router';
 import { TmaChecklistActionEffect } from './effects/tma-checklist-action.effect';
-import { metaReducers, reducerProvider, reducerToken } from "./reducers/checklist-action.reducer";
-
+import {
+  metaReducers,
+  reducerProvider,
+  reducerToken,
+} from './reducers/checklist-action.reducer';
 
 @NgModule({
   imports: [
     CommonModule,
     ReactiveFormsModule,
     StateModule,
-    StoreModule.forFeature(TMA_CHECKLIST_ACTION_FEATURE, reducerToken, { metaReducers }),
+    StoreModule.forFeature(TMA_CHECKLIST_ACTION_FEATURE, reducerToken, {
+      metaReducers,
+    }),
     EffectsModule.forFeature([TmaChecklistActionEffect]),
-    RouterModule
+    RouterModule,
   ],
-  providers: [reducerProvider]
+  providers: [reducerProvider],
 })
-export class TmaChecklistActionStoreModule { }
+export class TmaChecklistActionStoreModule {}

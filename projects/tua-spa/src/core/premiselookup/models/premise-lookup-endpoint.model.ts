@@ -1,8 +1,9 @@
 export interface PremiseLookupEndpoints {
-  /**
-   * Premise details validation
-   *
-   * @member {string}
-   */
-  premiseValidation?: string;
-}
+    /**
+     * Premise details validation
+     *
+     * @member {string}
+     */
+    premiseValidation?: string;
+  }
+  

@@ -19,6 +19,7 @@ import { TmaGuidedSellingProductScrollComponent } from './container/guided-selli
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { TmaAddToCartModule } from '../../cart';
 import { TmaProductListModule } from '../../product/product-list';
+import { TmaPriceDisplayModule } from '../../product/price/price-display/tma-price-display.module';
 
 @NgModule({
   imports: [
@@ -37,19 +38,20 @@ import { TmaProductListModule } from '../../product/product-list';
     TmaProductListModule,
     TmaGuidedSellingCurrentSelectionModule,
     InfiniteScrollModule,
-    SpinnerModule
+    SpinnerModule,
+    TmaPriceDisplayModule,
   ],
   declarations: [
     TmaGuidedSellingProductListComponent,
     TmaGuidedSellingProductListItemComponent,
     TmaGuidedSellingProductGridItemComponent,
-    TmaGuidedSellingProductScrollComponent
+    TmaGuidedSellingProductScrollComponent,
   ],
   exports: [
     TmaGuidedSellingProductListComponent,
     TmaGuidedSellingProductListItemComponent,
     TmaGuidedSellingProductGridItemComponent,
-    TmaGuidedSellingProductScrollComponent
+    TmaGuidedSellingProductScrollComponent,
   ]
 })
-export class TmaGuidedSellingContentModule extends TmaProductListModule { }
+export class TmaGuidedSellingContentModule extends TmaProductListModule {}

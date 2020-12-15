@@ -43,10 +43,12 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
     protected tmaChecklistActionService: TmaChecklistActionService,
     protected premiseDetailInteractionService: TmaPremiseDetailInteractionService,
     protected checklistActionTypeCheckService: TmaChecklistActionTypeCheckService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
-    this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$)).subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
+    this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$))
+      .subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
     this.checklistAction$ = this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, this.productCode);
     this.premiseDetails$ = this.premiseDetailInteractionService.getPremiseDetails;
   }
@@ -65,16 +67,16 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
 
   /**
    * Get the checklist action type
-   * 
+   *
    * @return A {@link TmaChecklistActionType}
    */
   get checklistActionType(): typeof TmaChecklistActionType {
     return TmaChecklistActionType;
   }
-  
+
   /**
    * Check if the installation address action type is provided
-   * 
+   *
    * @param checklistActionList - list of checklist actions
    * @param type - checklist action type
    * @return True if the checklist type is found in the checklist actions list, otherwise false
@@ -85,7 +87,7 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the installation address from the provided premise details
-   * 
+   *
    * @param premiseDetail - premise detail
    * @param entryNumber - optional entry number
    * @returns The installation address as {@link string}
@@ -116,7 +118,7 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the meter details from the provided premise detail
-   * 
+   *
    * @param premiseDetail - premise detail
    * @param entryNumber - optional entry number
    * @returns The meter details as {@link string}
@@ -128,17 +130,17 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
     return premiseDetail && premiseDetail.meter ? premiseDetail.meter.id : '';
   }
 
-   /**
+  /**
    * Get the premise details
-   * 
+   *
    * @param premiseDetail - the premise details
    * @return A {@link TmaPremiseDetail}
    */
   getPremiseDetails(premiseDetail: { premiseDetails: TmaPremiseDetail, entryNumber: number }): TmaPremiseDetail {
-    if (premiseDetail){
+    if (premiseDetail) {
       return premiseDetail.premiseDetails;
     }
-      return this.premiseDetail;
+    return this.premiseDetail;
   }
 
 }

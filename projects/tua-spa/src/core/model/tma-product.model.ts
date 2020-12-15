@@ -55,12 +55,16 @@ export interface TmaProductOfferingPrice {
   tierStart?: number;
   tierEnd?: number;
   region?: TmaRegion[];
+  priority?: number;
+  isPercentage?: boolean;
+  alterations?: TmaProductOfferingPrice[];
 }
 
 export enum TmaPopChargeType {
   ONE_TIME = 'oneTime',
   RECURRING = 'recurring',
-  USAGE = 'usage'
+  USAGE = 'usage',
+  DISCOUNT = 'discount'
 }
 
 export enum TmaPopBillingEventType {

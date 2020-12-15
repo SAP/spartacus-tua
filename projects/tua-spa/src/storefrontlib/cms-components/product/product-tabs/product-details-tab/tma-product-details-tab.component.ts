@@ -9,7 +9,7 @@ import { TmaPriceService } from '../../../../../core/product/facade';
   selector: 'cx-product-details-tab',
   templateUrl: './tma-product-details-tab.component.html',
   styleUrls: ['./tma-product-details-tab.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TmaProductDetailsTabComponent extends ProductDetailsTabComponent implements OnInit {
 
@@ -29,12 +29,6 @@ export class TmaProductDetailsTabComponent extends ProductDetailsTabComponent im
     this.currency$ = this.currencyService.getActive();
   }
 
-  /**
-   * Checks if recurring or usage charge prices exist in the list of prices.
-   *
-   * @param priceList List containing all prices of a product
-   * @return a value indicating if the contract term should be displayed or not
-   */
   isContractTermDisplayNeeded(priceList: TmaProductOfferingPrice[]): boolean {
     if (!priceList || priceList.length === 0) {
       return false;

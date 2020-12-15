@@ -1,22 +1,27 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { CurrencyService, GlobalMessageService, GlobalMessageType, ProductService, TranslationService } from '@spartacus/core';
-import { CartItemComponent, Item, ModalRef, ModalService, PromotionService } from '@spartacus/storefront';
-import { Observable, Subject } from 'rxjs';
+import { OnDestroy } from '@angular/core';
+import { GlobalMessageService, GlobalMessageType, ProductService, TranslationService } from '@spartacus/core';
+import { ModalRef, ModalService } from '@spartacus/storefront';
+import { Subject } from 'rxjs';
 import { filter, first, takeUntil } from 'rxjs/operators';
 import {
   Appointment,
+  TmaInstallationAddressConverter,
+  TmaPremiseDetailInteractionService,
+  TmaPremiseDetailService,
+  TmaProcessType
+} from '../../../../../core';
+import { TmaCartService } from '../../../../../core/cart/facade';
+import {
+  LogicalResource,
+  LogicalResourceType,
   TmaAddress,
   TmaCartPrice,
-  TmaCartPriceService,
-  TmaCartService,
   TmaCharacteristic,
-  TmaInstallationAddressConverter,
   TmaMeter,
   TmaOrderEntry,
   TmaPlace,
   TmaPlaceRole,
   TmaPremiseDetail,
-  TmaPremiseDetailInteractionService,
   TmaProcessTypeEnum,
   TmaProduct,
   TmaRelatedParty,
@@ -24,23 +29,29 @@ import {
   TmaSubscribedProduct,
   TmaTechnicalResource,
   TmaTechnicalResources
-} from '../../../../../core';
-import {
-  LogicalResource, LogicalResourceType
 } from '../../../../../core/model';
-import { TmaPremiseDetailService } from '../../../../../core/premisedetail';
+import { Component, Input, OnInit } from '@angular/core';
+import {
+  CartItemComponent,
+  Item,
+  PromotionService
+} from '@spartacus/storefront';
+import { CurrencyService } from '@spartacus/core';
+import { Observable } from 'rxjs';
+import { TmaCartPriceService } from '../../../../../core/cart/facade';
 import { LogicalResourceReservationService } from '../../../../../core/reservation';
 import { TmaUserAddressService } from '../../../../../core/user/facade/tma-user-address.service';
 import { TmaPremiseDetailsFormComponent } from '../../../premise-details';
 
 export interface TmaItem extends Item {
-  entryNumber: number;
+  entryNumber?: number;
   subscribedProduct?: TmaSubscribedProduct;
   cartPrice?: TmaCartPrice;
   entryGroupNumbers?: number[];
   rootBpoCode?: string;
-  contractStartDate?: string;
   appointment?: Appointment;
+  processType?: TmaProcessType;
+  contractStartDate?: string;
 }
 
 @Component({
@@ -49,7 +60,6 @@ export interface TmaItem extends Item {
   styleUrls: ['./tma-cart-item.component.scss']
 })
 export class TmaCartItemComponent extends CartItemComponent implements OnInit, OnDestroy {
-
   @Input()
   item: TmaItem;
 
@@ -60,13 +70,13 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   isRemovable: boolean;
 
   @Input()
-  isCartPage?: boolean;
+  cartPage?: boolean;
 
-  @Output()
-  updateContractStartDate = new EventEmitter<any>();
+  @Input()
+  qtyDisabled = false;
 
-  @Output()
-  updateServiceProvider = new EventEmitter<any>();
+  @Input()
+  isPremiseDetailsReadOnly: boolean;
 
   premiseDetails: TmaPremiseDetail;
   serviceProvider: string;
@@ -77,21 +87,11 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   protected modalRef: ModalRef;
   protected destroyed$ = new Subject();
 
-  /**
-   *
-   * @deprecated Since 1.3
-   * Added multiple services
-   */
-  constructor(
-    cartPriceService: TmaCartPriceService,
-    currencyService: CurrencyService,
-    promotionService: PromotionService
-  );
-
   constructor(
     public cartPriceService: TmaCartPriceService,
     protected currencyService: CurrencyService,
     protected promotionService: PromotionService,
+    protected logicalResourceReservationService?: LogicalResourceReservationService,
     protected modalService?: ModalService,
     protected cartService?: TmaCartService,
     protected tmaUserAddressService?: TmaUserAddressService,
@@ -100,8 +100,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     protected installationAddressConverter?: TmaInstallationAddressConverter,
     protected translationService?: TranslationService,
     protected productService?: ProductService,
-    protected premiseDetailInteractionService?: TmaPremiseDetailInteractionService,
-    protected logicalResourceReservationService?: LogicalResourceReservationService
+    protected premiseDetailInteractionService?: TmaPremiseDetailInteractionService
   ) {
     super(promotionService);
   }
@@ -129,13 +128,27 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     this.destroyed$.complete();
   }
 
+  removeItem() {
+    if (!!this.itemLogicalResources) {
+      this.logicalResourceReservationService.clearInvalidReservations(
+        this.itemLogicalResources
+      );
+    }
+    super.removeItem();
+  }
+
   /**
    * Emits event for updating contract start date.
-   * 
+   *
    * @param contractStartDate - The new contract start date
    */
   onUpdateContractStartDate(contractStartDate: string): void {
-    this.updateContractStartDate.emit({ item: this.item, contractStartDate: contractStartDate });
+    const orderEntry: TmaOrderEntry = {
+      entryNumber: this.item.entryNumber,
+      contractStartDate: contractStartDate
+    };
+
+    this.cartService.updateCartEntry(orderEntry);
   }
 
   /**
@@ -144,7 +157,9 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   onMoveIn(): void {
     const orderEntry: TmaOrderEntry = {
       entryNumber: this.item.entryNumber,
-      processType: { id: TmaProcessTypeEnum.ACQUISITION },
+      processType: {
+        id: TmaProcessTypeEnum.ACQUISITION
+      }
     };
 
     this.cartService.updateCartEntry(orderEntry);
@@ -152,16 +167,30 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
 
   /**
    * Updates the cart entry with switch service provider information.
-   * 
+   *
    * @param serviceProvider - The current service provider
    */
   onSwitchServiceProvider(serviceProvider: string): void {
-    this.updateServiceProvider.emit({ item: this.item, provider: serviceProvider });
+    const orderEntry: TmaOrderEntry = {
+      entryNumber: this.item.entryNumber,
+      processType: {
+        id: TmaProcessTypeEnum.SWITCH_SERVICE_PROVIDER
+      },
+      subscribedProduct: {
+        relatedParty: [
+          {
+            id: serviceProvider, role: TmaRelatedPartyRole.SERVICE_PROVIDER
+          }
+        ]
+      }
+    };
+
+    this.cartService.updateCartEntry(orderEntry);
   }
 
   /**
    * Opens pop-up for providing new premise detail.
-   * 
+   *
    * @param premiseDetails - The current premise detail
    */
   onUpdatePremiseDetails(premiseDetails: TmaPremiseDetail): void {
@@ -191,9 +220,13 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
 
           this.cartService.updateCartEntry(orderEntry);
           this.tmaUserAddressService.updateUserAddress(this.getAddressId(this.item), this.installationAddressConverter.convertSourceToTarget(premiseDetails.installationAddress));
-          this.premiseDetailInteractionService.updatePremiseDetail({ premiseDetails: premiseDetails, entryNumber: this.item.entryNumber });
+          this.premiseDetailInteractionService.updatePremiseDetail({
+            premiseDetails: premiseDetails,
+            entryNumber: this.item.entryNumber
+          });
           this.premiseDetails = premiseDetails;
-        } else {
+        }
+        else {
           this.translationService.translate('premiseDetails.premiseDetailsValidation.fail').pipe(takeUntil(this.destroyed$))
             .subscribe((translatedMessage: string) => this.globalMessageService.add(translatedMessage, GlobalMessageType.MSG_TYPE_ERROR));
         }
@@ -208,12 +241,12 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
    * @return The purchase reason as {@link string}
    */
   getPurchaseReason(): string {
-    return this.serviceProvider ? 'switchProvider' : 'move';
+    return this.item.processType.id === TmaProcessTypeEnum.SWITCH_SERVICE_PROVIDER ? 'switchProvider' : 'move';
   }
 
   /**
    * Checks if the cart item has installation address or not.
-   * 
+   *
    * @return True if has installation address, otherwise false
    */
   hasInstallationAddress(): boolean {
@@ -225,7 +258,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
 
   /**
    * Returns the premise details based on information from cart item and product.
-   * 
+   *
    * @param product - The product offering
    * @return The premise details as {@link TmaPremiseDetail}
    */
@@ -242,17 +275,21 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
 
   protected getServiceProvider(item: TmaItem): string {
     this.serviceProvider = item &&
-      item.subscribedProduct &&
-      item.subscribedProduct.relatedParty ? item.subscribedProduct.relatedParty.find((relatedParty: TmaRelatedParty) => relatedParty.role === TmaRelatedPartyRole.SERVICE_PROVIDER).id : null;
+    item.subscribedProduct &&
+    item.subscribedProduct.relatedParty ?
+      item.subscribedProduct.relatedParty.find((relatedParty: TmaRelatedParty) => relatedParty.role === TmaRelatedPartyRole.SERVICE_PROVIDER).id :
+      null;
     return this.serviceProvider;
   }
 
   protected getAddressId(item: TmaItem): string {
-    return item && item.subscribedProduct && item.subscribedProduct.place ? item.subscribedProduct.place.find((place: TmaPlace) => place.role === TmaPlaceRole.INSTALLATION_ADDRESS).id : '';
+    return item && item.subscribedProduct && item.subscribedProduct.place ?
+      item.subscribedProduct.place.find((place: TmaPlace) => place.role === TmaPlaceRole.INSTALLATION_ADDRESS).id : '';
   }
 
   protected getAddressFromItem(item: TmaItem): TmaAddress {
-    const place = item && item.subscribedProduct && item.subscribedProduct.place ? item.subscribedProduct.place.find((address: TmaPlace) => address.role === TmaPlaceRole.INSTALLATION_ADDRESS) : null;
+    const place = item && item.subscribedProduct && item.subscribedProduct.place ?
+      item.subscribedProduct.place.find((address: TmaPlace) => address.role === TmaPlaceRole.INSTALLATION_ADDRESS) : null;
 
     return place ? {
       id: place.id,
@@ -268,7 +305,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   protected getMeter(product: TmaProduct): TmaMeter {
     return this.item && this.item.subscribedProduct && this.item.subscribedProduct.characteristic ? {
       id: this.item.subscribedProduct.characteristic.find((characteristic: TmaCharacteristic) => characteristic.name === 'meter_id').value,
-      type: product.productSpecification.id,
+      type: product.productSpecification.id
     } : null;
   }
 
@@ -276,7 +313,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     let modalInstance: any;
     this.modalRef = this.modalService.open(TmaPremiseDetailsFormComponent, {
       centered: true,
-      size: 'lg',
+      size: 'lg'
     });
 
     modalInstance = this.modalRef.componentInstance;
@@ -285,15 +322,6 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     modalInstance.validatePremiseDetails.subscribe(($e) => {
       this.validatePremiseDetails($e);
     });
-  }
-
-  removeItem() {
-    if (!!this.itemLogicalResources) {
-      this.logicalResourceReservationService.clearInvalidReservations(
-        this.itemLogicalResources
-      );
-    }
-    this.remove.emit(this.item);
   }
 
   protected getLogicalResources(

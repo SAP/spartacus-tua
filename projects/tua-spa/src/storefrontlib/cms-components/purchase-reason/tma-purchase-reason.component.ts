@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { BaseSiteService } from '@spartacus/core';
 import { DatePipe } from '@angular/common';
@@ -61,7 +71,7 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
 
   minDate: Date;
   maxDate: Date;
-  
+
   protected baseSiteId: string;
   protected destroyed$ = new Subject();
 
@@ -78,9 +88,10 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
     this.maxDate = new Date();
     this.minDate.setDate(this.minDate.getDate() + 1);
     this.maxDate.setFullYear(this.maxDate.getFullYear() + 1000);
-    this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$)).subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
+    this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$))
+      .subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
     this.checklistAction$ = this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, this.productCode);
-    if (!this.selectedReasonPurchase){
+    if (!this.selectedReasonPurchase) {
       this.selectedReasonPurchase = 'move';
     }
   }
@@ -94,7 +105,7 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
    * Emits an event for the move radio button state
    */
   onMoveInChecked(): void {
-    this.selectedReasonPurchase = "move";
+    this.selectedReasonPurchase = 'move';
     this.moveIn.emit();
   }
 
@@ -102,13 +113,13 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
    * Emits an event for the switch provider radio button state
    */
   onSwitchProviderChecked(): void {
-    this.selectedReasonPurchase = "switchProvider";
+    this.selectedReasonPurchase = 'switchProvider';
     this.switchProvider.emit();
   }
 
   /**
    * Emits an event with the updated contract start date
-   * 
+   *
    * @param event - user input event
    */
   onUpdateContractStartDate(event: Event) {
@@ -121,12 +132,12 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
   onUpdateServiceProvider() {
     this.serviceProvider = this.serviceProviderInput.nativeElement.value;
     this.serviceProviderButton.nativeElement.disabled = true;
-    this.updateProvider.emit({ serviceProvider: this.serviceProvider });
+    this.updateProvider.emit(this.serviceProvider);
   }
 
   /**
    * Checks if the update service provider button should be disabled
-   * 
+   *
    * @return True if the update service provider button should be disabled, otherwise false
    */
   isUpdateServiceProviderButtonDisabled(): boolean {
@@ -135,7 +146,7 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
 
   /**
    * Check if the installation address action type is provided
-   * 
+   *
    * @param checklistActionList - list of checklist actions
    * @param type - checklist action type
    * @return True if the checklist type is found in the checklist actions list, otherwise false
@@ -162,7 +173,7 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
 
   /**
    * Get the checklist action type
-   * 
+   *
    * @return A {@link TmaChecklistActionType}
    */
   get checklistActionType(): typeof TmaChecklistActionType {
