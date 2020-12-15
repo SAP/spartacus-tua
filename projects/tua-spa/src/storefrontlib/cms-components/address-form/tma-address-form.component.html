@@ -1,0 +1,136 @@
+<ng-container [formGroup]="installationAddress">
+    <!-- House/Building Number -->
+    <div class="form-group">
+        <label>
+            <span
+            class="card-label col-md-4 required">{{ 'addressInputs.buildingNumber.label' | cxTranslate }}</span>
+            <input
+            class="form-control"
+            type="text"
+            required
+            placeholder="{{
+            'addressInputs.buildingNumber.placeholder' | cxTranslate
+                }}"
+            formControlName="buildingNumber"
+            />
+        </label>
+    </div>
+
+    <!-- Street Name -->
+    <div class="form-group">
+        <label>
+            <span class="card-label col-md-4 required">{{
+                'addressInputs.streetName.label' | cxTranslate
+                }}</span>
+            <input
+            class="form-control"
+            type="text"
+            required
+            placeholder="{{
+            'addressInputs.streetName.placeholder' | cxTranslate
+                }}"
+            formControlName="streetName"
+            />
+        </label>
+    </div>
+
+    <!-- Apartment/Unit/Suite -->
+    <div class="form-group">
+        <label>
+            <span class="card-label col-md-4">{{
+                'addressInputs.apartmentNumber.label' | cxTranslate
+                }}&nbsp;({{ 'common.optional' | cxTranslate }})</span>
+            <input
+            class="form-control"
+            type="text"
+            placeholder="{{
+            'addressInputs.apartmentNumber.placeholder' | cxTranslate }}"
+            formControlName="apartmentNumber"
+            />
+        </label>
+    </div>
+
+    <!-- City -->
+    <div class="form-group">
+        <label>
+            <span class="card-label col-md-4 required">{{
+                'addressInputs.city.label' | cxTranslate
+                }}</span>
+            <input
+            class="form-control"
+            type="text"
+            required
+            placeholder="{{
+            'addressInputs.city.placeholder' | cxTranslate
+                }}"
+            formControlName="city"
+            />
+        </label>
+    </div>
+
+    <!-- Country -->
+    <div class="form-group" formGroupName="country">
+        <ng-container *ngIf="countries$ | async as countries">
+            <div *ngIf="countries.length !== 0">
+            <label>
+                <span class="card-label required col-md-4">{{
+                    'addressInputs.country.label' | cxTranslate
+                    }}</span>
+                <ng-select class="country-select"
+                            formControlName="isocode"
+                            [searchable]="true"
+                            [clearable]="false"
+                            [items]="countries"
+                            bindLabel="name"
+                            bindValue="isocode"
+                            placeholder="{{ 'addressInputs.country.placeholder' | cxTranslate }}"
+                            (change)="onCountrySelected($event)"
+                >
+                </ng-select>
+            </label>
+            </div>
+        </ng-container>
+    </div>
+
+    <!-- Regions -->
+    <div class="form-group" formGroupName="region">
+        <ng-container *ngIf="regions$ | async as regions">
+            <div *ngIf="regions.length !== 0">
+            <label>
+                <span class="card-label required col-md-4">{{
+                    'addressInputs.state.label' | cxTranslate
+                    }}</span>
+                <ng-select class="region-select"
+                            formControlName="isocode"
+                            [searchable]="true"
+                            [clearable]="false"
+                            [items]="regions"
+                            bindLabel="name"
+                            bindValue="isocode"
+                            placeholder="{{ 'addressInputs.state.placeholder' | cxTranslate }}"
+                            (change)="onRegionSelected($event)"
+                >
+                </ng-select>
+            </label>
+            </div>
+        </ng-container>
+    </div>
+
+    <!-- Postal Code -->
+    <div class="form-group">
+        <label>
+            <span class="card-label col-md-4 required">{{
+                'addressInputs.postalCode.label' | cxTranslate
+                }}</span>
+            <input
+            class="form-control"
+            type="text"
+            required
+            placeholder="{{
+            'addressInputs.postalCode.placeholder' | cxTranslate
+                }}"
+            formControlName="postalCode"
+            />
+        </label>
+    </div>
+</ng-container>

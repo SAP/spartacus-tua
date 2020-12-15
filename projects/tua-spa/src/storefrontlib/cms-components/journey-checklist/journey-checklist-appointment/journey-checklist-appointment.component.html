@@ -1,0 +1,73 @@
+<div
+  class="row container mx-auto px-2 py-3 appointment-container stepper-container"
+>
+  <div class="row mx-auto d-flex py-3 justify-content-center">
+    <span class="fontLabel-bold">
+      {{ 'checkList.appointment.headline' | cxTranslate }}
+    </span>
+  </div>
+  <ng-container *ngIf="errPatch">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ 'checkList.appointment.patchError' | cxTranslate }}
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!errPatch">
+    <div class="row mx-auto w-100">
+      <ng-container
+        *ngIf="getTimeSlots(this.timeSlots$ | async) | async as timeSlot"
+      >
+        <div class="col-4 p-1 my-2">
+          <div class="border-round-ph p-2 alignMiddle">
+            <div class="form-group form-check">
+              <input
+                type="radio"
+                class="form-check-input"
+                id="timeSlot"
+                name="timeSlot"
+                [(ngModel)]="selectedAvailableTimeSlot"
+                (change)="selectedTimeSlot(defaultTimeSlot)"
+                [value]="defaultTimeSlot"
+                checked
+              />
+              <label class="form-check-label">{{
+                'checkList.appointment.call_to_schedule' | cxTranslate
+              }}</label>
+            </div>
+          </div>
+        </div>
+        <ng-container
+          *ngFor="
+            let availableTimeSlot of timeSlot.availableTimeSlot;
+            let i = index
+          "
+        >
+          <ng-container *ngIf="i < getrequestedNumberOfTimeSlots()">
+            <div class="col-4 p-1 my-2">
+              <div class="border-round-ph p-2 alignMiddle">
+                <div class="form-group form-check">
+                  <input
+                    type="radio"
+                    class="form-check-input"
+                    id="timeSlot"
+                    name="timeSlot"
+                    (change)="selectedTimeSlot(availableTimeSlot)"
+                    [value]="
+                      availableTimeSlot.validFor.startDateTime
+                        | cxDate: 'MMM d, y h:mm a':'UTC'
+                    "
+                  />
+                  <label class="form-check-label" for="timeSlot">
+                    {{
+                      availableTimeSlot.validFor.startDateTime
+                        | cxDate: 'MMM d, y h:mm a':'UTC'
+                    }}</label
+                  >
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+</div>

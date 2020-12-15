@@ -1,0 +1,81 @@
+<div [formGroup]="premiseDetails">
+
+  <!-- Modal Header -->
+  <ng-container *ngIf="isDialog">
+    <div class="cx-dialog-header modal-header">
+      <div class="cx-dialog-title modal-title">
+        {{ 'premiseDetails.provideDetails' |cxTranslate }}
+      </div>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="onDismissModal('Cross click')"
+      >
+        <span aria-hidden="true">
+          <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
+        </span>
+      </button>
+    </div>
+    <hr>
+  </ng-container>
+
+  <!-- Title -->
+  <ng-container *ngIf="!isDialog">
+    <div class="d-flex justify-content-center">
+      <h4>{{ 'premiseDetails.provideDetails' |cxTranslate }}</h4>
+    </div>
+  </ng-container>
+
+
+  <div [ngClass]="isDialog ? 'modal-body' : ''">
+
+    <!-- Premise Address -->
+    <h5
+      [ngClass]="isDialog ? 'cx-dialog-subtitle' : 'bold'">{{ 'premiseDetails.premiseAddress.title' | cxTranslate }}</h5>
+
+    <cx-address-form
+      [address]='installationAddress'
+      [isDialog]='isDialog'
+      (countrySelected)='onCountrySelected($event)'
+      (regionSelected)='onRegionSelected($event)'>
+    </cx-address-form>
+
+    <p>&nbsp;</p>
+
+    <!-- Meter deatils -->
+    <h5
+      [ngClass]="isDialog ? 'cx-dialog-subtitle' : 'bold'">{{ 'premiseDetails.meterDetails.title' | cxTranslate }}</h5>
+
+
+    <!-- Meter ID -->
+    <div class="form-group">
+      <label>
+          <span class="card-label col-md-4 required">{{
+            'premiseDetails.meterDetails.meterId.label' | cxTranslate
+            }}</span>
+        <input
+          class="form-control"
+          type="text"
+          required
+          placeholder="{{
+          'premiseDetails.meterDetails.meterId.placeholder' | cxTranslate
+            }}"
+          formControlName="meterId"
+        />
+      </label>
+    </div>
+
+    <div class="cx-checkout-btns row">
+      <div class="col-md-12 col-lg-12">
+        <button
+          class="btn btn-block btn-primary"
+          (click)="onVerifyPremiseDetails()"
+          [disabled]="premiseDetails.invalid"
+        >
+          {{ 'common.next' | cxTranslate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

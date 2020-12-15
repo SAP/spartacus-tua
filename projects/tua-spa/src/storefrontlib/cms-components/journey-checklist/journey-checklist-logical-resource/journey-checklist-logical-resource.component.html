@@ -1,0 +1,43 @@
+<div class="row container mx-auto px-2 py-3 msisdn-container">
+  <button [hidden]="!isEdit" class="btn clsBtn btn-sm" (click)="closeModal()">
+    <span class="material-icons"> close </span>
+  </button>
+  <div class="row mx-auto py-3 d-flex justify-content-start" *ngIf="checkListLength !== 1">
+    <span class="font-txt">
+      {{ "checkList.msisdn.headline" | cxTranslate }}
+    </span>
+  </div>
+  <ng-container *ngIf="error$ | async; else msisdnLoad">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ 'availabilityCheckError.fetchAvailabilityCheck' | cxTranslate }}
+    </div>
+  </ng-container>
+  <ng-template #msisdnLoad>
+    <ng-container *ngIf="patchError">
+      <div class="alert alert-primary w-100 mt-2" role="alert">
+        {{ 'msisdnReservationError.patchError' | cxTranslate }}
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!patchError">
+      <ng-container *ngIf="logicalResources$ | async as logicalResources">
+        <div class="row mx-auto w-100">
+          <div class="col-4 p-2 my-2" *ngFor="let logicalResource of logicalResources;">
+            <div class="border-round-ph p-2 alignMiddle">
+              <div class="form-group form-check">
+                <input type="radio" class="form-check-input" name="logicalResource" id="{{logicalResource.value}}"
+                       value="{{ logicalResource.value }}" [(ngModel)]="selectedAvailableLogicalResource"
+                       (change)="selectedLogicalResource(logicalResource)"/>
+                <label class="form-check-label" for="{{logicalResource.value}}">{{logicalResource.value}}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div *ngIf="isEdit" class="row mx-auto d-flex justify-content-center w-100">
+        <button (click)="updateCart()" [disabled]="msisdnChanged" class="btn btn-primary btn-sm btn-wd-40">
+          {{ 'common.update' | cxTranslate }}
+        </button>
+      </div>
+    </ng-container>
+  </ng-template>
+</div>
