@@ -1,0 +1,33 @@
+<ng-container *ngIf="product$ | async as product">
+  <ng-template
+    [cxOutlet]="outlets.PRICE"
+    [cxOutletContext]="{ product: product }"
+  >
+    <div class="price" aria-label="new item price">
+      <div *ngFor="let poPrice of product?.productOfferingPrice">
+        <div *ngIf="poPrice?.price" class="cx-code">
+          {{
+            "productDetails.currency." + poPrice?.price?.currencyIso
+              | cxTranslate
+          }}{{ poPrice?.price?.value }}
+        </div>
+        <div *ngFor="let price of poPrice?.bundledPop">
+          <div *ngIf="price?.price" class="cx-code">
+            {{
+              "productDetails.currency." + price?.price?.currencyIso
+                | cxTranslate
+            }}{{ price?.price?.value }}
+          </div>
+        </div>
+      </div>
+      {{ product?.price?.formattedValue }}
+    </div>
+  </ng-template>
+
+  <ng-template
+    [cxOutlet]="outlets.SUMMARY"
+    [cxOutletContext]="{ product: product }"
+  >
+    <p [innerHTML]="product?.summary" class="summary"></p>
+  </ng-template>
+</ng-container>
