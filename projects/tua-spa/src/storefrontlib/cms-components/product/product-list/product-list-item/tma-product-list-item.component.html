@@ -1,0 +1,143 @@
+<div class="row">
+  <div class="col-12 col-md-4">
+    <a
+      [routerLink]="{ cxRoute: 'product', params: product } | cxUrl"
+      class="cx-product-image-container"
+    >
+      <cx-media
+        class="cx-product-image"
+        [container]="product.images?.PRIMARY"
+        format="product"
+        [alt]="product.summary"
+      ></cx-media>
+    </a>
+  </div>
+  <div class="col-12 col-md-8">
+    <a
+      [routerLink]="{ cxRoute: 'product', params: product } | cxUrl"
+      class="cx-product-name"
+      [innerHtml]="product.nameHtml"
+    ></a>
+    <cx-star-rating
+      *ngIf="product.averageRating"
+      [rating]="product?.averageRating"
+      [disabled]="true"
+    ></cx-star-rating>
+    <div *ngIf="!product.averageRating" class="cx-product-no-review">
+      {{ 'productDetails.noReviews' | cxTranslate }}
+    </div>
+    <ng-container *ngIf="!(productSpecificationForAverageCost || productSpecificationForViewDetails)">
+      <div class="cx-product-price" aria-label="Product price">
+        <ng-container *ngIf="product.price.formattedValue; else compositePrice">
+          {{ product.price?.formattedValue }}
+        </ng-container>
+      </div>
+      <ng-template #compositePrice>
+        <cx-price-display [price]="product.productOfferingPrice[0]"></cx-price-display>
+      </ng-template>
+    </ng-container>
+
+    <div class="row">
+      <div class="col-12 col-md-7 my-1">
+        <p class="cx-product-summary" [innerHtml]="product.summary">
+          {{ product.summary }}
+        </p>
+        <ng-container *ngIf="detailedProduct$ | async as detailedProduct">
+          <ng-container *ngIf="priceService.getUsageUnits(detailedProduct).length > 1">
+            <p class="text-warning cx-size-small">
+              {{ 'productDetails.costEstimationWarningMessage' | cxTranslate }}
+            </p>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div class="col-12 col-md-5">
+        <ng-container *ngIf="productSpecificationForAverageCost && consumptionComponent">
+          <ng-container *ngIf="detailedProduct$ | async as detailedProduct else loading">
+            <ng-container *ngIf="priceService.getUsageUnits(detailedProduct).length <= 1; else showBasePrice">
+
+              <ng-container *ngIf="currency$ | async as currency">
+                <div class="row d-flex justify-content-center">{{'productDetails.averageCost' | cxTranslate}}*</div>
+                <div class="row d-flex justify-content-center">
+                  <div #averageCostPerMonth class="cx-size-large cx-bold">
+                    {{ getAverageCostPerMonth(detailedProduct, currency) }}</div>
+                  <div>&nbsp;/ {{'productDetails.month' | cxTranslate}}</div>
+                </div>
+                <div class="row cx-size-small d-flex justify-content-center">
+                  (
+                  <div #averageCostPerYear>
+                    {{ getAverageCostPerYear(detailedProduct, currency) }}
+                  </div>
+                  / {{'productDetails.year' | cxTranslate}}*)
+                </div>
+              </ng-container>
+            </ng-container>
+            <ng-template #showBasePrice>
+              <div class="row d-flex justify-content-center">
+                <div class="cx-product-price cx-bold" aria-label="Product price">
+                  {{ product.price?.formattedValue }}
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="productSpecificationForViewDetails && consumptionComponent">
+          <ng-container *ngIf="detailedProduct$ | async as detailedProduct else loading">
+            <div class="row d-flex justify-content-center">
+              <button (click)="changeShowDetailedPrices()" class="btn btn-link">
+                {{'productList.viewDetailedPrices' | cxTranslate}}
+              </button>
+            </div>
+
+            <button [routerLink]="{ cxRoute: 'product', params: product } | cxUrl" class="btn btn-primary btn-block"
+                    type="button">
+              {{'productList.viewDetails' | cxTranslate}}
+            </button>
+          </ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="!productSpecificationForViewDetails">
+          <cx-add-to-cart
+            *ngIf="product.stock?.stockLevelStatus !== 'outOfStock'"
+            [showQuantity]="false"
+            [product]="product"
+          ></cx-add-to-cart>
+        </ng-container>
+      </div>
+    </div>
+
+    <ng-container *ngIf="detailedProduct$ | async as detailedProduct">
+      <ng-container *ngIf="priceService.getHighestPriorityPriceForSPO(detailedProduct) as highestPriorityPrice">
+        <div *ngIf="showDetailedPrices" class="row border rounded">
+          <div (click)="changeShowDetailedPrices()" class="col-md-12 d-flex justify-content-end close">&times;</div>
+          <div class="col-md-12">
+            <cx-price-display [price]="highestPriorityPrice"></cx-price-display>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <div *ngIf="productSpecificationForViewDetails && !consumptionComponent">
+      <div class="row">
+        <div class="col-12 col-md-7">
+          <p [innerHtml]="product.summary" class="cx-product-summary">
+            {{ product.summary }}
+          </p>
+        </div>
+        <div class="col-12 col-md-5">
+          <button [routerLink]="{ cxRoute: 'product', params: product } | cxUrl" class="btn btn-primary btn-block"
+                  type="button">
+            {{'productList.viewDetails' | cxTranslate}}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="cx-spinner">
+    <cx-spinner></cx-spinner>
+  </div>
+</ng-template>

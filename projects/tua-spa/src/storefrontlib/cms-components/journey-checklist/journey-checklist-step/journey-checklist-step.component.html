@@ -1,0 +1,208 @@
+<div class="container-fluid px-0 w-100 stepper-container">
+  <div class="row mx-auto">
+    <ngb-tabset
+      class="w-100"
+      [destroyOnHide]="false"
+      #tabSet="ngbTabset"
+      justify="fill"
+    >
+      <ng-container *ngIf="currentCart$ | async as currentCart">
+        <ngb-tab
+          class="w-100"
+          *ngFor="let checklistAction of uniqueActionTypes; let i = index"
+          [id]="'tab-' + i"
+        >
+          <ng-template ngbTabContent>
+            <ng-container>
+              <!-- logical resource -->
+              <div
+                class="row mx-auto d-flex justify-content-center mb-2"
+                *ngIf="checklistAction === getChecklistActionTypeMsisdn()"
+              >
+                <ng-container *ngIf="errorResult">
+                  <div class="alert alert-primary w-100" role="alert">
+                    {{
+                      'msisdnReservationError.postReservationError'
+                        | cxTranslate
+                    }}
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="!errorResult">
+                  <cx-journey-checklist-logical-resource
+                    (msisdnSelected)="onMsisdnSelection($event)"
+                    (errorPost)="setLogicalResourceError($event)"
+                    [checkListLength]="checklistActions.length"
+                    class="w-100"
+                  >
+                  </cx-journey-checklist-logical-resource>
+                  <ng-container *ngIf="!logicalResourceError">
+                    <ng-container *ngIf="i !== 0">
+                      <button
+                        (click)="tabSet.select('tab-' + (i - 1))"
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{ 'common.back' | cxTranslate }}
+                      </button>
+                    </ng-container>
+                    <ng-container
+                      *ngIf="checklistActions.length > i + 1; else hasNext"
+                    >
+                      <button
+                        (click)="tabSet.select('tab-' + (i + 1))"
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{ 'common.next' | cxTranslate }}
+                      </button>
+                    </ng-container>
+                    <ng-template #hasNext>
+                      <button
+                        (click)="submit(currentCart)"
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{ 'common.continue' | cxTranslate }}
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                </ng-container>
+              </div>
+
+              <!-- Installation Address -->
+              <div
+                class="row mx-auto d-flex justify-content-center mb-2"
+                *ngIf="
+                  checklistAction ===
+                  getChecklistActionTypeInstallationAddress()
+                "
+              >
+                <cx-journey-checklist-installation-address
+                  class="w-100 px-3"
+                  [checkListLengthApp]="uniqueActionTypes.length"
+                  [isEdit]="isEdit"
+                  [currentAddress]="currentAddress"
+                  (addressForm)="getAddressForm($event)"
+                >
+                </cx-journey-checklist-installation-address>
+                <ng-container *ngIf="addressError">
+                  <div class="alert alert-primary w-100" role="alert">
+                    {{ 'addressForm.invalidAddress' | cxTranslate }}
+                  </div>
+                </ng-container>
+                <ng-container>
+                  <ng-container
+                    *ngIf="uniqueActionTypes.length > i + 1; else hasNext"
+                  >
+                    <ng-container>
+                      <button
+                        [disabled]="!installationAddressForm"
+                        (click)="
+                          isEdit
+                            ? updateInstallationAddress(
+                                tabSet,
+                                'tab-' + (i + 1)
+                              )
+                            : createInstallationAddress(
+                                tabSet,
+                                'tab-' + (i + 1)
+                              )
+                        "
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{ 'common.next' | cxTranslate }}
+                      </button>
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #hasNext>
+                    <button
+                      [disabled]="!installationAddressForm"
+                      (click)="
+                        isEdit ? update(currentCart) : submit(currentCart)
+                      "
+                      class="btn btn-primary btn-sm btn-wd-40"
+                    >
+                      {{
+                        isEdit ? 'Update' : ('common.continue' | cxTranslate)
+                      }}
+                    </button>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <!-- Appointment -->
+              <ng-container *ngIf="!errorResult">
+                <div
+                  class="row mx-auto d-flex justify-content-center mb-2"
+                  *ngIf="
+                    checklistAction === getchecklistActionType_Appointment()
+                  "
+                >
+                  <cx-journey-checklist-appointment
+                    class="w-100 px-3"
+                    [checkListLengthApp]="uniqueActionTypes.length"
+                    [placeRequired]="
+                      uniqueActionTypes.includes('INSTALLATION_ADDRESS')
+                    "
+                    [currentSelectedTimePeriod]="currentSelectedTimePeriod"
+                    [currentSelectedStartDate]="currentSelectedStartDate"
+                    [currentAppointmentId]="currentAppointmentId"
+                  ></cx-journey-checklist-appointment>
+                  <ng-container *ngIf="errorResult">
+                    <div class="alert alert-primary w-100" role="alert">
+                      {{ 'cartItems.appointmentError.errorPost' | cxTranslate }}
+                    </div>
+                  </ng-container>
+                  <ng-container *ngIf="!errorResult">
+                    <ng-container
+                      *ngIf="uniqueActionTypes.length > i + 1; else hasNext"
+                    >
+                      <button
+                        (click)="tabSet.select('tab-' + (i + 1))"
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{ 'common.next' | cxTranslate }}
+                      </button>
+                    </ng-container>
+                    <ng-template #hasNext>
+                      <button
+                        (click)="
+                          isEdit ? update(currentCart) : submit(currentCart)
+                        "
+                        [disabled]="!timeSlotChanged"
+                        class="btn btn-primary btn-sm btn-wd-40"
+                      >
+                        {{
+                          isEdit ? 'Update' : ('common.continue' | cxTranslate)
+                        }}
+                      </button>
+                    </ng-template>
+                  </ng-container>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="errorResult">
+                <div class="row mx-auto d-flex justify-content-center mb-2">
+                  <div class="alert alert-primary w-100" role="alert">
+                    {{ 'cartItems.appointmentError.errorPost' | cxTranslate }}
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="errPatch">
+                <div class="row mx-auto d-flex justify-content-center mb-2">
+                  <div class="alert alert-primary w-100" role="alert">
+                    {{ 'checkList.appointment.patchError' | cxTranslate }}
+                  </div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-template>
+        </ngb-tab>
+      </ng-container>
+    </ngb-tabset>
+  </div>
+</div>
+<button class="btn clsBtn btn-sm" (click)="closeModal()">
+  <span class="material-icons">close</span>
+</button>
+<ngx-spinner
+  [fullScreen]="false"
+  type="ball-clip-rotate-multiple"
+  size="medium"
+>
+</ngx-spinner>

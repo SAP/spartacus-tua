@@ -1,0 +1,21 @@
+.appointment-container {
+  .border-round-ph {
+    border: 3px solid var(--cx-color-secondary);
+    border-radius: 13px;
+  }
+
+  .sentTxt {
+    font-size: 0.89rem;
+    font-weight: 600;
+  }
+
+  .clsBtn {
+    position: absolute;
+    top: 1;
+    right: 0;
+  }
+
+  .btn-wd-40 {
+    width: 40% !important;
+  }
+}

@@ -1,0 +1,32 @@
+.msisdn-container {
+  input[type='radio']::after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    left: 4px;
+    top: 4px;
+  }
+
+  .border-round-ph {
+    border: 3px solid var(--cx-color-secondary);
+    border-radius: 13px;
+  }
+
+  .font-txt {
+    font-size: 0.89rem;
+    font-weight: 600;
+  }
+
+  .clsBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .btn-wd-40 {
+    width: 40% !important;
+  }
+}

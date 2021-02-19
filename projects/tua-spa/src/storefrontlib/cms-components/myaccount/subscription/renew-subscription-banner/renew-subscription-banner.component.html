@@ -1,0 +1,126 @@
+<div class="container px-0">
+  <div class="row w-110 px-3 my-2">
+    <button
+      class="btn btn-primary btn-action full-width"
+      [routerLink]="{ cxRoute: 'subscriptions' } | cxUrl"
+    >
+      {{ 'subscriptions.backToSubscriptions' | cxTranslate }}
+    </button>
+  </div>
+  <ng-container *ngIf="subscriptionDetail$ | async as subscriptionDetail">
+    <ng-container
+      *ngIf="
+        isSubscriptionEligibleForRenewal(subscriptionDetail)
+          | async as isEligibleForRenew
+      "
+    >
+      <div *ngIf="!subscriptionDetail.tmfProduct.isBundle">
+        <ng-container *ngIf="component.data$ | async as data">
+          <ng-container *ngIf="mediaService.getMedia(data.media) as urlMedia">
+            <ng-container
+              *ngFor="let product of subscriptionDetail.tmfProducts"
+            >
+              <ng-container
+                *ngIf="
+                  productOfferingService.getProductOffering(
+                    baseSiteId,
+                    product.productOffering.id,
+                    'RETENTION'
+                  ) | async as product
+                "
+              >
+                <div *ngIf="priceService.getStandalonePrices(product).length > 0">
+                  <ng-container
+                    *ngIf="
+                      priceService.getEligibleSubscriptionTerms(
+                        product.priceContext
+                      ) as eligibleTerms
+                    ">
+                    <div *ngIf="eligibleTerms.length > 0">
+                      <div
+                        class="row mx-auto banner-container hidden-sm"
+                        [ngStyle]="{ background: 'url(' + urlMedia.src + ')' }"
+                      >
+                        <div class="col-12 col-sm-12 col-md-12">
+                          <div class="dropdownPosition">
+                            <ng-container
+                              *ngIf="
+                                subscriptionTermService.getSelectedSubscriptionTermId()
+                                  | async as selectedTermId;
+                                else noSelectedTerm
+                              "
+                            >
+                            <div class="col-12 col-sm-6 col-md-5">
+                              <div class="form-group w-100">
+                                <select
+                                  [ngModel]="selectedTermId"
+                                  class="form-control form-control-sm border-2"
+                                  (ngModelChange)="
+                                  setSubscriptionTermAndPrice(
+                                      eligibleTerms,
+                                      product.productOfferingPrice,
+                                      product.priceContext,
+                                      $event
+                                    )
+                                  "
+                                >
+                                  <option
+                                    *ngFor="let term of eligibleTerms"
+                                    [selected]="term?.id === selectedTermId"
+                                    [value]="term.id"
+                                  >
+                                    {{ term?.name }}
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
+                            </ng-container>
+                            <ng-template #noSelectedTerm>
+                              {{
+                                setSubscriptionTermAndPrice(
+                                  eligibleTerms,
+                                  product.productOfferingPrice,
+                                  product.priceContext,
+                                  eligibleTerms[0].id
+                                )
+                              }}
+                              <div class="form-group w-100">
+                                {{
+                                  defaultSubscriptionTermSelected(
+                                    eligibleTerms[0].id
+                                  )
+                                }}
+                              </div>
+                            </ng-template>
+                            <div class="col-12 col-sm-6 col-md-7">
+                            <div class="row priceFont">
+                              <cx-price-display class="w-100"
+                                [price]="highestPriorityProductOfferingPrice"
+                              ></cx-price-display>
+                            </div>
+                            </div>
+
+                          </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-5 margin-leftTop">
+                          <cx-renew-subscription
+                            [subscription]="subscriptionDetail.tmfProduct"
+                            [subscribedProducts]="
+                              validSubscribedProducts
+                            "
+                            [buttonText]="data.buttonText"
+                          >
+                          </cx-renew-subscription>
+                        </div>
+                      </div>
+                    </div>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

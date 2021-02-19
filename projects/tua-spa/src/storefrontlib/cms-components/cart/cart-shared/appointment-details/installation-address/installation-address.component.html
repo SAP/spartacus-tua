@@ -1,0 +1,76 @@
+<div *ngIf="installationAddressEntries[0]">
+  <div class="card w-100 border-0 px-0">
+    <div class="card-header border-0 bg-white py-1 px-0">
+      <div class="row mx-auto">
+        <div class="col-10 px-0">
+          <span class="font-label-bold text-dark">
+            {{ 'cartItems.installationAddress' | cxTranslate }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body border-0 py-1 px-0">
+      <div class="col-12 px-0">
+        <span
+          class="font-small"
+          *ngIf="installationAddressEntries[0].subscribedProduct.place[0].line1"
+        >
+          {{ installationAddressEntries[0].subscribedProduct.place[0].line1 }},
+        </span>
+        <span
+          class="font-small"
+          *ngIf="installationAddressEntries[0].subscribedProduct.place[0].line2"
+        >
+          {{ installationAddressEntries[0].subscribedProduct.place[0].line2 }},
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span
+          class="font-small"
+          *ngIf="installationAddressEntries[0].subscribedProduct.place[0].town"
+        >
+          {{ installationAddressEntries[0].subscribedProduct.place[0].town }},
+        </span>
+        <span
+          class="font-small"
+          *ngIf="
+            installationAddressEntries[0].subscribedProduct.place[0].region &&
+            installationAddressEntries[0].subscribedProduct.place[0].region.name
+          "
+        >
+          {{
+            installationAddressEntries[0].subscribedProduct.place[0].region
+              .name
+          }},
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span
+          class="font-small"
+          *ngIf="
+            installationAddressEntries[0].subscribedProduct.place[0].country &&
+            installationAddressEntries[0].subscribedProduct.place[0].country
+              .name
+          "
+        >
+          {{
+            installationAddressEntries[0].subscribedProduct.place[0].country
+              .name
+          }}
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span
+          class="font-small"
+          *ngIf="
+            installationAddressEntries[0].subscribedProduct.place[0].postalCode
+          "
+        >
+          {{
+            installationAddressEntries[0].subscribedProduct.place[0].postalCode
+          }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

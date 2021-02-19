@@ -1,0 +1,75 @@
+<ng-container *ngIf="appointmentEntries[0].appointment.id">
+  <ng-container
+    *ngIf="
+      appointmentService.getAppointmentErrorForID(
+        appointmentEntries[0].appointment.id
+      ) | async as errorMessage;
+      else appointmentLoad
+    "
+  >
+    <ng-container *ngIf="currentPageCode$ | async as currentPage">
+      <div class="row mx-auto text-danger">
+        <span
+          *ngIf="
+            currentPage === 'order' || currentPage === 'orderConfirmationPage'
+          "
+        >
+          {{
+            'cartItems.appointmentError.getAppointmentByIdError' | cxTranslate
+          }}
+        </span>
+
+        <span
+          *ngIf="
+            currentPage === 'CheckoutReviewOrder' || currentPage === 'cartPage'
+          "
+        >
+          {{
+            'cartItems.appointmentError.appointmentByIdCartRemoval'
+              | cxTranslate
+          }}
+        </span>
+      </div>
+    </ng-container>
+  </ng-container>
+  <ng-template #appointmentLoad>
+    <div *ngIf="appointmentEntries[0].appointment.id === 'CALL_TO_SCHEDULE'">
+      <span class="font-label pr-0"
+        >{{ 'cartItems.appointment' | cxTranslate }}
+      </span>
+      <span class="font-small">
+        {{ 'cartItems.defaultAppointment' | cxTranslate }}
+      </span>
+    </div>
+    <div *ngIf="appointmentEntries[0].appointment.id !== 'CALL_TO_SCHEDULE'">
+      <ng-container *ngIf="getAppointment(appointment$ | async) as appointment">
+        <ng-container
+          *ngIf="
+            appointment.status === getAppointmentStateType();
+            else displayAppointment
+          "
+        >
+          <span class="text-danger">
+            {{
+              'cartItems.appointmentError.cancelledAppointmentError'
+                | cxTranslate
+            }}
+          </span>
+        </ng-container>
+        <ng-template #displayAppointment>
+          <div *ngIf="appointment.validFor" class="font-small clickable">
+            <span class="font-label pr-0"
+              >{{ 'cartItems.appointment' | cxTranslate }}
+            </span>
+            <span class="font-small">
+              {{
+                appointment.validFor.startDateTime
+                  | date: 'MMM d, y h:mm a':'UTC'
+              }}</span
+            >
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </ng-template>
+</ng-container>

@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - '12.13.1'
+
+addons:
+  chrome: stable
+
+install:
+  - yarn install
+
+before_script:
+  - CHROME_MAIN_VERSION=`google-chrome-stable --version | sed -E 's/(^Google Chrome |\.[0-9]+ )//g'`
+  - CHROMEDRIVER_VERSION=`curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAIN_VERSION"`
+  - curl "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O
+  - unzip chromedriver_linux64.zip -d ~/bin
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start &
+  - sleep 3
+
+script:
+  - yarn ng build tua-spa
+  - yarn run ng lint tua-spa
+  - yarn run test tua-spa --watch=false --browsers ChromeHeadless
