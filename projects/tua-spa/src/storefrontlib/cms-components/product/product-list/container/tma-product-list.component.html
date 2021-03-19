@@ -65,6 +65,7 @@
                   <div class="row">
                     <cx-product-grid-item
                       *ngFor="let product of model?.products"
+                      [isAddToCartForServiceableProducts]="productSearchService.addToCartServiceableProduct()"
                       [product]="product"
                       [consumptionComponent]="getConsumptionComponent(page)"
                       class="col-12 col-sm-6 col-md-4"
@@ -75,6 +76,7 @@
                 <ng-container *ngIf="viewMode === ViewModes.List">
                   <cx-product-list-item
                     *ngFor="let product of model?.products"
+                    [isAddToCartForServiceableProducts]="productSearchService.addToCartServiceableProduct()"
                     [product]="product"
                     [consumptionComponent]="getConsumptionComponent(page)"
                     class="cx-product-search-list"

@@ -5,7 +5,7 @@
 }
 
 .labelHeading {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 600;
 
 }
@@ -15,10 +15,12 @@
     font-weight: 500;
 }
 
-.background-green {
+.background-active{
     background-color: green;
 }
-
+.background-cancelled{
+    background-color: red;
+}
 .text-green {
     color: green;
 }

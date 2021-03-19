@@ -24,6 +24,7 @@
                 <cx-tmf-product
                   class="w-100"
                   [tmfProduct]="product"
+                  [subscriptionId]="subscriptionDetail.tmfProduct.id"
                   [order]="order"
                 >
                 </cx-tmf-product>
@@ -42,7 +43,11 @@
         <div class="row mx-auto w-100 px-0 my-2">
           <ng-container *ngFor="let product of subscriptionDetail.tmfProducts">
             <div class="col-6 px-2 py-2">
-              <cx-tmf-product class="w-100" [tmfProduct]="product">
+              <cx-tmf-product 
+                class="w-100"
+                [tmfProduct]="product" 
+                [subscriptionId]="subscriptionDetail.tmfProduct.id"
+              >
               </cx-tmf-product>
             </div>
           </ng-container>

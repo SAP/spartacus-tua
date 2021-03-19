@@ -44,8 +44,37 @@ export const subscriptions = {
       gbps: 'GBPS',
       mbps: 'MBPS'
     },
+    noPenaltiesApplicable: 'No Penalties Applicable', 
     renew: 'Renew',
     forSubscription: 'For Subscription',
-    renewSubscription: 'Renew Subscription'
+    renewSubscription: 'Renew Subscription',
+    addNewCard: 'Add New Card',
+    next: 'Next',
+    cancel: 'Cancel',
+    default: 'Default',
+    terminate: 'Terminate',
+    confirm: 'Confirm',
+    confirmTermination: 'Are you sure you want to terminate your subscription?' ,
+    subscribedProductTermination: '{{subscribedProductId}} will be terminated.',
+    status:{
+      status_pendingTerminate: 'Pending Termination',
+      status_created: 'Created',
+      status_pendingActive: 'Pending Active',
+      status_cancelled: 'Cancelled',
+      status_active: 'Active',
+      status_terminated: 'Terminated',
+      status_suspended: 'Suspended',
+      status_aborted: 'Aborted'
+    },
+    processType:{
+      processType_ACQUISITION: 'Acquisition',
+      processType_DEVICE_ONLY: 'Device Only',
+      processType_RETENTION: 'Retention',
+      processType_SWITCH_SERVICE_PROVIDER: 'Switch Service Provider',
+      processType_TARIFF_CHANGE: 'Tariff Change',
+      processType_TERMINATION: 'Termination'
+    },
+    deliveryAddressRequired: 'Default Address is required to proceed.',
+    deliveryModeNotEligible: 'Delivery Mode not eligible for default address.'
   }
 };

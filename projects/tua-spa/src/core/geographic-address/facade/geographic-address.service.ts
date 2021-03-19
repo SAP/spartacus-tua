@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import * as GeographicAddressActions from '../store/actions/geographic-address.actions';
-import { StateWithGeographicAddress } from '../store';
+import { StateWithGeographicAddress, GeographicAddressAction } from '../store';
 import { GeographicAddress } from '../../model';
 import { Subject, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -10,7 +10,8 @@ import * as GeographicAddressSelectors from '../store/selectors/geographic-addre
 export class GeographicAddressService implements OnDestroy {
   protected destroyed$ = new Subject();
 
-  constructor(protected store: Store<StateWithGeographicAddress>) {}
+  constructor(protected store: Store<StateWithGeographicAddress>) {
+  }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
@@ -30,7 +31,7 @@ export class GeographicAddressService implements OnDestroy {
     this.store.dispatch(
       new GeographicAddressActions.CreateGeographicAddress({
         baseSiteId: baseSiteId,
-        geographicAddress: geographicAddress,
+        geographicAddress: geographicAddress
       })
     );
   }
@@ -51,7 +52,7 @@ export class GeographicAddressService implements OnDestroy {
       new GeographicAddressActions.UpdateGeographicAddress({
         baseSiteId: baseSiteId,
         geographicAddressId: geographicAddressId,
-        geographicAddress: geographicAddress,
+        geographicAddress: geographicAddress
       })
     );
   }
@@ -66,6 +67,20 @@ export class GeographicAddressService implements OnDestroy {
       GeographicAddressSelectors.getSelectedInstallationGeographicAddress
     );
   }
+
+  /**
+   * This method retrives the selected installation address.
+   *
+   * @returns selected installation address as {@link Observable} of {@link GeographicAddress}
+   */
+  setSelectedInstallationAddress(address: GeographicAddress): void {
+    this.store.dispatch(
+      new GeographicAddressAction.SelectedInstallationAddress({
+        selectedInstallationAddress: address
+      })
+    );
+  }
+
 
   /**
    * This method determines if geographic address has error.

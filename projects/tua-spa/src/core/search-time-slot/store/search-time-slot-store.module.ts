@@ -16,8 +16,9 @@ import { SearchTimeSlotEffect } from './effects';
     StateModule,
     StoreModule.forFeature(SEARCH_TIME_SLOT_FEATURE, reducerToken, {}),
     EffectsModule.forFeature([SearchTimeSlotEffect]),
-    RouterModule,
+    RouterModule
   ],
-  providers: [reducerProvider],
+  providers: [reducerProvider]
 })
-export class SearchTimeSlotStoreModule {}
+export class SearchTimeSlotStoreModule {
+}

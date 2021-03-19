@@ -58,7 +58,7 @@ export class TmaCartPriceService implements OnDestroy {
     this.payOnCheckoutDiscount = 0;
     this.discountedPayOnCheckoutPrice = 0;
     this.allPrices = [];
-    if (item.cartPrice.cartPrice) {
+    if (item.cartPrice && item.cartPrice.cartPrice) {
       this.flattenPriceTreeWithDiscount(item.cartPrice, null, []);
     }
     this.computeEntryPriceTypes(this.allPrices, '');

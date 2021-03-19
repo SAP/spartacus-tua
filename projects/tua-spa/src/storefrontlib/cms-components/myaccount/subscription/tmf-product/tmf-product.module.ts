@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SpinnerModule } from '@spartacus/storefront';
 import { TmaCartItemPriceDisplayModule } from '../../../cart/cart-shared/cart-item-price-display/tma-cart-item-price-display.module';
+import { TerminateSubscriptionModule } from './terminate-subscription/terminate-subscription.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -15,11 +16,12 @@ import { TmaCartItemPriceDisplayModule } from '../../../cart/cart-shared/cart-it
     RouterModule,
     UrlModule,
     SpinnerModule,
-    TmaCartItemPriceDisplayModule
+    TmaCartItemPriceDisplayModule,
+    TerminateSubscriptionModule
   ],
   providers: [TmfProductService],
   declarations: [TmfProductComponent],
   exports: [TmfProductComponent],
-  entryComponents: [TmfProductComponent],
+  entryComponents: [TmfProductComponent]
 })
 export class TmfProductComponentModule {}

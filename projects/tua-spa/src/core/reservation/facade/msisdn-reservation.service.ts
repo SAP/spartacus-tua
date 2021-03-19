@@ -12,6 +12,7 @@ import { AvailabilityCheckService } from '../../availability-check/facade';
 import { LogicalResourceReservationService } from './logical-resource-reservation.service';
 import { Store } from '@ngrx/store';
 import { JourneyChecklistConfig } from '../../config';
+import { take, filter, takeUntil } from 'rxjs/operators';
 
 const { MSISDN_TYPE } = LOCAL_STORAGE.MSISDN_RESERVATION;
 
@@ -29,12 +30,20 @@ export class MsisdnReservationService extends LogicalResourceReservationService 
   }
 
   /**
-   * This method is used to create reservation for logical resource selected by user from the list of available logical resources
+   * Creates reservation for logical resource selected by user from the list of available logical resources
    *
    * @param product - The product for which the MSISDN will be reserved
    */
-  public createReservationForMsisdn(product: TmaProduct): void {
-    const selectedMsisdn: ResourceRef = this.availabilityCheckService.getSelectedLogicalResource();
+  public createReservationFor(product: TmaProduct): void {
+    let selectedMsisdn: ResourceRef;
+    this.availabilityCheckService.getSelectedLogicalResource().pipe(
+      filter((result: ResourceRef) => !!result),
+      take(2),
+      takeUntil(this.destroyed$)
+    )
+      .subscribe((result: ResourceRef) => {
+        selectedMsisdn = result;
+      });
     if (!selectedMsisdn) {
       return;
     }

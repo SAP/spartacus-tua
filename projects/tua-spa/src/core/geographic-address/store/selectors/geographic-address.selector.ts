@@ -20,7 +20,8 @@ export const getSelectedInstallationGeographicAddress: MemoizedSelector<
   GeographicAddress
 > = createSelector(
   getGeographicAddressFeatureState,
-  (state: GeographicAddressState) => state.installationAddress
+  (state: GeographicAddressState) => { return state.installationAddress;
+  }
 );
 
 export const getSelectedGeographicAddressError: MemoizedSelector<

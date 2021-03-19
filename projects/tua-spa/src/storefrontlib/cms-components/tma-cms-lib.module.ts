@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { TmaAddressFormModule } from './address-form';
 import { TmaCartComponentModule } from './cart';
-import { LogicalResourceModule } from './cart/cart-shared/logical-resource';
 import { TmaCheckoutComponentModule } from './checkout';
 import { TmaConsumptionModule } from './consumption';
 import { TmaGuidedSellingModule } from './guided-selling';
@@ -12,6 +11,8 @@ import { TmaOrderConfirmationModule } from './order-confirmation';
 import { TmaPremiseDetailsModule } from './premise-details';
 import { TmaProductListModule, TmaProductSummaryModule } from './product';
 import { TmaProductTabsModule } from './product/product-tabs';
+import { ServiceabilityBannerModule } from './serviceability';
+import { ServiceabilityButtonModule } from './serviceability-button';
 
 @NgModule({
   imports: [
@@ -24,11 +25,12 @@ import { TmaProductTabsModule } from './product/product-tabs';
     TmaOrderModule,
     SubscriptionComponentModule,
     TmaGuidedSellingModule,
-    LogicalResourceModule,
     JourneyChecklistComponentModule,
     TmaAddressFormModule,
     TmaPremiseDetailsModule,
-    TmaConsumptionModule
-  ],
+    TmaConsumptionModule,
+    ServiceabilityBannerModule,
+    ServiceabilityButtonModule
+  ]
 })
 export class TmaCmsLibModule {}

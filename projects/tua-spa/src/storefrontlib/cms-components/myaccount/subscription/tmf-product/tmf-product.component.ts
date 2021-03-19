@@ -3,10 +3,14 @@ import {
   Input,
   ChangeDetectionStrategy,
   OnInit,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TmfProductService } from '../../../../../core/subscription/tmf-product/facade';
+import {
+  TmfProductService,
+  TmaProcessTypeEnum,
+  RecommendationService
+} from '../../../../../core';
 import {
   TmfProduct,
   TmfProductRelatedPartyRole,
@@ -14,13 +18,14 @@ import {
   TmaOrderEntry,
   TmaCartItemPrice,
   TmaOrder,
-  TmaTmfRelatedParty,
+  TmaTmfRelatedParty
 } from '../../../../../core/model';
 import {
   UserOrderService,
   CurrencyService,
   User,
   UserService,
+  BaseSiteService
 } from '@spartacus/core';
 import { filter, takeUntil } from 'rxjs/operators';
 import { TmaCartPriceService } from '../../../../../core/cart/facade';
@@ -30,7 +35,7 @@ import { TmaItem } from '../../../cart/cart-shared';
   selector: 'cx-tmf-product',
   templateUrl: './tmf-product.component.html',
   styleUrls: ['./tmf-product.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TmfProductComponent implements OnInit, OnDestroy {
   @Input()
@@ -38,20 +43,27 @@ export class TmfProductComponent implements OnInit, OnDestroy {
   @Input()
   tmfProduct: TmfProduct;
   @Input()
+  subscriptionId?: string;
+  @Input()
   order?: TmaOrder;
 
   tmfProductDetail$: Observable<TmfProduct>;
   currency$: Observable<string>;
   isOwner: boolean;
+  baseSiteId: string;
+  isEligibleForTermination$: Observable<boolean>;
+  status: string;
   protected user: User;
   protected destroyed$ = new Subject();
 
   constructor(
     public priceService: TmaCartPriceService,
+    public recommendationService: RecommendationService,
     protected tmfProductService: TmfProductService,
     protected userOrderService: UserOrderService,
     protected currencyService: CurrencyService,
-    protected userService: UserService
+    protected userService: UserService,
+    protected baseSiteService: BaseSiteService
   ) {}
 
   ngOnInit(): void {
@@ -63,12 +75,38 @@ export class TmfProductComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe((customer: User) => (this.user = customer));
+    this.baseSiteService
+      .getActive()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
+    this.isSubscriptionEligibleFor(this.tmfProduct,TmaProcessTypeEnum.TERMINATION);
   }
 
   ngOnDestroy(): void {
     this.destroyed$.next();
     this.destroyed$.complete();
     this.tmfProductService.clearTmfProductDetails();
+  }
+
+  /**
+   * Checks if subscribed product is eligible for given process type.
+   *
+   * @param product 
+   *         The subscribed product as {@link TmfProduct}
+   * @param processTypeId
+   *         The identifier of the processType as {@link string}
+   *
+   */
+  isSubscriptionEligibleFor(product: TmfProduct, processTypeId: string) {
+    if (product.status === TmfProductStatus.active) {
+      this.isEligibleForTermination$ = this.recommendationService.checkRecommendationsFor(
+        this.baseSiteId,
+        this.user.uid,
+        processTypeId,
+        product.productOffering.id,
+        this.subscriptionId
+      );
+    }
   }
 
   getProductOrderEntry(order: TmaOrder, entryNumber: string): TmaOrderEntry {
@@ -121,16 +159,5 @@ export class TmfProductComponent implements OnInit, OnDestroy {
       }
     });
     return this.isOwner;
-  }
-
-  getProductStatus(product: TmfProduct): boolean {
-    if (product.status) {
-      if (product.status.toUpperCase() === TmfProductStatus.ACTIVE) {
-        return true;
-      }
-      if (product.status.toUpperCase() === TmfProductStatus.CANCELLED) {
-        return false;
-      }
-    }
   }
 }

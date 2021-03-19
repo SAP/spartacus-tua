@@ -1,4 +1,4 @@
-import { SearchTimeSlot, TimeSlot } from '../../model';
+import { SearchTimeSlot, TimeSlot, RelatedPlaceRefOrValue } from '../../model';
 import { StateUtils } from '@spartacus/core';
 
 export const SEARCH_TIME_SLOT_FEATURE = 'Search-TimeSlot';
@@ -9,6 +9,7 @@ export interface StateWithSearchTimeSlot {
 }
 
 export interface SearchTimeSlotState {
-  selectedTimeSlot?: TimeSlot;
+  selectedTimeSlot?: SearchTimeSlot;
   searchTimeSlots?: StateUtils.LoaderState<SearchTimeSlot>;
+  error?: string;
 }

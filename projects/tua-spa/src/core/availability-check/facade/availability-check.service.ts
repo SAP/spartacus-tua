@@ -4,7 +4,6 @@ import { Observable, Subject } from 'rxjs';
 import * as AvailabilityCheckActions from '../store/actions/availability-check.action';
 import { Store, select } from '@ngrx/store';
 import * as AvailabilityCheckSelectors from '../store/selectors';
-import { take, filter, takeUntil } from 'rxjs/operators';
 import { StateWithAvailabilityCheck } from '../store';
 
 @Injectable()
@@ -74,31 +73,21 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * This method is used to get the selected logical resource.
+   * Get the selected logical resource.
    *
    * @return
-*          the selected logical resource
+   *          selected logical resource as {@link Observable}
    */
-  getSelectedLogicalResource(): ResourceRef {
-    let selectedLogicalResource: ResourceRef;
-    this.store
-      .select(AvailabilityCheckSelectors.getSelectedLogicalResource)
-      .pipe(
-        filter((result: ResourceRef) => !!result),
-        take(1),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe((result: ResourceRef) => {
-        selectedLogicalResource = result;
-      });
-    return selectedLogicalResource;
+  getSelectedLogicalResource(): Observable<ResourceRef> {
+    return this.store
+      .select(AvailabilityCheckSelectors.getSelectedLogicalResource);
   }
 
   /**
    * This method is used to determine if any error is there in fetching the availability check details.
    *
    * @return
-*           the error message indicating error occurred in fetching the availability check details
+   *        the error message indicating error occurred in fetching the availability check details of type  string {@link Observable}
    */
   getAvailabilityCheckError(): Observable<string> {
     return this.store.pipe(
@@ -107,7 +96,7 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * This method is used to clear the AvailabilityCheck state.
+   * Clear the AvailabilityCheck state.
    */
   clearAvailabilityCheckState(): void {
     this.store.dispatch(
@@ -116,11 +105,21 @@ export class AvailabilityCheckService implements OnDestroy {
   }
 
   /**
-   * This method is used to clear the AvailabilityCheck error.
+   * Clear the AvailabilityCheck error.
    */
   clearAvailabilityCheckError(): void {
     this.store.dispatch(
       new AvailabilityCheckActions.ClearAvailabilityCheckError()
     );
   }
+
+  /**
+   * Clear the selected logical Resource state.
+   */
+  clearSelectedLogicalResourceState(): void {
+    this.store.dispatch(
+      new AvailabilityCheckActions.ClearSelectedLogicalResourceState()
+    );
+  }
+
 }

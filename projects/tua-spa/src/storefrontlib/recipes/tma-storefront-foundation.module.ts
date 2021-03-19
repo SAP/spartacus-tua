@@ -8,21 +8,22 @@ import {
   TmaConsumptionConfigModule,
   TmaPremiseDetailModule,
   TmaProductSpecificationAverageCostModule,
-  TmaProductSpecificationForViewDetailsConfigModule
-} from '../../core';
-import { TmaTmfCartModule } from '../../core/tmf-cart';
-import { SubscriptionModule } from '../../core/subscription/subscription.module';
-import {
+  TmaProductSpecificationForViewDetailsConfigModule,
+  TmaProductModule,
   TmaChecklistActionModule,
   AppointmentModule,
   SearchTimeSlotModule,
   JourneyChecklistConfigModule,
+  GeographicAddressModule,
   RecommendationModule,
   ReservationModule,
-  AvailabilityCheckModule
+  AvailabilityCheckModule,
+  QueryServiceQualificationModule,
 } from '../../core';
+import { TmaTmfCartModule } from '../../core/tmf-cart';
+import { SubscriptionModule } from '../../core/subscription/subscription.module';
 import { TmaGlobalMessageModule } from '../../core/global-message/tma-global-message.module';
-import { GeographicAddressModule } from '../../core/geographic-address';
+import { TmaCheckoutModule } from '../../core/checkout/tma-checkout.module';
 
 @NgModule({
   imports: [
@@ -45,7 +46,10 @@ import { GeographicAddressModule } from '../../core/geographic-address';
     TmaGlobalMessageModule.forRoot(),
     TmaConsumptionConfigModule.forRoot(),
     TmaCartModule.forRoot(),
-    ProductOfferingModule.forRoot()
+    TmaCheckoutModule.forRoot(),
+    QueryServiceQualificationModule.forRoot(),
+    ProductOfferingModule.forRoot(),
+    TmaProductModule.forRoot()
   ],
   exports: [],
   providers: []

@@ -6,8 +6,7 @@
         {{
           (increment
             ? 'addToCart.itemsIncrementedInYourCart'
-            : 'addToCart.itemsAddedToYourCart'
-          ) | cxTranslate
+            : 'addToCart.itemsAddedToYourCart') | cxTranslate
         }}
       </div>
       <button
@@ -37,11 +36,17 @@
       </span>
       <div class="cx-dialog-row">
         <div class="cx-dialog-item col-sm-12 col-md-6">
+          <div *ngIf="entry.subscribedProduct.id">
+            <span class="flash-warn">{{
+              'subscriptions.processType.processType'
+                | cxTranslate: { context: entry.processType.id }
+            }}</span>
+          </div>
           <cx-cart-item
             [item]="entry"
             [isRemovable]="true"
             [compact]="true"
-            [cartPage]="false"
+            [showEdit]="false"
             [isPremiseDetailsReadOnly]="true"
             [quantityControl]="getQuantityControl() | async"
             [promotionLocation]="promotionLocation"
@@ -94,15 +99,6 @@
               >{{ 'addToCart.proceedToCheckout' | cxTranslate }}</a
             >
           </div>
-        </div>
-        <div
-          class="cx-dialog-item col-sm-12 col-md-6"
-          *ngIf="entryHaveInstallationDetails(entry) && !hasPremise"
-        >
-          <cx-appointment-details
-            class="w-100"
-            [groupItems]="appointmentEntries"
-          ></cx-appointment-details>
         </div>
       </div>
     </div>

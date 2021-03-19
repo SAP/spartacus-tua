@@ -8,6 +8,7 @@ import {
   CartCouponModule,
   CartSharedModule,
   MediaModule,
+  ModalModule,
   PromotionsModule,
   SpinnerModule
 } from '@spartacus/storefront';
@@ -17,9 +18,11 @@ import { TmaCartItemListComponent } from './cart-item-list/tma-cart-item-list.co
 import { EffectsModule } from '@ngrx/effects';
 import { TmaTmfCartEffect } from '../../../../core/tmf-cart/store/effects/tma-tmf-cart.effect';
 import { TmaItemCounterModule } from '../../../shared/components/item-counter';
-import { LogicalResourceModule } from './logical-resource';
-import { JourneyChecklistLogicalResourceComponent } from '../../journey-checklist';
-import { AppointmentDetailsComponentModule } from './appointment-details';
+import {
+  JourneyChecklistLogicalResourceDisplayModule,
+  JourneyChecklistInstallationAddressDisplayModule,
+  JourneyChecklistAppointmentDisplayModule
+} from '../../journey-checklist';
 import { TmaCartItemPriceDisplayModule } from './cart-item-price-display/tma-cart-item-price-display.module';
 import { TmaPremiseDetailsModule } from '../../premise-details/components';
 import { TmaPurchaseReasonModule } from '../../purchase-reason';
@@ -41,22 +44,23 @@ import { TmaPurchaseReasonModule } from '../../purchase-reason';
     SpinnerModule,
     TmaPremiseDetailsModule,
     TmaPurchaseReasonModule,
-    LogicalResourceModule,
-    AppointmentDetailsComponentModule,
+    JourneyChecklistLogicalResourceDisplayModule,
+    JourneyChecklistAppointmentDisplayModule,
+    JourneyChecklistInstallationAddressDisplayModule,
     TmaCartItemPriceDisplayModule,
-    EffectsModule.forFeature([TmaTmfCartEffect])
+    EffectsModule.forFeature([TmaTmfCartEffect]),
+    ModalModule
   ],
   declarations: [
     TmaCartItemComponent,
     TmaCartItemListComponent,
     TmaOrderSummaryComponent
   ],
-  entryComponents: [JourneyChecklistLogicalResourceComponent],
+  entryComponents: [],
   exports: [
     TmaCartItemComponent,
     TmaCartItemListComponent,
     TmaOrderSummaryComponent
   ]
 })
-export class TmaCartSharedModule extends CartSharedModule {
-}
+export class TmaCartSharedModule extends CartSharedModule {}

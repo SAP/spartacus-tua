@@ -5,7 +5,7 @@ import {
   ConfigModule,
   I18nModule,
   UrlModule,
-  FeaturesConfigModule,
+  FeaturesConfigModule
 } from '@spartacus/core';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import {
@@ -17,7 +17,7 @@ import {
   ProductListModule,
   SpinnerModule,
   StarRatingModule,
-  ViewConfigModule,
+  ViewConfigModule
 } from '@spartacus/storefront';
 import { TmaProductListComponent } from './container/tma-product-list.component';
 import { TmaProductListItemComponent } from './product-list-item/tma-product-list-item.component';
@@ -26,6 +26,7 @@ import { TmaProductScrollComponent } from './container/product-scroll/tma-produc
 import { TmaAddToCartModule } from '../../cart';
 import { TmaProductViewComponent } from './product-view/tma-product-view.component';
 import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
+import { QueryServiceQualificationModule } from '../../../../core';
 
 @NgModule({
   imports: [
@@ -34,15 +35,15 @@ import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.
     ConfigModule.withConfig({
       cmsComponents: {
         CMSProductListComponent: {
-          component: TmaProductListComponent,
+          component: TmaProductListComponent
         },
         ProductGridComponent: {
-          component: TmaProductListComponent,
+          component: TmaProductListComponent
         },
         SearchResultsListComponent: {
-          component: TmaProductListComponent,
+          component: TmaProductListComponent
         }
-      },
+      }
     }),
     RouterModule,
     MediaModule,
@@ -58,21 +59,22 @@ import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.
     ViewConfigModule,
     FeaturesConfigModule,
     TmaPriceDisplayModule,
+    QueryServiceQualificationModule
   ],
   declarations: [
     TmaProductListComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
-    TmaProductScrollComponent,
+    TmaProductScrollComponent
   ],
   exports: [
     TmaProductListComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
-    TmaProductScrollComponent,
+    TmaProductScrollComponent
   ],
-  entryComponents: [TmaProductListComponent],
+  entryComponents: [TmaProductListComponent]
 })
 export class TmaProductListModule extends ProductListModule {}

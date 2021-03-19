@@ -28,13 +28,13 @@
               class="material-icons pointer-cursor"
               *ngIf="!readonly"
               (click)="removeBpo(group.key)"
-              >highlight_off</span
+            >highlight_off</span
             >
             <span
               class="material-icons pointer-cursor"
               *ngIf="!readonly && !isCartEntryForRenewal(group.value)"
               (click)="prepareCgsForEdit(group.key, group.value, 0)"
-              >edit</span
+            >edit</span
             >
             <ng-container
               *ngIf="getProduct(group.value[0].rootBpoCode) | async as bpo"
@@ -57,63 +57,57 @@
             {{ compatibilityMessage.message }}
           </div>
         </div>
-        <br />
+        <br/>
       </ng-container>
 
       <ng-container *ngFor="let item of group.value">
         <ng-container *ngIf="!item.entries">
           <div class="cx-item-list-items">
+            <div
+            >
+              <div *ngIf="item.subscribedProduct.id">
+                <span class="flash-warn">{{
+                  'subscriptions.processType.processType'
+                    | cxTranslate: { context: item.processType.id }
+                }}</span>
+              </div>
               <ng-container *ngIf="item.rootBpoCode === undefined">
                 <span *ngIf="isCartEntryForRenewal([item])">
                   <span class="right-arrow">
                     {{ 'subscriptions.renew' | cxTranslate }} &nbsp;{{
                       item.subscriptionTerm.name
                     }}
-                  </span>
                 </span>
-              </ng-container>
-              <div
-                class="cx-item-list-items"
-                *ngIf="getControl(item) | async as control"
-                [class.is-changed]="control.get('quantity').dirty"
+              </span>
+            </ng-container>
+            <div
+              class="cx-item-list-items"
+              *ngIf="getControl(item) | async as control"
+              [class.is-changed]="control.get('quantity').dirty"
+            >
+              <cx-cart-item
+                [showEdit]="showEdit"
+                [item]="item"
+                [quantityControl]="control.get('quantity')"
+                [readonly]="readonly"
+                [promotionLocation]="promotionLocation"
+                [isPremiseDetailsReadOnly]="isPremiseDetailsReadOnly"
+                [isRemovable]="item.rootBpoCode == null"
+                (remove)="removeEntry($event)"
+                [options]="options"
               >
-                <cx-cart-item
-                  [cartPage]="cartPage"
-                  [item]="item"
-                  [quantityControl]="control.get('quantity')"
-                  [readonly]="readonly"
-                  [promotionLocation]="promotionLocation"
-                  [isPremiseDetailsReadOnly]="isPremiseDetailsReadOnly"
-                  [isRemovable]="item.rootBpoCode == null"
-                  (remove)="removeEntry($event)"
-                  [options]="options"
-                >
-                </cx-cart-item>
-                <ng-container
-                  *ngIf="
-                    item.rootBpoCode === undefined &&
-                    getOrderEntryArray(item) as orderEntries
-                  "
-                >
-                  <ng-container
-                    *ngIf="!isProductSpecificationForViewDetails(item)"
-                  >
-                    <cx-appointment-details
-                      [cartPage]="cartPage"
-                      [groupItems]="orderEntries"
-                    ></cx-appointment-details>
-                  </ng-container>
-                </ng-container>
-              </div>
+              </cx-cart-item>
+              <ng-container
+                *ngIf="
+                  item.rootBpoCode === undefined &&
+                  getOrderEntryArray(item) as orderEntries
+                "
+              >
+              </ng-container>
+            </div>
+          </div>
           </div>
         </ng-container>
-      </ng-container>
-
-      <ng-container *ngIf="group.value[0].rootBpoCode !== undefined">
-        <cx-appointment-details
-          [cartPage]="cartPage"
-          [groupItems]="group.value"
-        ></cx-appointment-details>
       </ng-container>
     </ng-container>
   </div>

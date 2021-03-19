@@ -107,11 +107,13 @@
 </ng-container>
 
 <ng-container *ngIf="!productSpecificationForViewDetails">
-  <cx-add-to-cart
-    *ngIf="product.stock?.stockLevelStatus !== 'outOfStock'"
-    [showQuantity]="false"
-    [product]="product"
-  ></cx-add-to-cart>
+      <cx-add-to-cart
+      *ngIf="product.stock?.stockLevelStatus !== 'outOfStock'"
+      [showQuantity]="false"
+      [product]="product"
+      [seeDetails]="!isAddToCartForServiceableProducts"
+      [isAddToCartForServiceableProducts]="isAddToCartForServiceableProducts"
+    ></cx-add-to-cart>
 </ng-container>
 
 <ng-template #loading>

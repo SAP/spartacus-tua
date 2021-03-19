@@ -11,9 +11,8 @@ import { BaseSiteService } from '@spartacus/core';
 
 @Injectable()
 export class TmaChecklistActionService implements OnDestroy {
-  
+
   protected activeBaseSite: string;
-  
   protected destroyed$ = new Subject();
 
   /**
@@ -43,11 +42,11 @@ export class TmaChecklistActionService implements OnDestroy {
   }
 
   /**
-   * This method is used to retrive checklist actions for defined product and process type
+   * This method is used to retrieve checklist actions for defined product and process type
    * @param baseSiteId  The base site Id
    * @param productCode The product code
    * @param processType? The process type to find the checklist actions
-   * @returns TmaChecklistActionModel.TmaChecklistAction[] The applicable checkist actions
+   * @returns TmaChecklistActionModel.TmaChecklistAction[] The applicable checklist actions
    */
   getChecklistActionForProductCode(
     baseSiteId: string,
@@ -69,7 +68,7 @@ export class TmaChecklistActionService implements OnDestroy {
             new TmaChecklistAction.LoadChecklistActions({
               baseSiteId,
               productCode,
-              processType,
+              processType
             })
           );
         }
@@ -78,7 +77,7 @@ export class TmaChecklistActionService implements OnDestroy {
   }
 
   /**
-   * Retrives the checklist actions for multiple product offerings based on process type
+   * Retrieves the checklist actions for multiple product offerings based on process type
    *
    * @param baseSiteId  The base site Id
    * @param productOfferingCodes The list of product offering codes
@@ -90,25 +89,18 @@ export class TmaChecklistActionService implements OnDestroy {
     productOfferingCodes: string[],
     processType?: TmaProcessTypeEnum
   ): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
+    this.store.dispatch(
+      new TmaChecklistAction.LoadChecklistActions({
+        baseSiteId,
+        productOfferingCodes,
+        processType,
+      })
+    );
     return this.store.pipe(
       select(TmaChecklistActionSelectors.getChecklistActionForPoCodes, {
         productOfferingCodes,
         baseSiteId,
         processType,
-      }),
-      tap((checklistActions: TmaChecklistActionModel.TmaChecklistAction[]) => {
-        if (
-          checklistActions === undefined ||
-          Object.keys(checklistActions).length === 0
-        ) {
-          this.store.dispatch(
-            new TmaChecklistAction.LoadChecklistActions({
-              baseSiteId,
-              productOfferingCodes,
-              processType,
-            })
-          );
-        }
       })
     );
   }

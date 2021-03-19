@@ -30,7 +30,8 @@ import {
   TmaPriceContext,
   TmaProductOfferingPrice,
   TmaSubscriptionTerm,
-  TmfProductOfferingType
+  TmfProductOfferingType,
+  TmfProductStatus
 } from '../../../../../core/model';
 
 @Component({
@@ -109,7 +110,8 @@ export class RenewSubscriptionBannerComponent
     this.validSubscribedProducts = subscribedProducts.filter(
       (subscribedProduct: TmfProduct) =>
         subscribedProduct.productOffering['@referredType'] !==
-        TmfProductOfferingType.OPERATIONAL_PRODUCT_OFFERING
+          TmfProductOfferingType.OPERATIONAL_PRODUCT_OFFERING &&
+        subscribedProduct.status === TmfProductStatus.active
     );
     if (this.validSubscribedProducts.length > 0) {
       return this.recommendationService.checkRecommendationsFor(

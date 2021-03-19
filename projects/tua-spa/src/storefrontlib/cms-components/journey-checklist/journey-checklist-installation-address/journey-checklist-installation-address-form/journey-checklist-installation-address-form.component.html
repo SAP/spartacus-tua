@@ -1,0 +1,86 @@
+<div class="row mx-auto">
+  <div class="card w-100">
+    <div class="card-header">
+      <div class="row mx-auto d-flex justify-content-center py-3">
+        <div class="col-sm-11 col-10">
+          <div class="row mx-auto d-flex justify-content-center">
+            <span class="headText pl-2">
+          {{ 'checkList.installationAddress.headline' | cxTranslate }}
+        </span>
+          </div>
+        </div>
+
+        <div class="col-1 col-sm-1">
+          <div class="row mx-auto d-flex justify-content-end">
+            <span class="material-icons clickable" (click)="closeModal()"
+            >close</span
+            >
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div [formGroup]="installationAddressDetails">
+        <cx-address-form
+          [address]="installationAddress"
+          [isDialog]="false"
+          [isEdit]="isEdit"
+          (countrySelected)="onCountrySelected($event)"
+          (regionSelected)="onRegionSelected($event)"
+        >
+        </cx-address-form>
+
+        <p>&nbsp;</p>
+        <div class="cx-checkout-btns row">
+          <div
+            *ngIf="isValid(installationAddressDetails.invalid)"
+            class="col-md-12 col-lg-12"
+          ></div>
+        </div>
+
+        <!-- Installation Address -->
+        <div class="row mx-auto d-flex justify-content-center mb-2 w-100">
+          <ng-container *ngIf="poNotServiceableError">
+            <div class="alert alert-primary w-100 m-4" role="alert">
+              {{
+              'serviceability.notServiceable'
+              | cxTranslate: { code: poNotServiceable }
+              }}
+            </div>
+          </ng-container>
+          <ng-container *ngIf="systemNotAvailable && !poNotServiceableError">
+            <div class="alert alert-primary w-100 m-4" role="alert">
+              {{ 'serviceability.serviceNotAvailable' | cxTranslate }}
+            </div>
+          </ng-container>
+          <ng-container *ngIf="addressError">
+            <div class="alert alert-primary w-100" role="alert">
+              {{ 'addressForm.invalidAddress' | cxTranslate }}
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <div class="row mx-auto d-flex justify-content-center">
+        <button [disabled] = "installationAddressDetails.invalid"
+          (click)="performServiceability()"
+          class="btn btn-primary btn-sm btn-wd-40"
+        >
+          {{
+          isEdit
+          ? ('common.update' | cxTranslate)
+          : ('common.add' | cxTranslate)
+          }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<ngx-spinner
+  [fullScreen]="false"
+  type="ball-clip-rotate-multiple"
+  size="medium"
+></ngx-spinner>

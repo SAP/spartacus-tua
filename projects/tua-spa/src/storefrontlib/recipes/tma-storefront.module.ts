@@ -3,7 +3,7 @@ import {
   ProductDetailsPageModule,
   ProductListingPageModule,
   StorefrontFoundationModule,
-  StorefrontModule,
+  StorefrontModule
 } from '@spartacus/storefront';
 import { AsmModule, ExternalRoutesModule, OccModule, PersonalizationModule, provideConfig, SiteContextModule, SmartEditModule } from '@spartacus/core';
 import { TmaStorefrontConfig } from '../tma-storefront-config';
@@ -12,12 +12,12 @@ import { TmaOccModule } from '../../core/occ';
 import { TmfModule } from '../../core/tmf';
 import { TmfAppointmentModule } from '../../core/tmf-appointment';
 import { TmfResourcePoolManagementModule } from '../../core/tmf-resource-pool-management/tmf-resource-pool-management.module';
+import { TmfQueryServiceQualificationModule } from '../../core/tmf-service-qualification-management';
 import { PremiseLookupModule } from '../../core';
 import { TmaMainModule } from '../layout';
 import { RouterModule } from '@angular/router';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-
 
 @NgModule({
   imports: [
@@ -52,13 +52,14 @@ import { EffectsModule } from '@ngrx/effects';
     TmfModule.forRoot(),
     PremiseLookupModule.forRoot(),
     TmfResourcePoolManagementModule.forRoot(),
-    TmfAppointmentModule.forRoot()
+    TmfAppointmentModule.forRoot(),
+    TmfQueryServiceQualificationModule.forRoot()
   ],
   exports: [
     TmaMainModule,
     StorefrontFoundationModule,
-    TmaStorefrontFoundationModule,
-  ],
+    TmaStorefrontFoundationModule
+  ]
 })
 export class TmaStorefrontModule extends StorefrontModule {
   static withConfig(
@@ -66,7 +67,7 @@ export class TmaStorefrontModule extends StorefrontModule {
   ): ModuleWithProviders<TmaStorefrontModule> {
     return {
       ngModule: TmaStorefrontModule,
-      providers: [provideConfig(config)],
+      providers: [provideConfig(config)]
     };
   }
 }

@@ -3,7 +3,7 @@ import { ActionReducerMap } from '@ngrx/store';
 import * as fromTmaSearchTimeSlotReducers from './search-time-slot.reducer';
 import {
   SearchTimeSlotState,
-  SEARCH_TIME_SLOT_DATA,
+  SEARCH_TIME_SLOT_DATA
 } from '../search-time-slot.state';
 import { SearchTimeSlot } from '../../..';
 import { StateUtils } from '@spartacus/core';
@@ -15,6 +15,7 @@ export function getReducers(): ActionReducerMap<SearchTimeSlotState> {
       fromTmaSearchTimeSlotReducers.searchTimeSlotReducer
     ),
     selectedTimeSlot: fromTmaSearchTimeSlotReducers.selectedTimeSlotReducer,
+    error: fromTmaSearchTimeSlotReducers.searchTimeSlotErrorReducer
   };
 }
 
@@ -26,5 +27,5 @@ export const reducerToken: InjectionToken<ActionReducerMap<
 
 export const reducerProvider: Provider = {
   provide: reducerToken,
-  useFactory: getReducers,
+  useFactory: getReducers
 };

@@ -21,5 +21,8 @@ export * from './tmf-appointment/index';
 export * from './recommendation/index';
 export * from './geographic-address/index';
 export * from './global-message/index';
+export * from './queryServiceQualification/index';
 export * from './productoffering/index';
+export * from './checkout/index';
 export * from './subscription-term/index';
+export * from './tmf-service-qualification-management/index';

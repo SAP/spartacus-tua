@@ -1,0 +1,8 @@
+<ng-container *ngIf="currentCart$ | async as currentCart">
+  <button
+    class="btn btn-sm btn-terminate btn-primary"
+    (click)="addToCart(currentCart)"
+  >
+    {{ 'subscriptions.terminate' | cxTranslate }}
+  </button>
+</ng-container>

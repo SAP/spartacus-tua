@@ -8,7 +8,7 @@
         <cx-promotions [promotions]="orderPromotions"></cx-promotions>
       </ng-container>
       <cx-cart-item-list
-        [cartPage]="true"
+        [showEdit]="true"
         [items]="entries"
         [cartIsLoading]="!(cartLoaded$ | async)"
         [promotionLocation]="promotionLocation"

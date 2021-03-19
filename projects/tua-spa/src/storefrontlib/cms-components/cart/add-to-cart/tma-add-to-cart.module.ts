@@ -18,19 +18,22 @@ import { TmaAddToCartComponent } from './tma-add-to-cart.component';
 import { TmaAddedToCartDialogComponent } from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { TmaCartSharedModule } from '../cart-shared';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { JourneyChecklistComponentModule } from '../../journey-checklist';
+import {
+  JourneyChecklistLogicalResourceDisplayModule,
+  JourneyChecklistAppointmentDisplayModule,
+  JourneyChecklistInstallationAddressDisplayModule
+} from '../../journey-checklist';
 import { TmaPremiseDetailsModule } from '../../premise-details';
-import { AppointmentDetailsComponentModule } from '../cart-shared/appointment-details';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 @NgModule({
   imports: [
     TmaCartSharedModule,
-    AppointmentDetailsComponentModule,
     CommonModule,
     RouterModule,
     SpinnerModule,
+    NgxSpinnerModule,
     PromotionsModule,
-    JourneyChecklistComponentModule,
     FeaturesConfigModule,
     ConfigModule.withConfig({
       cmsComponents: {
@@ -45,7 +48,10 @@ import { AppointmentDetailsComponentModule } from '../cart-shared/appointment-de
     ItemCounterModule,
     FormsModule,
     ReactiveFormsModule,
-    TmaPremiseDetailsModule
+    TmaPremiseDetailsModule,
+    JourneyChecklistLogicalResourceDisplayModule,
+    JourneyChecklistAppointmentDisplayModule,
+    JourneyChecklistInstallationAddressDisplayModule
   ],
   declarations: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],
   entryComponents: [TmaAddToCartComponent, TmaAddedToCartDialogComponent],

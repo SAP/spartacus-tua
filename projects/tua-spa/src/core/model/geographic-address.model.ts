@@ -21,6 +21,7 @@ export interface GeographicAddress {
   isContactAddress?: boolean;
   isShippingAddress?: boolean;
   isBillingAddress?: boolean;
+  '@type'?: string;
 }
 
 export interface GeographicSubAddress {

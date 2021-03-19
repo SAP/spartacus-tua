@@ -33,5 +33,6 @@ export interface TmaTmfProductOffering {
 export enum TmaTmfActionType {
   ADD = 'ADD',
   UPDATE = 'UPDATE',
-  KEEP = 'KEEP'
+  KEEP = 'KEEP',
+  REMOVE = 'REMOVE'
 }

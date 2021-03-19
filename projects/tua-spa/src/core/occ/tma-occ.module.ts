@@ -10,11 +10,15 @@ import {
 } from '@spartacus/core';
 import { TmaOccCartModule } from './adapters/cart';
 import { TmaOccProductModule } from './adapters/product';
+import { TmaCheckoutOccModule } from './adapters/checkout';
+import { TmaUserOccModule } from './adapters/user';
 
 @NgModule({
   imports: [
     TmaOccCartModule,
-    TmaOccProductModule
+    TmaOccProductModule,
+    TmaCheckoutOccModule,
+    TmaUserOccModule
   ]
 })
 export class TmaOccModule extends OccModule {

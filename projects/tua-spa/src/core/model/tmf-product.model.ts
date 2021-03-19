@@ -21,14 +21,14 @@ export interface TmfProduct {
 }
 
 export enum TmfProductStatus {
-  CREATED = 'CREATED',
-  PENDINGACTIVE = 'PENDINGACTIVE',
-  CANCELLED = 'CANCELLED',
-  ACTIVE = 'ACTIVE',
-  PENDINGTERMINATE = 'PENDINGTERMINATE',
-  TERMINATED = 'TERMINATED',
-  SUSPENDED = 'SUSPENDED',
-  ABORTED = 'ABORTED',
+  created = 'created',
+  pendingActive = 'pendingActive',
+  cancelled = 'cancelled',
+  active = 'active',
+  pendingTerminate = 'pendingTerminate',
+  terminated = 'terminated',
+  suspended = 'suspended',
+  aborted = 'aborted',
 }
 
 export enum TmfProductRelatedPartyRole {

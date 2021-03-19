@@ -1,5 +1,6 @@
 import {
-  AnonymousConsentsConfig, AsmConfig,
+  AnonymousConsentsConfig,
+  AsmConfig,
   AuthConfig,
   CartConfig,
   CmsConfig, ExternalRoutesConfig, GlobalMessageConfig,
@@ -17,10 +18,9 @@ import { TmfResourcePoolManagementConfig } from '../core/tmf-resource-pool-manag
 import { SeoConfig } from '@spartacus/storefront/cms-structure/seo/config';
 import { TmaBillingFrequencyConfig } from '../core/config/billing-frequency';
 import { JourneyChecklistConfig } from '../core/config/journey-checklist-config';
+import { TmfQueryServiceQualificationConfig } from '../core/tmf-service-qualification-management';
 
-
-class SkipLinkConfig {
-}
+class SkipLinkConfig {}
 
 export type TmaStorefrontConfig =
   | AnonymousConsentsConfig
@@ -52,4 +52,5 @@ export type TmaStorefrontConfig =
   | MediaConfig
   | PaginationConfig
   | CartConfig
-  | SeoConfig;
+  | SeoConfig
+  | TmfQueryServiceQualificationConfig;

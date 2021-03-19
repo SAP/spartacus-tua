@@ -1,5 +1,6 @@
 export const resource = {
   resource: {
-    type_MSISDN: 'Phone Number'
+    typeMsisdn: 'Phone Number',
+    selectMsisdn: 'Select desired Phone number'
   }
 };

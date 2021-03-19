@@ -22,4 +22,5 @@ export * from './tma-cms-model';
 export * from './tma-consumption.model';
 export * from './tma-image.model';
 export * from './tma-po-search-by-consumption.model';
+export * from './query-service-qualification.model';
 export * from './tma-banner.model';

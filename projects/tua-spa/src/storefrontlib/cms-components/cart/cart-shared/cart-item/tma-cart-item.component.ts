@@ -1,20 +1,21 @@
 import { OnDestroy } from '@angular/core';
-import { GlobalMessageService, GlobalMessageType, ProductService, TranslationService } from '@spartacus/core';
+import { GlobalMessageService, GlobalMessageType, ProductService, TranslationService, BaseSiteService } from '@spartacus/core';
 import { ModalRef, ModalService } from '@spartacus/storefront';
 import { Subject } from 'rxjs';
-import { filter, first, takeUntil } from 'rxjs/operators';
+import { filter, first, takeUntil, take, distinctUntilChanged, map } from 'rxjs/operators';
 import {
   Appointment,
   TmaInstallationAddressConverter,
   TmaPremiseDetailInteractionService,
   TmaPremiseDetailService,
   TmaProcessType,
-  TmaSubscriptionTerm
-} from '../../../../../core';
-import { TmaCartService } from '../../../../../core/cart/facade';
-import {
+  TmaSubscriptionTerm,
+  TmaChecklistActionService,
+  TmaChecklistActionTypeCheckService,
+  JourneyChecklistConfig,
   LogicalResource,
   LogicalResourceType,
+  TmaActionType,
   TmaAddress,
   TmaCartPrice,
   TmaCharacteristic,
@@ -29,8 +30,13 @@ import {
   TmaRelatedPartyRole,
   TmaSubscribedProduct,
   TmaTechnicalResource,
-  TmaTechnicalResources
-} from '../../../../../core/model';
+  TmaTechnicalResources,
+  TmaChecklistAction,
+  TmaCartPriceService,
+  TmaCartService,
+  LogicalResourceReservationService,
+  TmaProductService
+} from '../../../../../core';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   CartItemComponent,
@@ -38,8 +44,6 @@ import {
 } from '@spartacus/storefront';
 import { CurrencyService, OrderEntry } from '@spartacus/core';
 import { Observable } from 'rxjs';
-import { TmaCartPriceService } from '../../../../../core/cart/facade';
-import { LogicalResourceReservationService } from '../../../../../core/reservation';
 import { TmaUserAddressService } from '../../../../../core/user/facade/tma-user-address.service';
 import { TmaPremiseDetailsFormComponent } from '../../../premise-details';
 
@@ -54,6 +58,7 @@ export interface TmaItem extends OrderEntry {
   processType?: TmaProcessType;
   contractStartDate?: string;
   subscriptionTerm?: TmaSubscriptionTerm;
+  action?: TmaActionType;
 }
 
 @Component({
@@ -72,7 +77,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   isRemovable: boolean;
 
   @Input()
-  cartPage?: boolean;
+  showEdit?: boolean;
 
   @Input()
   qtyDisabled = false;
@@ -85,24 +90,30 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   product$: Observable<TmaProduct>;
   currency$: Observable<string>;
   itemLogicalResources: LogicalResource[];
-
+  checklistAction$: TmaChecklistAction[];
   protected modalRef: ModalRef;
   protected destroyed$ = new Subject();
+  protected baseSiteId: string;
 
   constructor(
     public cartPriceService: TmaCartPriceService,
+    public checklistActionTypeCheckService: TmaChecklistActionTypeCheckService,
     protected currencyService: CurrencyService,
     protected promotionService: PromotionService,
+    public productSpecificationProductService?: TmaProductService,
     protected logicalResourceReservationService?: LogicalResourceReservationService,
     protected modalService?: ModalService,
     protected cartService?: TmaCartService,
     protected tmaUserAddressService?: TmaUserAddressService,
     protected tmaPremiseDetailService?: TmaPremiseDetailService,
     protected globalMessageService?: GlobalMessageService,
+    protected tmaChecklistActionService?: TmaChecklistActionService,
     protected installationAddressConverter?: TmaInstallationAddressConverter,
     protected translationService?: TranslationService,
     protected productService?: ProductService,
-    protected premiseDetailInteractionService?: TmaPremiseDetailInteractionService
+    protected premiseDetailInteractionService?: TmaPremiseDetailInteractionService,
+    protected baseSiteService?: BaseSiteService,
+    protected config?: JourneyChecklistConfig
   ) {
     super(promotionService);
   }
@@ -123,6 +134,44 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     this.itemLogicalResources = this.getLogicalResources(
       this.item.subscribedProduct.characteristic
     );
+    this.baseSiteService
+      .getActive()
+      .pipe(
+        first((baseSiteId: string) => !!baseSiteId),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
+
+    this.tmaChecklistActionService.getChecklistActionForProductCode(
+      this.baseSiteId,
+      this.item.product.code,
+      this.item.processType.id
+    ).pipe(
+      take(2),
+      filter((checklistResult: TmaChecklistAction[]) => !!checklistResult),
+      distinctUntilChanged(),
+      takeUntil(this.destroyed$),
+      map((checklistResult: TmaChecklistAction[]) => {
+        if (Object.keys(checklistResult).length !== 0) {
+          const journeyCheckLists: TmaChecklistAction[] = checklistResult.filter(
+            (checklist: TmaChecklistAction) =>
+              this.config.journeyChecklist.journeyChecklistSteps.includes(
+                checklist.actionType
+              )
+          );
+          if (Object.keys(journeyCheckLists).length !== 0) {
+            this.checklistAction$ = journeyCheckLists;
+          }
+          else {
+            this.checklistAction$ = undefined;
+          }
+        }
+        else {
+          this.checklistAction$ = undefined;
+        }
+      })
+    )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
@@ -247,18 +296,6 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
   }
 
   /**
-   * Checks if the cart item has installation address or not.
-   *
-   * @return True if has installation address, otherwise false
-   */
-  hasInstallationAddress(): boolean {
-    return !!(this.item &&
-      this.item.subscribedProduct &&
-      this.item.subscribedProduct.place &&
-      this.item.subscribedProduct.place.find((place: TmaPlace) => place.role === TmaPlaceRole.INSTALLATION_ADDRESS));
-  }
-
-  /**
    * Returns the premise details based on information from cart item and product.
    *
    * @param product - The product offering
@@ -269,6 +306,62 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
       installationAddress: this.installationAddressConverter.convertTargetToSource(this.getAddressFromItem(this.item)),
       meter: this.getMeter(product)
     };
+  }
+
+  /**
+   * Checks if the cart item has installation address
+   *
+   * @return True {@link boolean} if cart item has installation address, otherwise false
+   */
+  hasInstallationAddress(): boolean {
+    return !!(this.item &&
+      this.item.subscribedProduct &&
+      this.item.subscribedProduct.place &&
+      this.item.subscribedProduct.place.find((place: TmaPlace) => place.role === TmaPlaceRole.INSTALLATION_ADDRESS));
+  }
+
+  /**
+   * Checks if appointment is present in cart item
+   *
+   * @return True {@link boolean} if cart item has appointment, otherwise false
+   */
+  hasAppointment(): boolean {
+    return !!(this.item.appointment && this.item.appointment.id);
+  }
+
+  /**
+   * Checks if logical resource MSISDN present in cart item
+   *
+   * @return True {@link boolean} if cart item has logical resource MSISDN, otherwise false
+   */
+  isLogicalResourceMsisdn(): boolean {
+    return !!(this.item &&
+      this.item.subscribedProduct &&
+      this.item.subscribedProduct.characteristic &&
+      this.item.subscribedProduct.characteristic.find((tmaCharacteristic: TmaCharacteristic) => tmaCharacteristic.name === LogicalResourceType.MSISDN));
+  }
+
+  /**
+   * Check Logical Resource present in cart item
+   *
+   * @return a {@link LogicalResource}
+   */
+  hasLogicalResource(): LogicalResource[] {
+    if (this.item &&
+      this.item.subscribedProduct &&
+      this.item.subscribedProduct.characteristic) {
+      return this.getLogicalResources(
+        this.item.subscribedProduct.characteristic
+      );
+    }
+    return;
+  }
+
+  getMeter(product: TmaProduct): TmaMeter {
+    return this.item && this.item.subscribedProduct && this.item.subscribedProduct.characteristic ? {
+      id: this.getMeterValue(this.item.subscribedProduct),
+      type: product.productSpecification.id
+    } : null;
   }
 
   protected checkPremiseValidity(validationResult: TmaTechnicalResources): boolean {
@@ -304,12 +397,30 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     } : null;
   }
 
-  protected getMeter(product: TmaProduct): TmaMeter {
-    return this.item && this.item.subscribedProduct && this.item.subscribedProduct.characteristic ? {
-      id: this.getMeterValue(this.item.subscribedProduct),
-      type: product.productSpecification.id
-    } : null;
+  protected getLogicalResources(
+    characteristics: TmaCharacteristic[]
+  ): LogicalResource[] {
+    const logicalResources: LogicalResource[] = [];
+    if (!characteristics) {
+      return;
+    }
+    characteristics.forEach((characteristic: TmaCharacteristic) => {
+      if (
+        !!characteristic.name &&
+        Object.values(LogicalResourceType).includes(
+          LogicalResourceType[characteristic.name.toUpperCase()]
+        )
+      ) {
+        const logicalResource: LogicalResource = {};
+        logicalResource.type =
+          LogicalResourceType[characteristic.name.toUpperCase()];
+        logicalResource.value = characteristic.value;
+        logicalResources.push(logicalResource);
+      }
+    });
+    return logicalResources;
   }
+
   private getMeterValue(subscribedProduct: TmaSubscribedProduct): string {
     const characteristic = subscribedProduct.characteristic.find((tmaCharacteristic: TmaCharacteristic) =>
       tmaCharacteristic.name === 'meter_id');
@@ -334,27 +445,4 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     });
   }
 
-  protected getLogicalResources(
-    characteristics: TmaCharacteristic[]
-  ): LogicalResource[] {
-    const logicalResources: LogicalResource[] = [];
-    if (!characteristics) {
-      return;
-    }
-    characteristics.forEach((characteristic: TmaCharacteristic) => {
-      if (
-        !!characteristic.name &&
-        Object.values(LogicalResourceType).includes(
-          LogicalResourceType[characteristic.name.toUpperCase()]
-        )
-      ) {
-        const logicalResource: LogicalResource = {};
-        logicalResource.type =
-          LogicalResourceType[characteristic.name.toUpperCase()];
-        logicalResource.value = characteristic.value;
-        logicalResources.push(logicalResource);
-      }
-    });
-    return logicalResources;
-  }
 }

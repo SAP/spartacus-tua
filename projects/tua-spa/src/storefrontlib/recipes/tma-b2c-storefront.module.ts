@@ -12,7 +12,8 @@ import {
   mediaConfig,
   B2cStorefrontModule,
   layoutConfig,
-  defaultCmsContentProviders
+  defaultCmsContentProviders,
+  StorefrontModule
 } from '@spartacus/storefront';
 
 @NgModule({

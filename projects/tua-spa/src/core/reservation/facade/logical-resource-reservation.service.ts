@@ -209,50 +209,40 @@ export class LogicalResourceReservationService implements OnDestroy {
   }
 
   /**
-   * This method is used to clear the reservation state.
+   * Clears the reservation state.
    */
   public clearReservationState(): void {
     this.store.dispatch(new ReservationAction.ClearReservation());
   }
 
   /**
-   * This method is used to clear the created reservation state.
+   * Clears the created reservation state.
    */
   public clearCreatedReservationState(): void {
     this.store.dispatch(new ReservationAction.ClearCreatedReservation());
   }
 
   /**
-   * This method is used to update reservation for logical resource.
-   *  @param newResource
-   *          The new resource to be updated
-   *  @param cartEntryResourceValue
-   *           The selected logical resource value for the cart entry
-   *  @return
-   *        the updated reservation as {@link Observable<Reservation>}
+   * Update reservation for logical resource.
+   *
+   *  @param resourceRef
+   *          The new resource to be updated as {@link ResourceRef}
+   *  @param reservationId
+   *           The selected logical resource reservation id for the cart entry as {@link string}
    */
-  public updateReservationForLogicalResource(
-    newResource: ResourceRef,
-    cartEntryResourceValue: string
-  ): Observable<Reservation> {
+  public updateReservationFor(
+    resourceRef: ResourceRef,
+    reservationId: string
+  ): void {
     const updatedReservation = {
-      value: newResource,
+      value: resourceRef,
       op: 'replace'
     };
-    this.getReservationByLogicalResourceValue(cartEntryResourceValue)
-      .pipe(
-        filter((result: Reservation) => !!result),
-        take(1),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe((result: Reservation) => {
-        this.store.dispatch(
-          new ReservationAction.UpdateReservation({
-            updatedReservation: updatedReservation,
-            reservationId: result.id
-          })
-        );
-      });
-    return this.getReservationByLogicalResourceValue(newResource.value);
+    this.store.dispatch(
+      new ReservationAction.UpdateReservation({
+        updatedReservation: updatedReservation,
+        reservationId: reservationId
+      })
+    );
   }
 }

@@ -6,6 +6,8 @@ import { Appointment } from './appointment.model';
 export enum TmaActionType {
   ADD = 'ADD',
   UPDATE = 'UPDATE',
+  REMOVE = 'REMOVE',
+  KEEP = 'KEEP'
 }
 
 export enum TmaBillingTimeType {

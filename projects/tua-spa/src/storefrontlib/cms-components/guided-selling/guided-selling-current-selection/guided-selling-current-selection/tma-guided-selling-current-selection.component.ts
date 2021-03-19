@@ -4,13 +4,14 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  Input
 } from '@angular/core';
 import {
   animate,
   state,
   style,
   transition,
-  trigger,
+  trigger
 } from '@angular/animations';
 import {
   TmaCart,
@@ -19,15 +20,14 @@ import {
   TmaProduct,
   TmaProductOfferingPrice,
   TmaSelectionAction,
-  TmaTmfActionType,
   TmaTmfCartItem,
   TmaTmfShoppingCart,
-  TmaChecklistAction,
+  TmaChecklistAction
 } from '../../../../../core/model';
 import { Observable, Subject, Subscriber } from 'rxjs';
 import {
   TmaGuidedSellingCurrentSelectionsService,
-  TmaGuidedSellingStepsService,
+  TmaGuidedSellingStepsService
 } from '../../../../../core/guided-selling/facade';
 import { TmaPriceService } from '../../../../../core/product/facade';
 import {
@@ -38,30 +38,30 @@ import {
   UserService,
   TranslationService,
   GlobalMessageService,
-  GlobalMessageType,
+  Product,
+  GlobalMessageType
 } from '@spartacus/core';
 import {
   first,
   takeUntil,
-  take,
   filter,
+  take,
   distinctUntilChanged,
   map,
-  tap,
+  tap
 } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { ModalRef, ModalService } from '@spartacus/storefront';
 import { TmaGuidedSellingAddedToCartDialogComponent } from '../guided-selling-added-to-cart-dialog/tma-guided-selling-added-to-cart-dialog.component';
 import {
   LOCAL_STORAGE,
-  TmaConstantResourceModel,
+  TmaConstantResourceModel
 } from '../../../../../core/util/constants';
-import { JourneyChecklistStepComponent } from '../../../journey-checklist';
 import {
-  JourneyChecklistConfig,
-  TmaChecklistActionService,
   TmaTmfCartService,
-  TmaActiveCartService
+  TmaActiveCartService,
+  TmaChecklistActionService,
+  JourneyChecklistConfig
 } from '../../../../../core';
 import { TmaItem } from '../../../cart';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -77,14 +77,17 @@ const { CURRENT_SELECTION } = LOCAL_STORAGE.GUIDED_SELLING;
       state('false', style({ height: '0px', overflow: 'hidden' })),
       state('true', style({ height: '*' })),
       transition('1 => 0', animate('500ms ease-in')),
-      transition('0 => 1', animate('500ms ease-out')),
-    ]),
-  ],
+      transition('0 => 1', animate('500ms ease-out'))
+    ])
+  ]
 })
 export class TmaGuidedSellingCurrentSelectionComponent
   implements OnInit, OnDestroy {
   @ViewChild('addToCartButton', { static: false })
   addToCartButton: ElementRef;
+
+  @Input()
+  product: Product;
 
   currentSelections: TmaProduct[];
   currentSelectionTotal: string;
@@ -269,7 +272,6 @@ export class TmaGuidedSellingCurrentSelectionComponent
     this.currentSelections.forEach((product: TmaProduct) => {
       productOfferingIds.push(product.code);
     });
-
     this.tmaChecklistActionService
       .getChecklistActionsFor(
         this.currentBaseSiteId,
@@ -294,7 +296,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
             if (Object.keys(journeyCheckLists).length === 0) {
               this.addBpoCart(currentCart);
             } else {
-              this.addToCartWithChecklist(journeyCheckLists);
+              this.addToCartWithChecklist(journeyCheckLists,currentCart);
             }
           }
         })
@@ -308,25 +310,6 @@ export class TmaGuidedSellingCurrentSelectionComponent
   clearCurrentSelection(): void {
     this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
     this.guidedSellingStepsService.setFirstStepAsActiveStep();
-  }
-
-  protected openStepperModal(checklistActions: TmaChecklistAction[]): void {
-    this.spinner.hide();
-    let modalInstance: any;
-    this.modalRef = this.modalService.open(JourneyChecklistStepComponent, {
-      centered: true,
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false,
-    });
-
-    modalInstance = this.modalRef.componentInstance;
-    modalInstance.checklistActions = checklistActions;
-    modalInstance.bpoCode = this.bpoCode;
-    modalInstance.quantity = 1;
-    modalInstance.productOfferingCodes = this.currentSelections.map(
-      (currentSelection) => currentSelection.code
-    );
   }
 
   protected calculateTotal(currentSelections: TmaProduct[]): string {
@@ -354,7 +337,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
 
   protected createCartItemList(children: TmaProduct[]): TmaTmfCartItem[] {
     const cartItemList: TmaTmfCartItem[] = [];
-    
+
     children.forEach((child: TmaProduct) => {
       if (child.isBundle) {
         this.productService
@@ -364,25 +347,25 @@ export class TmaGuidedSellingCurrentSelectionComponent
             takeUntil(this.destroyed$)
           )
           .subscribe((product: TmaProduct) => {
-            if (this.createCartItemList(product.children).length > 0){
+            if (this.createCartItemList(product.children).length > 0) {
               cartItemList.push({
                 productOffering: {
-                  id: child.code,
+                  id: child.code
                 },
                 quantity: 1,
                 cartItem: this.createCartItemList(product.children)
-              }) 
+              });
             }
           });
-          return;
+        return;
       }
       if (this.currentSelections.some(selection => selection.code === child.code)) {
         cartItemList.push({
           productOffering: {
-            id: child.code,
+            id: child.code
           },
           quantity: 1
-        })
+        });
       }
     });
 
@@ -398,9 +381,9 @@ export class TmaGuidedSellingCurrentSelectionComponent
             cart &&
             cart.entries &&
             cart.entries.length >
-              (currentCart && currentCart.entries
-                ? currentCart.entries.length
-                : 0)
+            (currentCart && currentCart.entries
+              ? currentCart.entries.length
+              : 0)
         ),
         takeUntil(this.destroyed$)
       )
@@ -425,7 +408,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
         centered: true,
         size: 'lg',
         backdrop: 'static',
-        keyboard: false,
+        keyboard: false
       }
     );
 
@@ -444,18 +427,19 @@ export class TmaGuidedSellingCurrentSelectionComponent
   protected resolveEntries(items: TmaOrderEntry[], groupedItems: TmaOrderEntry[]): TmaOrderEntry[] {
     for (const item of items) {
       item.entries ?
-      this.resolveEntries(item.entries, groupedItems) :
-      groupedItems.push(item);
+        this.resolveEntries(item.entries, groupedItems) :
+        groupedItems.push(item);
     }
-    return groupedItems
+    return groupedItems;
   }
 
   protected addToCartWithChecklist(
-    journeyCheckLists: TmaChecklistAction[]
+    journeyCheckLists: TmaChecklistAction[],
+    currentCart: TmaCart
   ): void {
-    if (this.currentUser && this.currentUser.uid) {
-      this.openStepperModal(journeyCheckLists);
-    } else {
+    if ( !this.currentUser || this.currentUser.uid === OCC_USER_ID_ANONYMOUS ||
+      this.currentUser.uid === undefined) {
+      this.spinner.hide();
       this.translationService
         .translate('productDetails.loginNeeded')
         .pipe(
@@ -468,6 +452,9 @@ export class TmaGuidedSellingCurrentSelectionComponent
         )
         .subscribe()
         .unsubscribe();
+    }
+    else {
+      this.addBpoCart(currentCart);
     }
   }
 
@@ -483,22 +470,22 @@ export class TmaGuidedSellingCurrentSelectionComponent
       cartItem: [
         {
           processType: {
-            id: TmaProcessTypeEnum.ACQUISITION,
+            id: TmaProcessTypeEnum.ACQUISITION
           },
           productOffering: {
-            id: this.bpoCode,
+            id: this.bpoCode
           },
           quantity: 1,
-          cartItem: this.createCartItemList(this.parentBpo.children),
-        },
+          cartItem: this.createCartItemList(this.parentBpo.children)
+        }
       ],
       relatedParty: [
         {
-          id: currentUserId,
-        },
-      ],
+          id: currentUserId
+        }
+      ]
     };
-    
+
     this.tmaTmfCartService.updateCart(shoppingCart);
     this.addToCartButton.nativeElement.disabled = true;
     this.prepareDataForModal(currentCart);
@@ -507,5 +494,13 @@ export class TmaGuidedSellingCurrentSelectionComponent
 
   get constants(): TmaConstantResourceModel {
     return LOCAL_STORAGE;
+  }
+
+  private setProductDetails(modalInstance: any) {
+    const productOfferings = new Map();
+    this.currentSelections.forEach(currentSelection => {
+      productOfferings.set(currentSelection.code, currentSelection.name);
+    });
+    modalInstance.product = productOfferings;
   }
 }

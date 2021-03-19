@@ -10,3 +10,5 @@ export * from './address-form/index';
 export * from './purchase-reason/index';
 export * from './premise-details/index';
 export * from './consumption/index';
+export * from './serviceability/index';
+export * from './serviceability-button/index';

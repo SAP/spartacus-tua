@@ -27,6 +27,9 @@ export class TmaAddressFormComponent implements OnInit {
   @Output()
   regionSelected = new EventEmitter<any>();
 
+  @Input()
+  hasError?: boolean;
+
   countries$: Observable<Country[]>;
   regions$: Observable<Region[]>;
 
@@ -55,6 +58,7 @@ export class TmaAddressFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.hasError = false;
     //Fetching countries
     this.countries$ = this.userAddressService.getDeliveryCountries().pipe(
       tap((countries: Country[]) => {

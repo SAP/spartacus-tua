@@ -122,17 +122,6 @@ export class TmaGuidedSellingAddedToCartDialogComponent
     return this.activeCartService.getEntryForEntryNumber(entryNumber);
   }
 
-  entriesHaveInstallationDetails(items: TmaOrderEntry[]): boolean {
-    return items.find(
-      (item: TmaOrderEntry) =>
-        item.appointment !== undefined ||
-        (item.subscribedProduct !== null &&
-          item.subscribedProduct.place !== null)
-    )
-      ? true
-      : false;
-  }
-
   protected processEntries(): TmaOrderEntry[] {
     if (!this.entries || this.entries.length === 0) {
       return;

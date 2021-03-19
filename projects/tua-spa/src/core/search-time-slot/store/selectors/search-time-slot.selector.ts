@@ -1,12 +1,12 @@
 import {
   createFeatureSelector,
   createSelector,
-  MemoizedSelector,
+  MemoizedSelector
 } from '@ngrx/store';
 import {
   SearchTimeSlotState,
   StateWithSearchTimeSlot,
-  SEARCH_TIME_SLOT_FEATURE,
+  SEARCH_TIME_SLOT_FEATURE
 } from '../search-time-slot.state';
 import { SearchTimeSlot, TimeSlot } from '../../../model';
 import { StateUtils } from '@spartacus/core';
@@ -27,15 +27,20 @@ export const getSearchTimeSlotsState: MemoizedSelector<
 export const getAllSearchTimeSlots: MemoizedSelector<
   StateWithSearchTimeSlot,
   SearchTimeSlot
-> = createSelector(
-  getSearchTimeSlotsState,
-  StateUtils.loaderValueSelector
-);
+> = createSelector(getSearchTimeSlotsState, StateUtils.loaderValueSelector);
 
 export const getSelectedTimeSlots: MemoizedSelector<
   StateWithSearchTimeSlot,
-  TimeSlot
+  SearchTimeSlot
 > = createSelector(
   getTmfSearchTimeSlotFeatureState,
   (state: SearchTimeSlotState) => state.selectedTimeSlot
+);
+
+export const getSearchTimeSlotError: MemoizedSelector<
+  StateWithSearchTimeSlot,
+  string
+> = createSelector(
+  getTmfSearchTimeSlotFeatureState,
+  (state: SearchTimeSlotState) => state.error
 );

@@ -8,7 +8,6 @@ import { TmaGuidedSellingCurrentSelectionComponent } from './guided-selling-curr
 import { TmaGuidedSellingAddedToCartDialogComponent } from './guided-selling-added-to-cart-dialog/tma-guided-selling-added-to-cart-dialog.component';
 import { TmaCartSharedModule } from '../../cart/cart-shared';
 import { RouterModule } from '@angular/router';
-import { AppointmentDetailsComponentModule } from '../../cart/cart-shared/appointment-details';
 import { TmaPriceDisplayModule } from '../../product/price/price-display/tma-price-display.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
@@ -17,7 +16,6 @@ import { NgxSpinnerModule } from 'ngx-spinner';
     CommonModule,
     OutletModule,
     I18nModule,
-    AppointmentDetailsComponentModule,
     BrowserAnimationsModule,
     IconModule,
     PromotionsModule,

@@ -1,15 +1,21 @@
 <ng-container *ngIf="tmfProduct">
   <ng-container *ngIf="currency$ | async as currency">
     <div class="card w-100 border-0">
-      <div class="card-header py-3" [class.background-green]="getProductStatus(tmfProduct) === true"
-        [class.bg-danger]="getProductStatus(tmfProduct) === false">
+      <div class="card-header py-3 background-{{tmfProduct.status}}">
         <div class="row mx-auto">
-          <div class="col-8">
+          <div class="col-6">
             <span class="labelHeading">{{tmfProduct.name}} ({{tmfProduct.id}})</span>
           </div>
-          <div class="col-4">
-            <span class="labelHeading">{{tmfProduct.status?.toUpperCase()}}</span>
+          <div class="col-3">
+            {{
+              'subscriptions.status.status'
+                | cxTranslate: { context: tmfProduct.status }
+            }}
           </div>
+          <div class="col-3" *ngIf="isEligibleForTermination$ | async as isEligibleForTermination" 
+          placement="top" ngbTooltip="{{'subscriptions.noPenaltiesApplicable' | cxTranslate}}">
+              <cx-termination-button [product]="tmfProduct"></cx-termination-button>
+            </div>
         </div>
       </div>
       <div class="card-body border">

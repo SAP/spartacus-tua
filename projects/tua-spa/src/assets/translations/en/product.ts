@@ -84,6 +84,7 @@ export const product = {
     viewDetails: 'View Details',
     viewDetailedPrices: 'View Detailed Prices',
     averageCostBaseOnConsumption: 'Average cost base on your consumption',
-    updateConsumption: 'Update Your Consumption'
+    updateConsumption: 'Update Your Consumption',
+    seeDetails: 'See Details'
   }
 };

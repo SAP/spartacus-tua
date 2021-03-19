@@ -57,6 +57,9 @@ export function selectedLogicalResourceReducer(
     case AvailabilityCheckActionTypes.SELECTED_LOGICAL_RESOURCE_SUCCESS: {
       return action.payload;
     }
+    case AvailabilityCheckActionTypes.CLEAR_SELECTED_LOGICAL_RESOURCE_STATE: {
+      return selectedLogicalResourceInitialState;
+    }
   }
   return state;
 }

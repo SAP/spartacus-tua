@@ -1,10 +1,7 @@
 export const cart = {
   cartItems: {
     contractStartDate: 'Contract Start Date',
-    installationAddress: 'Installation Address:',
     meterNo: 'Meter NO',
-    appointment: 'Appointment:',
-    defaultAppointment: 'Please call to Schedule',
     subscription: 'Subscription',
     appointmentError: {
       getAppointmentByIdError:

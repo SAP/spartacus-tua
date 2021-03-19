@@ -30,6 +30,9 @@ export class TmaProductGridItemComponent extends ProductGridItemComponent implem
   @Input()
   consumptionComponent: TmaCmsConsumptionComponent;
 
+  @Input()
+  isAddToCartForServiceableProducts?: boolean;
+
   @ViewChild('averageCostPerMonth', { static: false })
   averageCostPerMonth: ElementRef;
 

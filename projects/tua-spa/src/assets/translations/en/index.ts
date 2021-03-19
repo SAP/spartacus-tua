@@ -11,8 +11,8 @@ import { priceheadLine } from './priceheadLine';
 import { product } from './product';
 import { purchaseReason } from './purchaseReason';
 import { resource } from './resource';
-import { stepper } from './stepper';
 import { subscriptions } from './subscriptions';
+import { serviceability } from './serviceability';
 
 export const en = {
   addressInputs,
@@ -28,6 +28,6 @@ export const en = {
   product,
   purchaseReason,
   resource,
-  stepper,
-  subscriptions
+  subscriptions,
+  serviceability
 };

@@ -13,7 +13,6 @@ import {
   ActiveCartService,
   BaseSiteService,
   ConsignmentEntry,
-  FeatureConfigService,
   OCC_USER_ID_ANONYMOUS,
   ProductSearchPage,
   ProductSearchService,
@@ -40,8 +39,8 @@ import {
   TmaCharacteristic,
   TmaProcessTypeEnum,
   TmaOrderEntry
-} from '../../../../../core/model';
-import { first, map, startWith, takeUntil, filter, tap } from 'rxjs/operators';
+} from '../../../../../core';
+import { first, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
 import { TmaItem } from '../cart-item/tma-cart-item.component';
 import {
@@ -72,7 +71,7 @@ export class TmaCartItemListComponent
   shouldReloadCart: boolean;
 
   @Input()
-  cartPage?: boolean;
+  showEdit?: boolean;
 
   @Input() readonly = false;
 
@@ -118,7 +117,6 @@ export class TmaCartItemListComponent
     protected activeCartService: ActiveCartService,
     protected fb: FormBuilder,
     protected selectiveCartService: SelectiveCartService,
-    protected featureConfigService: FeatureConfigService,
     protected productService: ProductService,
     protected productSearchService: ProductSearchService,
     protected changeDetectorRef: ChangeDetectorRef,
@@ -144,7 +142,7 @@ export class TmaCartItemListComponent
       .pipe(takeUntil(this.destroyed$))
       .subscribe((entries: TmaItem[]) => {
         this.items = this.resolveItemList(entries, []);
-        this.groupedItems = this.getGroupedItems(entries);
+        this.groupedItems = this.tmfCartService.getGroupedItems(entries);
       });
   }
 
@@ -167,7 +165,7 @@ export class TmaCartItemListComponent
       )
       .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
-    this.groupedItems = this.getGroupedItems(this.items);
+    this.groupedItems = this.tmfCartService.getGroupedItems(this.items);
     this.items = this.resolveItemList(this.items, []);
 
     if (!this.shouldReloadCart) {
@@ -211,7 +209,7 @@ export class TmaCartItemListComponent
       relatedParty: [
         {
           id: currentUserId
-        },
+        }
       ],
       cartItem: [
         {
@@ -280,7 +278,7 @@ export class TmaCartItemListComponent
       this.cancelAppointment(items);
       return;
     }
-    
+
     if (items[index].entries) {
       this.prepareCgsForEdit(entryGroupNumber, items, index + 1);
       return;
@@ -327,7 +325,8 @@ export class TmaCartItemListComponent
             value.entryNumber,
             value.quantity
           );
-        } else if (value) {
+        }
+        else if (value) {
           this.activeCartService.updateEntry(value.entryNumber, value.quantity);
         }
       }),
@@ -337,9 +336,9 @@ export class TmaCartItemListComponent
 
   /**
    * Checks for the given cart entries has the process type as retention.
-   * 
+   *
    * @param items - The cart items
-   * 
+   *
    * @return true if cart item has process type as retention as a {@link boolean}
    */
   isCartEntryForRenewal(items: TmaItem[]): boolean {
@@ -355,24 +354,9 @@ export class TmaCartItemListComponent
     return Array.of(item);
   }
 
-  isProductSpecificationForViewDetails(item: TmaOrderEntry): boolean {
-    let isPSForViewDetails = false;
-    this.productService
-      .get(item.product.code)
-      .pipe(filter((product: TmaProduct) => !!product))
-      .subscribe((product: TmaProduct) => {
-        if (product.productSpecification){
-          isPSForViewDetails = this.tmaProductService.isProductSpecificationForViewDetails(
-            product.productSpecification.id
-          );
-        }
-      });
-    return isPSForViewDetails;
-  }
-
   protected resolveItemList(items: TmaItem[], resolvedItems: TmaItem[]): TmaItem[] {
 
-    items.forEach((item: TmaItem) =>{
+    items.forEach((item: TmaItem) => {
       resolvedItems.push(item);
       if (item.entries) {
         this.resolveItemList(item.entries, resolvedItems);
@@ -401,39 +385,6 @@ export class TmaCartItemListComponent
         .subscribe()
         .unsubscribe();
     }
-  }
-
-  protected getGroupedItems(items: TmaItem[]): TmaGroupedItemMap[] {
-    const groups: TmaGroupedItemMap[] = [];
-
-    for (const item of items) {
-
-      const groupNr: number = item.entries
-        ? item.entryNumber
-        : -1;
-
-      if (!groups[groupNr]) {
-        groups[groupNr.toString()] = [];
-      }
-
-      item.entries ?
-      groups[groupNr.toString()] = this.getBpoGroupedItems(item.entries, []) :
-      groups[groupNr.toString()].push(item);
-
-    }
-    return groups;
-  }
-
-  protected getBpoGroupedItems(items: TmaItem[], groupedItems: TmaItem[]): TmaItem[] {
-    for (const item of items) {
-
-      groupedItems.push(item);
-      if (item.entries) {
-        this.getBpoGroupedItems(item.entries, groupedItems);
-      }
-    }
-
-    return groupedItems
   }
 
   protected hasRootGroups(cart: TmaCart): boolean {
@@ -491,7 +442,8 @@ export class TmaCartItemListComponent
         entry.quantity = consignmentEntry.quantity;
         return entry;
       });
-    } else {
+    }
+    else {
       this._tmaItems = items;
     }
   }

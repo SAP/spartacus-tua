@@ -3,7 +3,6 @@ import {
   RecommendationActionTypes,
 } from '../actions/recommendation.action';
 import { RecommendationMap } from '../recommendation.state';
-import { TmaProcessTypeEnum } from '../../../model';
 
 const initialState: RecommendationMap[] = [];
 
@@ -25,8 +24,7 @@ export function RecommendationReducer(
           subscriptionBaseId: action.payload.subscriptionBaseId,
           processTypeId: action.payload.processTypeId,
           recommendation: action.payload.recommendations,
-          isSubscriptionEligibleForProcessType:
-            action.payload.processTypeId === TmaProcessTypeEnum.RETENTION
+          isSubscriptionEligibleForProcessType: true
         });
       }
       return state;

@@ -1,8 +1,19 @@
-<ng-container *ngIf="product$ | async as product">
+<ng-container *ngIf="product$ | async as product; else entryWithRemoveAction">
   <ng-container
     *ngIf="cartPriceService.computeEntryPrice(item) as cartItemPrice"
   >
     <ng-container *ngIf="currency$ | async as currency">
+      <ng-container *ngIf = "!quantityControl.disabled">
+      <div *ngIf="isRemovable" class="row mx-auto d-flex justify-content-end">
+        <button
+          class="link"
+          [disabled]="quantityControl.disabled"
+          (click)="removeItem()"
+        >
+          {{ 'common.remove' | cxTranslate }}
+        </button>
+      </div>
+      </ng-container>
       <div [ngClass]="compact ? 'cx-compact row' : 'row'">
         <!-- Item Image -->
         <div class="col-2 cx-image-container">
@@ -30,7 +41,8 @@
                 >
               </div>
               <div *ngIf="item.subscribedProduct.id" class="cx-code">
-                  {{ 'cartItems.subscription' | cxTranslate }} : {{ item.subscribedProduct.id }}
+                {{ 'cartItems.subscription' | cxTranslate }} :
+                {{ item.subscribedProduct.id }}
               </div>
               <!-- Variants -->
               <ng-container *ngIf="item.product.baseOptions?.length">
@@ -60,18 +72,18 @@
               >
                 {{ 'cartItems.quantity' | cxTranslate }}
               </div>
-                <div class="cx-value">
-                  <cx-item-counter
-                    [control]="quantityControl"
-                    [quantityDisable]="qtyDisabled"
-                    [readonly]="
-                      !item.updateable || readonly || options.isSaveForLater
-                    "
-                    [max]="item.product.stock?.stockLevel || 1000"
-                    [allowZero]="true"
-                  >
-                  </cx-item-counter>
-                </div>
+              <div class="cx-value">
+                <cx-item-counter
+                  [control]="quantityControl"
+                  [quantityDisable]="qtyDisabled"
+                  [readonly]="
+                    !item.updateable || readonly || options.isSaveForLater
+                  "
+                  [max]="item.product.stock?.stockLevel || 1000"
+                  [allowZero]="true"
+                >
+                </cx-item-counter>
+              </div>
             </div>
             <!-- Pay On Checkout Price -->
             <div
@@ -162,18 +174,71 @@
             {{ 'productSummary.outOfStock' | cxTranslate }}
           </div>
 
-          <ng-container>
+          <span *ngIf="displayPrices">
+          <cx-cart-item-price-display
+            [price]="item.cartPrice"
+            [subscriptionTerm]="item.subscriptionTerm"
+          ></cx-cart-item-price-display>
+        </span>
+
+          <ng-container
+            *ngIf="
+            checklistActionTypeCheckService.hasJourneyChecklistAction(
+                checklistAction$,
+                checklistActionTypeCheckService.checklistActionType.MSISDN
+              )
+            "
+          >
             <div *ngIf="item.subscribedProduct">
-              <div *ngIf="itemLogicalResources as logicalResources">
-                <cx-logical-resource
-                  [logicalResources]="logicalResources"
-                  [item]="item"
-                  [cartPage]="cartPage"
-                >
-                </cx-logical-resource>
-              </div>
+              <cx-journey-checklist-logical-resource-display
+                [logicalResources]="hasLogicalResource()"
+                [item]="item"
+                [showEdit]="showEdit"
+                [addLogicalResource]="!isLogicalResourceMsisdn()"
+              >
+              </cx-journey-checklist-logical-resource-display>
             </div>
           </ng-container>
+          <ng-container
+            *ngIf="
+            checklistActionTypeCheckService.hasJourneyChecklistAction(
+                checklistAction$,
+                checklistActionTypeCheckService.checklistActionType.APPOINTMENT
+              )
+            "
+          >
+            <ng-container>
+              <cx-journey-checklist-appointment-display
+                class="w-100 px-0 col-12"
+                [item]="item"
+                [showEdit]="showEdit"
+                [addAppointment]="!hasAppointment()"
+              ></cx-journey-checklist-appointment-display>
+            </ng-container>
+          </ng-container>
+
+          <ng-container
+          *ngIf="
+            !productSpecificationProductService.isProductSpecificationForViewDetails(
+              product?.productSpecification?.id
+            )
+          ">
+          <ng-container
+            *ngIf="
+            checklistActionTypeCheckService.hasJourneyChecklistAction(
+                checklistAction$,
+                checklistActionTypeCheckService.checklistActionType.INSTALLATION_ADDRESS
+              )
+            "
+          >
+            <cx-journey-checklist-installation-address-display
+              class="w-100 px-0 col-12"
+              [item]="item"
+              [showEdit]="showEdit"
+              [addInstallationAddress]="!hasInstallationAddress()"
+            ></cx-journey-checklist-installation-address-display>
+          </ng-container>
+        </ng-container>
 
           <!-- Promotion -->
 
@@ -182,18 +247,16 @@
               appliedProductPromotions$ | async as appliedProductPromotions
             "
           >
-          <div *ngIf="appliedProductPromotions && appliedProductPromotions.length > 0">
-            <cx-promotions
-              [promotions]="appliedProductPromotions"
-            ></cx-promotions>
-          </div>
+            <div
+              *ngIf="
+                appliedProductPromotions && appliedProductPromotions.length > 0
+              "
+            >
+              <cx-promotions
+                [promotions]="appliedProductPromotions"
+              ></cx-promotions>
+            </div>
           </ng-container>
-        <span *ngIf="displayPrices">
-          <cx-cart-item-price-display
-            [price]="item.cartPrice"
-            [subscriptionTerm]="item.subscriptionTerm"
-          ></cx-cart-item-price-display>
-        </span>
 
           <div class="row">
             <!-- Premise details -->
@@ -246,26 +309,60 @@
                 "
               ></ng-container>
             </ng-container>
-
-            <div
-              *ngIf="isRemovable"
-              [ngClass]="
-                compact
-                  ? 'row col-3 col-md-3 col-lg-3 col-xl-3'
-                  : 'col-md-3 col-lg-3 col-xl-3 cx-remove-btn'
-              "
-            >
-              <button
-                class="link"
-                [disabled]="quantityControl.disabled"
-                (click)="removeItem()"
-              >
-                {{ 'common.remove' | cxTranslate }}
-              </button>
-            </div>
           </div>
         </div>
       </div>
     </ng-container>
   </ng-container>
 </ng-container>
+
+<ng-template #entryWithRemoveAction>
+  <ng-container *ngIf = "!quantityControl.disabled">
+    <div *ngIf="isRemovable" class="row mx-auto d-flex justify-content-end">
+      <button
+        class="link"
+        [disabled]="quantityControl.disabled"
+        (click)="removeItem()"
+      >
+        {{ 'common.remove' | cxTranslate }}
+      </button>
+    </div>
+    </ng-container>
+  <div class="row disable-product">
+    <div class="col-2 media-missing">
+    </div>
+    <div class="col-10">
+      <div class="row">
+        <div class="col-md-3 col-lg-3 col-xl-5">
+          <div
+          *ngIf="
+            item.action === 'REMOVE' && item.subscribedProduct.id
+          "
+          class="cx-code"
+        >
+          {{ item.subscribedProduct.id }} 
+        </div>
+        </div>
+        <div class="col-3">
+
+        </div>
+        <div class="col-md-5 col-lg-5 col-xl-4">
+          <div class="row mx-auto d-flex justify-content-center">
+            <ng-container *ngIf="currency$ | async as currency">
+              <div class="col-md-12 col-lg-12 d-flex justify-content-center">
+                <div class="cx-value w-100 d-flex justify-content-center">
+                  <span>
+                    {{
+                      'common.currencies.currency'
+                        | cxTranslate: { context: currency }
+                    }}0
+                  </span>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
