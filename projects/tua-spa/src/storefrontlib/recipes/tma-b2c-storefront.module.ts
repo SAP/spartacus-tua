@@ -1,42 +1,41 @@
-import {
-  b2cLayoutConfig,
-  B2cStorefrontModule,
-  CmsLibModule,
-  defaultCmsContentConfig,
-  StorefrontModule
-} from '@spartacus/storefront';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { TmaStorefrontModule } from './tma-storefront.module';
-import { ConfigModule, provideConfig } from '@spartacus/core';
+import {
+  provideConfig,
+  provideDefaultConfig,
+} from '@spartacus/core';
 import { TmaStorefrontConfig } from '../tma-storefront-config';
 import { TmaCmsLibModule } from '../cms-components';
 import { tmaB2cLayoutConfig } from './config';
+import {
+  CmsLibModule,
+  mediaConfig,
+  B2cStorefrontModule,
+  layoutConfig,
+  defaultCmsContentProviders,
+  StorefrontModule
+} from '@spartacus/storefront';
 
 @NgModule({
   imports: [
-    StorefrontModule.withConfig({
-      pwa: {
-        enabled: true,
-        addToHomeScreen: true
-      }
-    }),
-
-    TmaStorefrontModule.withConfig({
-      pwa: {
-        enabled: true,
-        addToHomeScreen: true
-      }
-    }),
-
-    ConfigModule.withConfig(b2cLayoutConfig),
-    ConfigModule.withConfig(tmaB2cLayoutConfig),
-    ConfigModule.withConfigFactory(defaultCmsContentConfig),
-
+    TmaStorefrontModule,
     // the cms lib module contains all components that added in the bundle
     CmsLibModule,
     TmaCmsLibModule
   ],
-  exports: [StorefrontModule, TmaStorefrontModule]
+  providers: [
+    provideDefaultConfig({
+      pwa: {
+        enabled: true,
+        addToHomeScreen: true
+      }
+    }),
+    provideDefaultConfig(layoutConfig),
+    provideDefaultConfig(mediaConfig),
+    provideDefaultConfig(tmaB2cLayoutConfig),
+    ...defaultCmsContentProviders,
+  ],
+  exports: [TmaStorefrontModule]
 })
 export class TmaB2cStorefrontModule extends B2cStorefrontModule {
   static withConfig(

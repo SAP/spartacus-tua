@@ -1,27 +1,28 @@
+import { TmaProcessTypeEnum } from '../../../model';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { TmaChecklistAction } from '../../../model/tma-checklist-action.model';
-import { TmaChecklistActionAdapter } from '../../../checklistaction/store/adapters/tma-checklist-action-adapter';
+import { TmaChecklistAction } from '../../../model';
+import { TmaChecklistActionAdapter } from '../../../checklistaction/store/adapters';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { TmfEndpointsService } from '../../services/tmf-endpoints.service';
+import { TmfEndpointsService } from '../../services';
 import { ConverterService } from '@spartacus/core';
-import { Tmf } from '../../tmf-models/tmf.models';
+import { Tmf } from '../../tmf-models';
 import { TMA_CHECKLIST_ACTION_NORMALIZER } from '../../../checklistaction/connectors';
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TmaTmfChecklistActionAdapter implements TmaChecklistActionAdapter {
-
   constructor(
-    protected http: HttpClient, protected tmfEndpointsService: TmfEndpointsService, protected converterService: ConverterService
-  ) {
-  }
+    protected http: HttpClient,
+    protected tmfEndpointsService: TmfEndpointsService,
+    protected converterService: ConverterService
+  ) {}
 
   getChecklistActions(
     baseSiteId: string,
-    productId: string
+    productId: string,
+    processType?: TmaProcessTypeEnum
   ): Observable<TmaChecklistAction[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
@@ -29,13 +30,46 @@ export class TmaTmfChecklistActionAdapter implements TmaChecklistActionAdapter {
 
     const queryParameters = Array();
     queryParameters['baseSiteId'] = baseSiteId;
+    queryParameters['processType.id'] = TmaProcessTypeEnum[processType];
     queryParameters['productOffering.id'] = productId;
 
-
-    const url = this.tmfEndpointsService.getUrl('checklistAction', [], queryParameters);
+    const url = this.tmfEndpointsService.getUrl(
+      'getChecklistAction',
+      [],
+      queryParameters
+    );
 
     return this.http
       .get<Tmf.TmaChecklistAction[]>(url, { headers })
-      .pipe(this.converterService.pipeableMany(TMA_CHECKLIST_ACTION_NORMALIZER));
+      .pipe(
+        this.converterService.pipeableMany(TMA_CHECKLIST_ACTION_NORMALIZER)
+      );
+  }
+
+  getChecklistActionsFor(
+    baseSiteId: string,
+    productOfferingIds: string[],
+    processType?: TmaProcessTypeEnum
+  ): Observable<TmaChecklistAction[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    const queryParameters = Array();
+    queryParameters['baseSiteId'] = baseSiteId;
+    queryParameters['processType.id'] = TmaProcessTypeEnum[processType];
+    queryParameters['productOffering.id'] = productOfferingIds;
+
+    const url = this.tmfEndpointsService.getUrl(
+      'getChecklistAction',
+      [],
+      queryParameters
+    );
+
+    return this.http
+      .get<Tmf.TmaChecklistAction[][]>(url, { headers })
+      .pipe(
+        this.converterService.pipeableMany(TMA_CHECKLIST_ACTION_NORMALIZER)
+      );
   }
 }

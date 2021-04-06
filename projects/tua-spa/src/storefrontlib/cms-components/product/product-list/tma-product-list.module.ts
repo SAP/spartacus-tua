@@ -24,8 +24,9 @@ import { TmaProductListItemComponent } from './product-list-item/tma-product-lis
 import { TmaProductGridItemComponent } from './product-grid-item/tma-product-grid-item.component';
 import { TmaProductScrollComponent } from './container/product-scroll/tma-product-scroll.component';
 import { TmaAddToCartModule } from '../../cart';
-import { TmaProductFacetNavigationComponent } from './product-facet-navigation/tma-product-facet-navigation.component';
 import { TmaProductViewComponent } from './product-view/tma-product-view.component';
+import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
+import { QueryServiceQualificationModule } from '../../../../core';
 
 @NgModule({
   imports: [
@@ -41,9 +42,6 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
         },
         SearchResultsListComponent: {
           component: TmaProductListComponent
-        },
-        ProductRefinementComponent: {
-          component: TmaProductFacetNavigationComponent
         }
       }
     }),
@@ -59,11 +57,12 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
     SpinnerModule,
     InfiniteScrollModule,
     ViewConfigModule,
-    FeaturesConfigModule
+    FeaturesConfigModule,
+    TmaPriceDisplayModule,
+    QueryServiceQualificationModule
   ],
   declarations: [
     TmaProductListComponent,
-    TmaProductFacetNavigationComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
@@ -71,12 +70,11 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
   ],
   exports: [
     TmaProductListComponent,
-    TmaProductFacetNavigationComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
     TmaProductScrollComponent
   ],
-  entryComponents: [TmaProductListComponent, TmaProductFacetNavigationComponent]
+  entryComponents: [TmaProductListComponent]
 })
-export class TmaProductListModule extends ProductListModule { }
+export class TmaProductListModule extends ProductListModule {}

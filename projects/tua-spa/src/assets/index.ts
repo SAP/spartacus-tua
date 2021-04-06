@@ -1,1 +1,1 @@
-export * from './translations/en/translations';
+export * from './translations/tma-translations';

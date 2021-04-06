@@ -8,6 +8,7 @@ export interface TmaProduct extends Product {
   children?: TmaProduct[];
   isBundle?: boolean;
   offeringGroup?: TmaProductOfferingGroup[];
+  priceContext?: TmaPriceContext[];
 }
 
 export interface TmaProcessType {
@@ -19,7 +20,8 @@ export enum TmaProcessTypeEnum {
   DEVICE_ONLY = 'DEVICE_ONLY',
   RETENTION = 'RETENTION',
   SWITCH_SERVICE_PROVIDER = 'SWITCH_SERVICE_PROVIDER',
-  TARIFF_CHANGE = 'TARIFF_CHANGE'
+  TARIFF_CHANGE = 'TARIFF_CHANGE',
+  TERMINATION = 'TERMINATION'
 }
 
 export interface TmaProductSpecification {
@@ -55,12 +57,16 @@ export interface TmaProductOfferingPrice {
   tierStart?: number;
   tierEnd?: number;
   region?: TmaRegion[];
+  priority?: number;
+  isPercentage?: boolean;
+  alterations?: TmaProductOfferingPrice[];
 }
 
 export enum TmaPopChargeType {
   ONE_TIME = 'oneTime',
   RECURRING = 'recurring',
-  USAGE = 'usage'
+  USAGE = 'usage',
+  DISCOUNT = 'discount'
 }
 
 export enum TmaPopBillingEventType {
@@ -71,7 +77,7 @@ export enum TmaPopBillingEventType {
 
 export enum TmaUsageType {
   EACH_RESPECTIVE_TIER = 'each_respective_tier',
-  HIGHEST_APPLICABLE_TIER = 'highest_applicable_tier',
+  HIGHEST_APPLICABLE_TIER = 'highest_applicable_tier'
 }
 
 export enum TmaItemType {
@@ -122,4 +128,20 @@ export interface TmaProductOfferingGroup {
   id?: string;
   name?: string;
   childProductOfferings?: TmaProduct[];
+}
+
+export interface TmaBillingEvent {
+  name?: string;
+}
+
+export interface TmaPriceContext {
+  id: string;
+  name: string;
+  isPriceOverride: boolean;
+  productOfferingPrice: TmaProductOfferingPrice;
+  isBundle: boolean;
+  isSellable: boolean;
+  productOfferingTerm: TmaProductOfferingTerm[];
+  processType: TmaProcessType;
+  priority: number;
 }

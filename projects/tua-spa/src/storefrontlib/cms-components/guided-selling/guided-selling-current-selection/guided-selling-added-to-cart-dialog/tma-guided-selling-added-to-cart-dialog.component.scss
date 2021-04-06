@@ -76,3 +76,36 @@
 .cx-smaller {
   font-size: var(--cx-font-small, 0.55rem);
 }
+
+.badge {
+  background-color: #28A745;
+  color: #FFFFFF;
+  padding: 0px 5px;
+  border-radius: 5px;
+  position: absolute;
+  top: 0%;
+  left: 40%;
+}
+
+.right-arrow {
+  display: inline-block;
+  color: #000000;
+  font-size: 1rem;
+  line-height: 30px;
+  margin-bottom: 5px;
+  padding-left: 10px;
+  position: relative;
+  width: auto;
+  background-color: #a8f83f;
+}
+.right-arrow:after {
+  content: '';
+  border-style: solid;
+  border-width: 10px;
+  height: 0;
+  position: absolute;
+  width: 0px;
+  border-color: transparent #a8f83f;
+  right: -15px;
+  border-width: 15px 0 15px 15px;
+}

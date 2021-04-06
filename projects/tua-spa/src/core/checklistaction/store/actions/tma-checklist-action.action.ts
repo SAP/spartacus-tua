@@ -1,4 +1,4 @@
-import { StateLoaderActions } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 import { TMA_CHECKLIST_ACTION_DATA } from '../tma-checklist-action.state';
 
 export enum TmaChecklistActionTypes {
@@ -7,7 +7,7 @@ export enum TmaChecklistActionTypes {
   LOAD_CHECKLIST_ACTIONS_FAIL = '[Checklist-action] Load Checklist Actions Fail'
 }
 
-export class LoadChecklistActions extends StateLoaderActions.LoaderLoadAction {
+export class LoadChecklistActions extends StateUtils.LoaderLoadAction {
   readonly type = TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS;
 
   constructor(public payload: any) {
@@ -15,7 +15,7 @@ export class LoadChecklistActions extends StateLoaderActions.LoaderLoadAction {
   }
 }
 
-export class LoadChecklistActionsSuccess extends StateLoaderActions.LoaderSuccessAction {
+export class LoadChecklistActionsSuccess extends StateUtils.LoaderLoadAction {
   readonly type = TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS_SUCCESS;
 
   constructor(public payload: any) {
@@ -23,7 +23,7 @@ export class LoadChecklistActionsSuccess extends StateLoaderActions.LoaderSucces
   }
 }
 
-export class LoadChecklistActionsFail extends StateLoaderActions.LoaderFailAction {
+export class LoadChecklistActionsFail extends StateUtils.LoaderLoadAction {
   readonly type = TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS_FAIL;
 
   constructor(public payload: any) {

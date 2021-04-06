@@ -5,11 +5,22 @@ export const defaultTmaStorefrontRoutesConfig: RoutesConfig = {
     paths: ['product/:productCode']
   },
   category: {
-    paths: ['c/:categoryCode']
+    paths: ['c/:categoryCode'],
+  },
+  usageConsumption: {
+    paths: ['my-account/subscription/subscription-base/:subscriptionId'],
+    paramsMapping: { subscriptionId: 'code' },
+  },
+  subscriptions: {
+    paths: ['/my-account/subscription'],
   },
   cgs: {
     paths: ['cgs/:bpoCode'],
     paramsMapping: { bpoCode: 'code' }
+  },
+  subscriptionDetail: {
+    paths: ['my-account/subscription/subscriptionDetail/:subscriptionId'],
+    paramsMapping: { subscriptionId: 'code' }
   }
 };
 

@@ -4,3 +4,7 @@ export interface TmaTmfRelatedParty {
   role?: string;
   name?: string;
 }
+
+export enum TmaTmfRelatedPartyRole {
+  CUSTOMER = 'CUSTOMER',
+}

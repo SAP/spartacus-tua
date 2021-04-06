@@ -45,3 +45,15 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+.metadata/
+*.class
+*/jalo/
+*/build.xml
+*/extensioninfo.xsd
+*/resources/items.xsd
+*/resources/beans.xsd
+*/gensrc/
+*/platformhome.properties
+*/resources/*/*-testclasses.xml
+*/resources/*/*-webtestclasses.xml
+*.iml

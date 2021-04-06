@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
+import { PageLayoutService, ViewConfig } from '@spartacus/storefront';
 import { TmaProductListComponent } from '../../../product/product-list';
+import { TmaProductSearchService,TmaProductListComponentService } from '../../../../../core';
 
 @Component({
   selector: 'cx-guided-selling-product-list',
@@ -11,9 +12,10 @@ export class TmaGuidedSellingProductListComponent extends TmaProductListComponen
 
   constructor(
     pageLayoutService: PageLayoutService,
-    productListComponentService: ProductListComponentService,
-    scrollConfig?: ViewConfig
+    productListComponentService: TmaProductListComponentService,
+    scrollConfig?: ViewConfig,
+    productSearchService?: TmaProductSearchService
   ) {
-    super(pageLayoutService, productListComponentService, scrollConfig);
+    super(pageLayoutService, productListComponentService, productSearchService, scrollConfig);
   }
 }

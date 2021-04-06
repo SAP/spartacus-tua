@@ -9,7 +9,7 @@ export class TmaChecklistActionModule {
   static forRoot(): ModuleWithProviders<TmaChecklistActionModule> {
     return {
       ngModule: TmaChecklistActionModule,
-      providers: [TmaChecklistActionService]
+      providers: [TmaChecklistActionService],
     };
   }
 }

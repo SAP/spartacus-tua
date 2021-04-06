@@ -9,35 +9,66 @@ import { makeErrorSerializable } from '../../../config/utils/tma-serialization-u
 import { TmaChecklistAction } from '../../../model';
 import { Action } from '@ngrx/store';
 
-
 @Injectable()
 export class TmaChecklistActionEffect {
-
   constructor(
     protected actions$: Actions,
     protected tmaChecklistActionConnector: TmaChecklistActionConnector
-  ) {
-  }
+  ) {}
 
   @Effect()
   loadChecklistAction$: Observable<Action> = this.actions$.pipe(
     ofType(TmaChecklistActionTypes.LOAD_CHECKLIST_ACTIONS),
     map((action: TmaChecklistActions.LoadChecklistActions) => action.payload),
-    mergeMap(payload => {
-      return this.tmaChecklistActionConnector.getChecklistActions(payload.baseSiteId, payload.productCode).pipe(
-        map((checklistActions: TmaChecklistAction[]) => {
-          return new TmaChecklistActions.LoadChecklistActionsSuccess({
-            checklistAction: checklistActions,
-            productCode: payload.productCode,
-            baseSiteId: payload.baseSiteId
-          });
-        }),
-        catchError(error =>
-          of(
-            new TmaChecklistActions.LoadChecklistActionsFail(
-              makeErrorSerializable(error))
-          ))
-      );
+    mergeMap((payload: any) => {
+      if (payload.productCode) {
+        return this.tmaChecklistActionConnector
+          .getChecklistActions(
+            payload.baseSiteId,
+            payload.productCode,
+            payload.processType
+          )
+          .pipe(
+            map((checklistActions: TmaChecklistAction[]) => {
+              return new TmaChecklistActions.LoadChecklistActionsSuccess({
+                checklistActions: checklistActions,
+                productCode: payload.productCode,
+                baseSiteId: payload.baseSiteId,
+                processType: payload.processType,
+              });
+            }),
+            catchError((error: any) =>
+              of(
+                new TmaChecklistActions.LoadChecklistActionsFail(
+                  makeErrorSerializable(error)
+                )
+              )
+            )
+          );
+      }
+      return this.tmaChecklistActionConnector
+        .getChecklistActionsFor(
+          payload.baseSiteId,
+          payload.productOfferingCodes,
+          payload.processType
+        )
+        .pipe(
+          map((checklistActions: TmaChecklistAction[]) => {
+            return new TmaChecklistActions.LoadChecklistActionsSuccess({
+              checklistActions: checklistActions,
+              productOfferingCodes: payload.productOfferingCodes,
+              baseSiteId: payload.baseSiteId,
+              processType: payload.processType,
+            });
+          }),
+          catchError((error: any) =>
+            of(
+              new TmaChecklistActions.LoadChecklistActionsFail(
+                makeErrorSerializable(error)
+              )
+            )
+          )
+        );
     })
   );
 }

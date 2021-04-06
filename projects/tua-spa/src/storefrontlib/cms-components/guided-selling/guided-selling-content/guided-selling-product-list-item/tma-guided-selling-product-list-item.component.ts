@@ -4,6 +4,8 @@ import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';
 import { Subject } from 'rxjs';
 import { TmaProductListItemComponent } from '../../../product/product-list';
 import { takeUntil } from 'rxjs/operators';
+import { CurrencyService } from '@spartacus/core';
+import { TmaPriceService } from '../../../../../core/product/facade';
 
 @Component({
   selector: 'cx-guided-selling-product-list-item',
@@ -17,10 +19,12 @@ export class TmaGuidedSellingProductListItemComponent extends TmaProductListItem
   protected destroyed$ = new Subject();
 
   constructor(
+    public priceService: TmaPriceService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
-    protected changeDetectorRef: ChangeDetectorRef
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected currencyService?: CurrencyService,
   ) {
-    super();
+    super(priceService,currencyService);
   }
 
   ngOnInit(): void {

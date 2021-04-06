@@ -1,35 +1,19 @@
-<div *ngIf="getGroupedRecurringChargeList(recurringChargeList, contractTerm) as groupedRecurringChargeList">
-  <div class="row" *ngIf="groupedRecurringChargeList?.length == 1">
-    {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:&nbsp;
-    <div class="cx-bold">
-      {{priceService.getFormattedPrice(groupedRecurringChargeList[0].price)}}
-      /{{getPeriodType(contractTerm)}}
-    </div>
-  </div>
-  <div *ngIf="groupedRecurringChargeList?.length > 1">
-    <div class="row">
-      {{ 'productDetails.price.priceTypes.recurringCharges' | cxTranslate }}:&nbsp;
-    </div>
-    <ng-container *ngFor="let recurringPriceKeyValue of groupedRecurringChargeList | keyvalue">
-      <div class="row cx-bold" *ngIf="recurringPriceKeyValue.key == 0">
-        {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
-        /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
-        {{'productDetails.price.recurringCharges.forFirst' | cxTranslate}}
-        {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
-      </div>
-      <div class="row cx-bold"
-           *ngIf="recurringPriceKeyValue.key > 0 && recurringPriceKeyValue.key < groupedRecurringChargeList.length - 1">
-        {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
-        /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
-        {{'productDetails.price.recurringCharges.forNext' | cxTranslate}}
-        {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
-      </div>
-      <div class="row cx-bold" *ngIf="recurringPriceKeyValue.key == groupedRecurringChargeList.length - 1">
-        {{priceService.getFormattedPrice(recurringPriceKeyValue.value.price)}}
-        /{{'productDetails.price.recurringCharges.billingFrequency.abbreviation' | cxTranslate : {context: contractTerm?.billingPlan?.billingTime} }}
-        {{'productDetails.price.recurringCharges.forLast' | cxTranslate}}
-        {{'productDetails.price.recurringCharges.month' | cxTranslate : {count: getCycleDuration(recurringPriceKeyValue.value, contractTerm)} }}&nbsp;
-      </div>
+{{recurringCharge.price.value}}
+<span
+  *ngIf="!recurringCharge.isPercentage">{{ 'common.currencies.currency' | cxTranslate : {context: recurringCharge.price.currencyIso} }}</span>
+<span *ngIf="recurringCharge.isPercentage">%</span>
+{{
+'productDetails.price.priceTypes.billingEvents.billingEvent'
+  | cxTranslate: { context: recurringCharge.billingEvent }
+}}
+<span *ngIf="recurringCharge.cycle">
+  <ng-container *ngIf="recurringCharge.cycle.cycleStart!==1 || recurringCharge.cycle.cycleEnd">
+    <ng-container *ngIf="recurringCharge.cycle.cycleStart && recurringCharge.cycle.cycleEnd">
+      {{'productDetails.price.common.for' | cxTranslate}}
+      {{recurringCharge.cycle.cycleStart}}&nbsp;{{'productDetails.price.common.to' | cxTranslate}}&nbsp;{{recurringCharge.cycle.cycleEnd}}
     </ng-container>
-  </div>
-</div>
+    <ng-container *ngIf="recurringCharge.cycle.cycleStart && !recurringCharge.cycle.cycleEnd">
+      {{'productDetails.price.common.onwards' | cxTranslate}}
+    </ng-container>
+  </ng-container>
+</span>

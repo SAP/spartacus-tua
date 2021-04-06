@@ -1,22 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { CartActions, CartEntryEffects, SiteContextActions } from '@spartacus/core';
+import { CartActions, CartModification, SiteContextActions, withdrawOn } from '@spartacus/core';
 import { from, Observable } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
+import { makeErrorSerializable } from '../../../config/utils/tma-serialization-utils';
+import { TmaCartEntryConnector } from '../../connectors';
 import * as TmaCartEntryActions from '../actions/tma-cart-entry.actions';
 import { TmaCartEntryActionTypes } from '../actions/tma-cart-entry.actions';
-import { TmaCartEntryConnector } from '../../connectors/tma-cart-entry.connector';
-import { withdrawOn } from '../../../config/utils/tma-withdraw-on';
-import { makeErrorSerializable } from '../../../config/utils/tma-serialization-utils';
 
 @Injectable()
-export class TmaCartEntryEffects extends CartEntryEffects {
+export class TmaCartEntryEffects {
 
   constructor(
     private tmaActions$: Actions,
     private tmaCartEntryConnector: TmaCartEntryConnector
   ) {
-    super(tmaActions$, tmaCartEntryConnector);
   }
 
   private tmaContextChange$ = this.tmaActions$.pipe(
@@ -28,64 +26,75 @@ export class TmaCartEntryEffects extends CartEntryEffects {
 
   @Effect()
   addCartEntry$: Observable<
-    | TmaCartEntryActions.AddCartEntrySuccess
-    | TmaCartEntryActions.AddCartEntryFail
-    | CartActions.LoadCart> = this.tmaActions$.pipe(
-      ofType(TmaCartEntryActionTypes.ADD_CART_ENTRY),
-      map((action: TmaCartEntryActions.AddCartEntry) => action.payload),
-      concatMap(payload =>
-        this.tmaCartEntryConnector
-          .addCartEntry(payload.userId, payload.cartId, payload.cartEntry)
-          .pipe(
-            map(() => {
-              return new TmaCartEntryActions.AddCartEntrySuccess({
-                userId: payload.userId,
+    | CartActions.CartAddEntrySuccess
+    | CartActions.CartAddEntryFail
+    | CartActions.LoadCart
+    > = this.tmaActions$.pipe(
+    ofType(TmaCartEntryActionTypes.ADD_ENTRY),
+    map((action: TmaCartEntryActions.AddEntry) => action.payload),
+    concatMap(payload => {
+      return this.tmaCartEntryConnector
+        .addCartEntry(
+          payload.userId,
+          payload.cartId,
+          payload.cartEntry
+        )
+        .pipe(
+          map(
+            (cartModification: CartModification) =>
+              new CartActions.CartAddEntrySuccess({
+                ...payload,
+                ...(cartModification as Required<CartModification>)
+              })
+          ),
+          catchError((error) =>
+            from([
+              new CartActions.CartAddEntryFail({
+                ...payload,
+                error: makeErrorSerializable(error)
+              }),
+              new CartActions.LoadCart({
                 cartId: payload.cartId,
-                cartEntry: payload.cartEntry,
-              });
-            }),
-            catchError(error =>
-              from([
-                new TmaCartEntryActions.AddCartEntryFail(makeErrorSerializable(error)),
-                new CartActions.LoadCart({
-                  cartId: payload.cartId,
-                  userId: payload.userId,
-                }),
-              ])
-            )
+                userId: payload.userId
+              })
+            ])
           )
-      ),
-      withdrawOn(this.tmaContextChange$)
-    );
+        );
+    }),
+    withdrawOn(this.tmaContextChange$)
+  );
 
   @Effect()
-  updateCartEntry$: Observable<| TmaCartEntryActions.UpdateCartEntrySuccess
-    | TmaCartEntryActions.UpdateCartEntryFail
-    | CartActions.LoadCart> = this.tmaActions$.pipe(
-      ofType(TmaCartEntryActionTypes.UPDATE_CART_ENTRY),
-      map((action: TmaCartEntryActions.UpdateCartEntry) => action.payload),
-      concatMap(payload =>
-        this.tmaCartEntryConnector
-          .updateCartEntry(payload.userId, payload.cartId, payload.cartEntry)
-          .pipe(
-            map(() => {
-              return new TmaCartEntryActions.UpdateCartEntrySuccess({
-                userId: payload.userId,
+  updateCartEntry$: Observable<
+    | CartActions.CartUpdateEntrySuccess
+    | CartActions.CartUpdateEntryFail
+    | CartActions.LoadCart
+    > = this.tmaActions$.pipe(
+    ofType(TmaCartEntryActionTypes.UPDATE_ENTRY),
+    map((action: TmaCartEntryActions.UpdateEntry) => action.payload),
+    concatMap(payload =>
+      this.tmaCartEntryConnector
+        .updateCartEntry(payload.userId, payload.cartId, payload.cartEntry)
+        .pipe(
+          map(() => {
+            return new CartActions.CartUpdateEntrySuccess({
+              ...payload
+            });
+          }),
+          catchError((error) =>
+            from([
+              new CartActions.CartUpdateEntryFail({
+                ...payload,
+                error: makeErrorSerializable(error)
+              }),
+              new CartActions.LoadCart({
                 cartId: payload.cartId,
-                cartEntry: payload.cartEntry,
-              });
-            }),
-            catchError(error =>
-              from([
-                new TmaCartEntryActions.UpdateCartEntryFail(makeErrorSerializable(error)),
-                new CartActions.LoadCart({
-                  cartId: payload.cartId,
-                  userId: payload.userId,
-                }),
-              ])
-            )
+                userId: payload.userId
+              })
+            ])
           )
-      ),
-      withdrawOn(this.tmaContextChange$)
-    );
+        )
+    ),
+    withdrawOn(this.tmaContextChange$)
+  );
 }

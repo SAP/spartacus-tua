@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { MultiCartService, StateWithMultiCart } from '@spartacus/core';
+import { MultiCartService, StateWithMultiCart, UserIdService } from '@spartacus/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { TmaOrderEntry } from '../../model';
+import * as TmaCartEntryActions from '../store/actions/tma-cart-entry.actions';
 import { TmaMultiCartSelectors } from '../store/selectors';
 
 @Injectable({
@@ -11,9 +12,52 @@ import { TmaMultiCartSelectors } from '../store/selectors';
 export class TmaMultiCartService extends MultiCartService {
 
   constructor(
-    protected store: Store<StateWithMultiCart>
+    protected store: Store<StateWithMultiCart>,
+    protected userIdService: UserIdService
   ) {
-    super(store);
+    super(store, userIdService);
+  }
+
+  /**
+   * Adds the provided entry to given cart.
+   *
+   * @param userId - The identifier of the user
+   * @param cartId - The identifier of the cart
+   * @param cartEntry - The entry to be added
+   */
+  addCartEntry(
+    userId: string,
+    cartId: string,
+    cartEntry: TmaOrderEntry
+  ): void {
+    this.store.dispatch(
+      new TmaCartEntryActions.AddEntry({
+        userId: userId,
+        cartId: cartId,
+        cartEntry: cartEntry
+      })
+    );
+  }
+
+  /**
+   * Updates the provided entry in given cart.
+   *
+   * @param userId - The identifier of the user
+   * @param cartId - The identifier of the cart
+   * @param cartEntry - The entry to be updated
+   */
+  updateCartEntry(
+    userId: string,
+    cartId: string,
+    cartEntry: TmaOrderEntry
+  ): void {
+    this.store.dispatch(
+      new TmaCartEntryActions.UpdateEntry({
+        userId: userId,
+        cartId: cartId,
+        cartEntry: cartEntry
+      })
+    );
   }
 
   /**

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { CurrencyService } from '@spartacus/core';
 import { CurrentProductService, ProductDetailsTabComponent } from '@spartacus/storefront';
 import { Observable } from 'rxjs';
 import { TmaProduct, TmaProductOfferingPrice } from '../../../../../core/model';
@@ -10,15 +11,22 @@ import { TmaPriceService } from '../../../../../core/product/facade';
   styleUrls: ['./tma-product-details-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TmaProductDetailsTabComponent extends ProductDetailsTabComponent {
+export class TmaProductDetailsTabComponent extends ProductDetailsTabComponent implements OnInit {
 
   product$: Observable<TmaProduct>;
+  currency$: Observable<string>;
 
   constructor(
     public priceService: TmaPriceService,
     protected currentProductService: CurrentProductService,
+    protected currencyService: CurrencyService
   ) {
     super(currentProductService);
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+    this.currency$ = this.currencyService.getActive();
   }
 
   isContractTermDisplayNeeded(priceList: TmaProductOfferingPrice[]): boolean {
