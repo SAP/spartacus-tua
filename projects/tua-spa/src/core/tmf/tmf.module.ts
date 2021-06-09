@@ -12,6 +12,9 @@ import {
 } from '../auth/http-interceptors';
 import { TmfSubscriptionModule } from './adapters/subscription';
 import { TmaTmfShoppingCartModule } from './adapters/cart';
+import { TmfRecommendationModule } from './adapters/recommendation';
+import { TmfGeographicAddressModule } from './adapters/geographic-address';
+import { TmfProductOfferingModule } from './adapters';
 
 @NgModule({
   imports: [
@@ -19,6 +22,9 @@ import { TmaTmfShoppingCartModule } from './adapters/cart';
     TmfSubscriptionModule,
     TmaTmfShoppingCartModule,
     TmfConfigLoaderModule.forRoot(),
+    TmfRecommendationModule,
+    TmfGeographicAddressModule,
+    TmfProductOfferingModule
   ],
 })
 export class TmfModule {

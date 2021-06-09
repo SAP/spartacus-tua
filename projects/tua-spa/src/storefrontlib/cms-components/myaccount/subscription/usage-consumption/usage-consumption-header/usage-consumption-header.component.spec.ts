@@ -1,5 +1,5 @@
-import { I18nTestingModule, UrlModule } from '@spartacus/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { I18nTestingModule } from '@spartacus/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { UsageConsumptionReport } from '../../../../../../core/model';
@@ -55,7 +55,7 @@ describe('UsageConsumptionHeaderComponent', () => {
   let component: UsageConsumptionHeaderComponent;
   let fixture: ComponentFixture<UsageConsumptionHeaderComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [UsageConsumptionHeaderComponent, MockUrlPipe],
       schemas: [NO_ERRORS_SCHEMA],

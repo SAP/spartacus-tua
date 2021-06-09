@@ -1,13 +1,13 @@
 import { SiteContextConfig } from '@spartacus/core';
-import { TmaTmfEndpoints } from '../tmf-models/tmf-endpoint.model';
-
+import { TmfEndpointMap } from '../tmf-models/tmf-endpoint.model';
 
 export abstract class TmfConfig extends SiteContextConfig {
   backend?: {
     tmf?: {
       baseUrl?: string;
       prefix?: string;
-      endpoints?: TmaTmfEndpoints;
+      version?: string;
+      endpoints?: TmfEndpointMap;
       legacy?: boolean;
     };
     media?: {

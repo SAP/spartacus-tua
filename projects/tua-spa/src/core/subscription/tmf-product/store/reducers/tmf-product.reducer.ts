@@ -21,21 +21,40 @@ export function tmfProductReducer(
       if (
         !state.find(
           (tmfProductState: TmfProductMap) =>
-            tmfProductState.tmfProductId === action.payload.tmfProductId &&
+            tmfProductState.id === action.payload.tmfProductId &&
             tmfProductState.baseSiteId === action.payload.baseSiteId
         )
       ) {
         state = state.concat({
           tmfProduct: action.payload.tmfProduct,
-          tmfProductId: action.payload.tmfProductId,
-          baseSiteId: action.payload.baseSiteId,
+          id: action.payload.tmfProductId,
+          baseSiteId: action.payload.baseSiteId
         });
       }
       return state;
     }
-    case TmfProductActionType.LOAD_TMF_PRODUCT_FAIL ||
-      TmfProductActionType.CLEAR_TMF_PRODUCT: {
+    case TmfProductActionType.CLEAR_TMF_PRODUCT: {
       return initialState;
+    }
+    case TmfProductActionType.LOAD_TMF_PRODUCT_FAIL: {
+      return initialState;
+    }
+    case TmfProductActionType.LOAD_TMF_PRODUCTS_SUCCESS: {
+      if (
+        !state.find(
+          (tmfProductState: TmfProductMap) =>
+            tmfProductState.id === action.payload.tmfSubsciptionId &&
+            tmfProductState.baseSiteId === action.payload.baseSiteId
+        )
+      ) {
+        state = state.concat({
+          tmfProduct: action.payload.tmfProduct,
+          id: action.payload.tmfProductId,
+          baseSiteId: action.payload.baseSiteId,
+          tmfProducts: action.payload.tmfProducts
+        });
+      }
+      return state;
     }
   }
   return state;

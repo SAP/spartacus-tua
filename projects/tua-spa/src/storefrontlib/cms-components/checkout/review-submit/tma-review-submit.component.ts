@@ -1,12 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-  CartService,
+  ActiveCartService,
+  CheckoutCostCenterService,
   CheckoutDeliveryService,
   CheckoutPaymentService,
+  PaymentTypeService,
   TranslationService,
   UserAddressService,
+  UserCostCenterService,
 } from '@spartacus/core';
-import { CheckoutConfigService, PromotionService, ReviewSubmitComponent } from '@spartacus/storefront';
+import { CheckoutConfigService, CheckoutStepService, PromotionService, ReviewSubmitComponent } from '@spartacus/storefront';
 
 @Component({
   selector: 'cx-review-submit',
@@ -19,11 +22,14 @@ export class TmaReviewSubmitComponent extends ReviewSubmitComponent {
     protected checkoutDeliveryService: CheckoutDeliveryService,
     protected checkoutPaymentService: CheckoutPaymentService,
     protected userAddressService: UserAddressService,
-    protected cartService: CartService,
+    protected activeCartService: ActiveCartService,
     protected translation: TranslationService,
-    protected checkoutConfigService: CheckoutConfigService,
-    protected promotionService: PromotionService
+    protected promotionService: PromotionService,
+    protected checkoutStepService: CheckoutStepService,
+    protected paymentTypeService: PaymentTypeService,
+    protected checkoutCostCenterService: CheckoutCostCenterService,
+    protected userCostCenterService: UserCostCenterService
   ) {
-    super(checkoutDeliveryService, checkoutPaymentService, userAddressService, cartService, translation, checkoutConfigService, promotionService);
+    super(checkoutDeliveryService, checkoutPaymentService, userAddressService, activeCartService, translation, promotionService, checkoutStepService, paymentTypeService, checkoutCostCenterService, userCostCenterService);
   }
 }

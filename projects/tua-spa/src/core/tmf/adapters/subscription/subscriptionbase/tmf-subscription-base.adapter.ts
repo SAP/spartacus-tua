@@ -31,7 +31,7 @@ export class TmfSubscriptionBaseAdapter implements SubscriptionBaseAdapter {
     queryParameters['subscriptionAccess.relatedParty.id'] = userId;
 
     const url = this.tmfEndpointsService.getUrl(
-      'subscriptionBase',
+      'getSubscriptionBases',
       [],
       queryParameters
     );

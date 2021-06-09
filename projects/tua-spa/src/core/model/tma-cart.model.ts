@@ -28,6 +28,7 @@ export interface TmaCharacteristic {
 }
 
 export interface TmaSubscribedProduct {
+  id?: string;
   relatedParty?: TmaRelatedParty[];
   place?: TmaPlace[];
   characteristic?: TmaCharacteristic[];
@@ -42,12 +43,12 @@ export interface TmaPlace {
   id?: string;
   name?: string;
   role?: TmaPlaceRole;
-  country?: Country;
-  region?: Region;
   line1?: string;
   line2?: string;
   town?: string;
   postalCode?: string;
+  region?: Region;
+  country?: Country;
 }
 
 export interface TmaCart extends Cart {

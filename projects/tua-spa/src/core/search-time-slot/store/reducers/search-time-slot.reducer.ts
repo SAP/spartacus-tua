@@ -1,17 +1,22 @@
 import {
   SearchTimeSlotAction,
-  SearchTimeSlotActionTypes,
+  SearchTimeSlotActionTypes
 } from '../actions/search-time-slot.action';
-import { SearchTimeSlot, TimeSlot } from '../../../model';
+import { SearchTimeSlot } from '../../../model';
 
 export const searchTimeSlotInitialState: SearchTimeSlot = {};
-export const selectedTimeSlotInitialState: TimeSlot = {};
+export const selectedTimeSlotInitialState: SearchTimeSlot = {};
+export const searchTimeSlotErrorInitialState: string = null;
 
 /**
- * Function to update the state with available time slots
- * @param state The state of the SearchTimeSlotState
- * @param action Dispatched action of {@link SearchTimeSlotAction}
- * @returns list of {@link SearchTimeSlot} of {@link SearchTimeSlotState}
+ * Update the state with available time slots
+ * 
+ * @param state
+ *             The state of the SearchTimeSlotState
+ * @param action
+ *             Dispatched action of {@link SearchTimeSlotAction}
+ * @returns
+ *        list of {@link SearchTimeSlot} of {@link SearchTimeSlotState}
  */
 export function searchTimeSlotReducer(
   state = searchTimeSlotInitialState,
@@ -21,12 +26,15 @@ export function searchTimeSlotReducer(
     case SearchTimeSlotActionTypes.LOAD_SEARCH_TIME_SLOT_SUCCESS: {
       return action.payload;
     }
+    case SearchTimeSlotActionTypes.CLEAR_SEARCH_TIME_SLOT_STATE: {
+      return searchTimeSlotInitialState;
+    }
   }
   return state;
 }
 
 /**
- * Function to update the state with selected time slot
+ * Update the state with selected time slot
  * @param state The state of the SearchTimeSlotState
  * @param action Dispatched action of {@link SearchTimeSlotAction}
  * @returns list of {@link TimeSlot} of {@link SearchTimeSlotState}
@@ -34,10 +42,37 @@ export function searchTimeSlotReducer(
 export function selectedTimeSlotReducer(
   state = selectedTimeSlotInitialState,
   action: SearchTimeSlotAction
-): TimeSlot {
+): SearchTimeSlot {
   switch (action.type) {
     case SearchTimeSlotActionTypes.SELECTED_TIME_SLOT_SUCCESS: {
-      return action.payload.timeSlot;
+      return (state = {
+        requestedTimeSlot: [action.payload.requestedTimeSlot],
+        relatedPlace: action.payload.relatedPlace
+      });
+    }
+    case SearchTimeSlotActionTypes.CLEAR_SELECTED_SEARCH_TIME_SLOT_STATE: {
+      return selectedTimeSlotInitialState;
+    }
+  }
+  return state;
+}
+
+/**
+ * Update the state with error occured during search timeslot API call
+ * @param state The state of the SearchTimeSlotState
+ * @param action Dispatched action of {@link SearchTimeSlotAction}
+ * @returns error as {@link string} of {@link SearchTimeSlotState}
+ */
+export function searchTimeSlotErrorReducer(
+  state = searchTimeSlotErrorInitialState,
+  action: SearchTimeSlotAction
+): string {
+  switch (action.type) {
+    case SearchTimeSlotActionTypes.LOAD_SEARCH_TIME_SLOT_FAIL: {
+      return action.payload;
+    }
+    case SearchTimeSlotActionTypes.CLEAR_SEARCH_TIME_ERROR_STATE: {
+      return searchTimeSlotErrorInitialState;
     }
   }
   return state;

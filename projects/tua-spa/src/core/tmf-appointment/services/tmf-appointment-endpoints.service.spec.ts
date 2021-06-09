@@ -43,7 +43,7 @@ describe('TmfAppointmentEndpointsService', () => {
         { provide: TmfAppointmentConfig, useValue: appointmentConfig },
       ],
     });
-    service = TestBed.get(
+    service = TestBed.inject(
       TmfAppointmentEndpointsService as Type<TmfAppointmentEndpointsService>
     );
   });

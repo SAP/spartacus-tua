@@ -20,7 +20,7 @@ export class TmfProductAdapterImpl implements TmfProductAdapter {
   getTmfProductDetails(
     baseSiteId: string,
     tmfProductId: string
-  ): Observable<TmfProduct[]> {
+  ): Observable<TmfProduct> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
     });
@@ -29,13 +29,13 @@ export class TmfProductAdapterImpl implements TmfProductAdapter {
     queryParameters['baseSiteId'] = baseSiteId;
 
     const url = this.tmfEndpointsService.getUrl(
-      'tmfProductId',
-      [{ id: tmfProductId }],
+      'getProduct',
+      { id: tmfProductId },
       queryParameters
     );
 
     return this.http
-      .get<Tmf.TmfProduct[]>(url, { headers })
-      .pipe(this.converterService.pipeableMany(TMF_PRODUCT_NORMALIZER));
+      .get<Tmf.TmfProduct>(url, { headers })
+      .pipe(this.converterService.pipeable(TMF_PRODUCT_NORMALIZER));
   }
 }

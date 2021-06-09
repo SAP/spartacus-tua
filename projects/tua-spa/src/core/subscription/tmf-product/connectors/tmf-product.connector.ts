@@ -12,7 +12,7 @@ export class TmfProductConnector {
   public getTmfProductDetails(
     baseSiteId: string,
     tmfProductId: string
-  ): Observable<TmfProduct[]> {
+  ): Observable<TmfProduct> {
     return this.adapter.getTmfProductDetails(baseSiteId, tmfProductId);
   }
 }

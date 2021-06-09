@@ -7,9 +7,10 @@ export interface TmaStateWithTmfProduct {
 }
 
 export class TmfProductMap {
-  baseSiteId?: string;
-  tmfProductId?: string;
   tmfProduct?: TmfProduct;
+  id?: string;
+  baseSiteId?: string;
+  tmfProducts?: TmfProduct[];
 }
 
 export interface TmfProductState {

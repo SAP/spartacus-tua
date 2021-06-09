@@ -3,26 +3,26 @@ import {
   Input,
   ChangeDetectionStrategy,
   OnInit,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { TmfProductService } from '../../../../../core/subscription/tmf-product/facade';
+import {
+  TmfProductService,
+  RecommendationService
+} from '../../../../../core';
 import {
   TmfProduct,
   TmfProductRelatedPartyRole,
-  TmfProductStatus,
   TmaOrderEntry,
   TmaCartItemPrice,
   TmaOrder,
-  TmaTmfRelatedParty,
+  TmaTmfRelatedParty
 } from '../../../../../core/model';
 import {
   UserOrderService,
   CurrencyService,
-  User,
-  UserService,
+  User
 } from '@spartacus/core';
-import { filter, takeUntil, tap } from 'rxjs/operators';
 import { TmaCartPriceService } from '../../../../../core/cart/facade';
 import { TmaItem } from '../../../cart/cart-shared';
 
@@ -30,37 +30,37 @@ import { TmaItem } from '../../../cart/cart-shared';
   selector: 'cx-tmf-product',
   templateUrl: './tmf-product.component.html',
   styleUrls: ['./tmf-product.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class TmfProductComponent implements OnInit, OnDestroy {
   @Input()
   tmfProductId: string;
+  @Input()
+  tmfProduct: TmfProduct;
+  @Input()
+  subscriptionId?: string;
+  @Input()
+  order?: TmaOrder;
+
   tmfProductDetail$: Observable<TmfProduct>;
   currency$: Observable<string>;
   isOwner: boolean;
+  baseSiteId: string;
+  isEligibleForTermination$: Observable<boolean>;
+  status: string;
   protected user: User;
   protected destroyed$ = new Subject();
 
   constructor(
     public priceService: TmaCartPriceService,
+    public recommendationService: RecommendationService,
     protected tmfProductService: TmfProductService,
     protected userOrderService: UserOrderService,
-    protected currencyService: CurrencyService,
-    protected userService: UserService
+    protected currencyService: CurrencyService
   ) {}
 
   ngOnInit(): void {
     this.currency$ = this.currencyService.getActive();
-    this.userService
-      .get()
-      .pipe(
-        filter((customer: User) => !!customer),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe((customer: User) => (this.user = customer));
-    this.tmfProductDetail$ = this.tmfProductService.getTmfProductDetails(
-      this.tmfProductId
-    );
   }
 
   ngOnDestroy(): void {
@@ -69,28 +69,39 @@ export class TmfProductComponent implements OnInit, OnDestroy {
     this.tmfProductService.clearTmfProductDetails();
   }
 
-  getProductOrder(orderId: string): Observable<TmaOrder> {
-    if (!!orderId) {
-      return this.userOrderService.getOrderDetails().pipe(
-        tap((order: TmaOrder) => {
-          if (Object.keys(order).length === 0 || order.code !== orderId) {
-            this.userOrderService.loadOrderDetails(orderId);
-          }
-        })
-      );
-    }
-  }
-
   getProductOrderEntry(order: TmaOrder, entryNumber: string): TmaOrderEntry {
     let userOrderEntry: TmaOrderEntry;
     if (!!order && !!order.entries) {
-      order.entries.filter((entry: TmaOrderEntry) => {
+      userOrderEntry = this.getEntry(order.entries, entryNumber);
+    }
+    return userOrderEntry;
+  }
+
+  /**
+   * Filters the order entry list with a given entry number.   * 
+   *
+   * @param entries the list of order entries.
+   *
+   * @return order entry as {@link TmaOrderEntry}.
+   */
+  getEntry(entries: TmaOrderEntry[], entryNumber: string): TmaOrderEntry {
+    let orderEntry: TmaOrderEntry;
+    if (entries) {
+      entries.forEach((entry: TmaOrderEntry) => {
         if (entry.entryNumber.toString() === entryNumber) {
-          userOrderEntry = entry;
+          orderEntry = entry;
+          return;
+        } else {
+          let productOrderEntry: TmaOrderEntry;
+          productOrderEntry = this.getEntry(entry.entries, entryNumber);
+          if (productOrderEntry) {
+            orderEntry = productOrderEntry;
+            return;
+          }
         }
       });
     }
-    return userOrderEntry;
+    return orderEntry;
   }
 
   getPrices(entry: TmaOrderEntry): TmaCartItemPrice {
@@ -108,14 +119,5 @@ export class TmfProductComponent implements OnInit, OnDestroy {
       }
     });
     return this.isOwner;
-  }
-
-  getProductStatus(product: TmfProduct): boolean {
-    if (product.status === TmfProductStatus.ACTIVE) {
-      return true;
-    }
-    if (product.status === TmfProductStatus.CANCELLED) {
-      return false;
-    }
   }
 }

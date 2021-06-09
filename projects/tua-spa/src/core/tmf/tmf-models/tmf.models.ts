@@ -1,10 +1,12 @@
 import { BaseStore, Language, Product } from '@spartacus/core';
+import { TmfRelatedParty } from '../../tmf-resource-pool-management';
 
 export namespace Tmf {
   export interface TmaChecklistAction {
     id: string;
     name: string;
     actionType: string;
+    productOffering?: TmfProductOfferingRef[];
   }
 
   export interface BaseSites {
@@ -71,7 +73,7 @@ export namespace Tmf {
     terminationDate?: Date;
     relatedParty?: TmaTmfRelatedParty[];
     productOrder?: TmfProductOrder[];
-    productOffering?: TmfProductOffering;
+    productOffering?: TmfProductOfferingRef;
   }
 
   export enum TmfProductStatus {
@@ -136,9 +138,9 @@ export namespace Tmf {
     validFor?: TmaTimePeriod;
   }
 
-  export interface TmfProductOffering {
-    href?: string;
+  export interface TmfProductOfferingRef {
     id: string;
+    href?: string;
     name?: string;
   }
 
@@ -167,5 +169,123 @@ export namespace Tmf {
     href: string;
     role?: string;
     name?: string;
+  }
+
+  export interface TmfRecommendation {
+    id?: string;
+    name?: string;
+    href?: string;
+    item?: TmfRecommendationItem[];
+  }
+
+  export interface TmfRecommendationItem {
+    offering?: TmfProductOfferingRef;
+    price?: TmfProductOfferingPrice;
+  }
+
+  export interface TmfPrice {
+    value?: string;
+    unit?: string;
+  }
+
+  export interface TmfProductOfferingPrice {
+    id?: string;
+    name?: string;
+    itemType?: string;
+    isBundle?: boolean;
+    bundledPop?: TmfProductOfferingPrice[];
+    isPriceOverride?: boolean;
+    priceType?: string;
+    priceEvent?: string;
+    percentage?: string;
+    price?: TmfPrice;
+  }
+
+  export interface TmfGeographicAddress {
+    id?: string;
+    href?: string;
+    streetNr?: string;
+    streetNrLast?: string;
+    streetNrLastSuffix?: string;
+    streetName?: string;
+    streetType?: string;
+    streetSuffix?: string;
+    postcode?: string;
+    locality?: string;
+    city?: string;
+    stateOfProvince?: string;
+    country?: string;
+    relatedParty: TmaTmfRelatedParty;
+    geographicSubAddress?: TmfGeographicSubAddress;
+    isInstallationAddress?: boolean;
+    isUnloadingAddress?: boolean;
+    isContactAddress?: boolean;
+    isShippingAddress?: boolean;
+    isBillingAddress?: boolean;
+  }
+
+  export interface TmfGeographicSubAddress {
+    id?: string;
+    href?: string;
+    name?: string;
+    type?: string;
+    subUnitType?: string;
+    subUnitNumber?: string;
+    levelType?: string;
+    levelNumber?: string;
+    buildingName?: string;
+    privateStreetNumber?: string;
+    privateStreetName?: string;
+  }
+
+  export interface TmfProductOffering {
+    id: string,
+    href: string,
+    name: string,
+    description: string,
+    isBundle: boolean,
+    isSellable: boolean,
+    productOfferingPrice?: TmfProductOfferingPrice[];
+    children?: TmfProductOffering[];
+    priceContext?: TmfPriceContext[];
+  }
+
+  export interface TmfPriceContext {
+    id: string,
+    poRelationship: TmfProductRelationship,
+    isPriceOverride: string,
+    productOfferingPrice: TmfProductOfferingPriceRef,
+    isBundle: boolean,
+    isSellable: boolean,
+    productOfferingTerm: TmfProductOfferingTerm[],
+    processType: TmfProcessType,
+    priority: number,
+    relatedParty: TmfRelatedParty
+  }
+
+  export interface TmfProductOfferingPriceRef {
+    id: string,
+    href: string,
+    name: string
+  }
+
+  export interface TmfProductOfferingTerm {
+    id: string,
+    description: string,
+    name: string,
+    duration: string,
+    validFor: string
+  }
+
+  export interface TmfProcessType {
+    id: TmfProcessTypeEnum;
+  }
+
+  export enum TmfProcessTypeEnum {
+    ACQUISITION = 'ACQUISITION',
+    DEVICE_ONLY = 'DEVICE_ONLY',
+    RETENTION = 'RETENTION',
+    SWITCH_SERVICE_PROVIDER = 'SWITCH_SERVICE_PROVIDER',
+    TARIFF_CHANGE = 'TARIFF_CHANGE'
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TmaPremiseDetail, TmaTechnicalResource } from '../../model';
-import { TmaPremiseDetailAdapter } from '../store/adapters';
+import { TmaPremiseDetailAdapter } from '../store/adapters/tma-premise-detail.adapter';
 
 @Injectable({
   providedIn: 'root'

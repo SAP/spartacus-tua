@@ -8,9 +8,9 @@
       aria-label="Close"
       (click)="dismissModal({})"
     >
-        <span aria-hidden="true">
-          <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
-        </span>
+          <span aria-hidden="true">
+            <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
+          </span>
     </button>
 
     <!-- Consumption component -->
@@ -20,14 +20,18 @@
           <span>{{ poConsumption.value.productSpecification.name }}</span>
         </ng-template>
         <ng-template ngbTabContent>
-          <cx-po-search-by-consumption
-            [poConsumption]="poConsumption.value"
-            [isModal]="true"
-            [url]="url"
-            [queryParams]="queryParams"
-            (closeModal)="dismissModal($event)"
-          >
-          </cx-po-search-by-consumption>
+          <ng-container *ngIf="currentPageCode$ | async as currentPage">
+            <cx-po-search-by-consumption
+              [poConsumption]="poConsumption.value"
+              [isModal]="true"
+              [url]="url"
+              [queryParams]="queryParams"
+              [isCartPage]="currentPage === 'cartPage' ? true : false"
+              [cartEntryConsumption]="cartEntryConsumption"
+              (closeModal)="dismissModal($event)"
+            >
+            </cx-po-search-by-consumption>
+          </ng-container>
         </ng-template>
       </ngb-tab>
     </ngb-tabset>

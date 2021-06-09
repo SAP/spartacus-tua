@@ -1,6 +1,7 @@
 import { TmaQuantity } from './tma-product.model';
 import { TimePeriod } from './time-period.model';
 import { TmaTmfRelatedParty } from './tma-tmf-related-party.model';
+import { RelatedPlaceRefOrValue } from './query-service-qualification.model';
 
 export interface Appointment {
   id?: string;
@@ -18,7 +19,8 @@ export interface Appointment {
   attachment?: AttachmentRef[];
   contactMedium?: ContactMedium[];
   relatedParty?: TmaTmfRelatedParty[];
-  relatedPlace?: RelatedPlaceRef;
+  relatedPlace?: RelatedPlaceRefOrValue;
+  '@type'?: string;
 }
 
 export enum AppointmentStateType {
@@ -64,10 +66,11 @@ export interface ContactMedium {
 
 export interface RelatedPlaceRef {
   id: string;
-  href: string;
-  name: string;
-  role: string;
-  isRef: boolean;
+  href?: string;
+  name?: string;
+  role?: string;
+  isRef?: boolean;
+  '@referredType': string;
 }
 
 export interface MediumCharacteristic {

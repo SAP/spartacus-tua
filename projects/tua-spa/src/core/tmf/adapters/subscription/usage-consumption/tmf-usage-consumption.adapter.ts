@@ -33,7 +33,7 @@ export class TmfUsageConsumptionAdapter implements UsageConsumptionAdapter {
     queryParameters['subscriptionBase.id'] = subscriptionBaseId;
 
     const url = this.tmfEndpointsService.getUrl(
-      'usageConsumptionReport',
+      'getUsageConsumptionReports',
       [],
       queryParameters
     );

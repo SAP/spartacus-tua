@@ -4,13 +4,17 @@ export const defaultTmaAuthConfig: AuthConfig = {
   authentication: {
     client_id: 'mobile_android',
     client_secret: 'secret',
-  },
-  backend: {
-    occ: {
-      endpoints: {
-        login: '/authorizationserver/oauth/token',
-        revoke: '/authorizationserver/oauth/revoke',
-      },
+    tokenEndpoint: '/oauth/token',
+    revokeEndpoint: '/oauth/revoke',
+    loginUrl: '/oauth/authorize',
+    OAuthLibConfig: {
+      scope: '',
+      customTokenParameters: ['token_type'],
+      strictDiscoveryDocumentValidation: false,
+      skipIssuerCheck: true,
+      disablePKCE: true,
+      oidc: false,
+      clearHashAfterLogin: false,
     },
   },
 };

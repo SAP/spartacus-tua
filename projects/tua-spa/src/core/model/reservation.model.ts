@@ -5,9 +5,9 @@ import {
 } from './logical-resource.model';
 
 export interface Reservation {
-  baseType?: string;
-  schemaLocation?: string;
-  type?: string;
+  '@baseType'?: string;
+  '@schemaLocation'?: string;
+  '@type'?: string;
   description?: string;
   href?: string;
   id?: string;

@@ -6,7 +6,7 @@ export class TmaBillingFrequencyLoadedConfigConverter {
 
   fromBillingFrequencyConfig(billingFrequencyConfig: TmaBillingFrequencyLoadedConfig): TmaBillingFrequencyLoadedConfig {
     return {
-      billingFrequency: billingFrequencyConfig.billingFrequency
+      billingFrequency: billingFrequencyConfig.billingFrequency,
     };
   }
 }

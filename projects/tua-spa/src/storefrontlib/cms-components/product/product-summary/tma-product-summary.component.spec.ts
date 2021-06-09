@@ -1,9 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { CmsService, CurrencyService, I18nTestingModule } from '@spartacus/core';
 import {
   AddToCartModule,
   CurrentProductService,
+  IntersectionOptions,
   ItemCounterModule,
   ModalService,
   OutletDirective,
@@ -13,10 +14,12 @@ import {
 import { Observable, of } from 'rxjs';
 import { TmaBillingFrequencyConfig } from '../../../../core/config/billing-frequency/config';
 import { TmaConsumptionConfig } from '../../../../core/config/consumption/config';
-import { TmaProduct } from '../../../../core/model/tma-product.model';
+import { TmaProduct } from '../../../../core/model';
 import { TmaPriceService, TmaProductService } from '../../../../core/product/facade';
 import { TmaPriceModule } from '../price';
 import { TmaProductSummaryComponent } from './tma-product-summary.component';
+import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
+import { Directive, EventEmitter, Input, Output } from '@angular/core';
 
 class MockCurrentProductService {
   getProduct(): Observable<TmaProduct> {
@@ -42,6 +45,15 @@ class MockCurrencyService {
 class MockActivatedRoute {
 }
 
+@Directive({
+  selector: '[cxOutlet]',
+})
+class MockOutletDirective {
+ @Input() cxOutlet: string;
+ @Input() cxOutletContext: any;
+ @Input() cxOutletDefer: IntersectionOptions;
+ @Output() loaded: EventEmitter<Boolean> = new EventEmitter<Boolean>(true);
+}
 
 describe('TmaProductSummaryComponent in product', () => {
   let productSummaryComponent: TmaProductSummaryComponent;
@@ -49,7 +61,7 @@ describe('TmaProductSummaryComponent in product', () => {
   let mockConsumptionConfig: TmaConsumptionConfig;
   let mockBillingFrequencyConfig: TmaBillingFrequencyConfig;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     mockConsumptionConfig = {
       consumption: {
         defaultValues: [
@@ -70,8 +82,8 @@ describe('TmaProductSummaryComponent in product', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [SpinnerModule, AddToCartModule, ItemCounterModule, I18nTestingModule, TmaPriceModule],
-      declarations: [TmaProductSummaryComponent, ProductSummaryComponent, OutletDirective],
+      imports: [SpinnerModule, AddToCartModule, ItemCounterModule, I18nTestingModule, TmaPriceModule, TmaPriceDisplayModule],
+      declarations: [TmaProductSummaryComponent, ProductSummaryComponent, MockOutletDirective],
       providers: [
         {
           provide: CurrentProductService,

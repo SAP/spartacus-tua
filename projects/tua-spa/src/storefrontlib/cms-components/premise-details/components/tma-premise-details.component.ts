@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import {
   Address,
+  AuthService,
   GlobalMessageService,
   GlobalMessageType,
   OrderEntry,
@@ -10,7 +11,10 @@ import {
   TranslationService,
   User,
   UserService,
-  WindowRef
+  WindowRef,
+  Page,
+  ContentSlotComponentData,
+  CmsService
 } from '@spartacus/core';
 import { ModalRef, ModalService } from '@spartacus/storefront';
 import { Observable, Subject } from 'rxjs';
@@ -26,12 +30,17 @@ import {
   TmaProduct,
   TmaRelatedParty,
   TmaRelatedPartyRole,
-  TmaTechnicalResources
+  TmaTechnicalResources,
+  TmaCmsConsumptionComponent,
+  SEPARATOR,
+  TmaConsumptionValue
 } from '../../../../core/model';
 import { TmaPremiseDetailService } from '../../../../core/premisedetail/facade';
 import { TmaUserAddressService } from '../../../../core/user/facade/tma-user-address.service';
 import { TmaInstallationAddressConverter } from '../../../../core/util/converters';
 import { TmaAddedToCartDialogComponent } from '../../cart/add-to-cart/added-to-cart-dialog/tma-added-to-cart-dialog.component';
+import { ActivatedRoute } from '@angular/router';
+import { TmaConsumptionConfig } from '../../../../core/config/consumption/config/tma-consumption-config';
 
 @Component({
   selector: 'cx-premise-details',
@@ -56,16 +65,17 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   validationResult$: Observable<TmaTechnicalResources>;
   activeUser$: Observable<User>;
+  isUserLoggedIn$: Observable<boolean>;
   product$: Observable<TmaProduct>;
-  addresses$: Observable<Address[]>;
-
+  page$: Observable<Page>;
+  consumptionDisplayList: string[] = [];
   protected modalRef: ModalRef;
   protected destroyed$ = new Subject();
-
 
   constructor(
     protected premiseDetailService: TmaPremiseDetailService,
     protected userService: UserService,
+    protected authService: AuthService,
     protected globalMessageService: GlobalMessageService,
     protected translationService: TranslationService,
     protected userAddressService: TmaUserAddressService,
@@ -75,17 +85,21 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
     protected modalService: ModalService,
     protected windowRef: WindowRef,
     protected routingService: RoutingService,
-    protected location: Location
-  ) { }
+    protected location: Location,
+    protected cmsService?: CmsService,
+    protected activatedRoute?: ActivatedRoute,
+    protected consumptionConfig?: TmaConsumptionConfig
+  ) {
+  }
 
   ngOnInit(): void {
     this.activeUser$ = this.userService.get();
+    this.isUserLoggedIn$ = this.authService.isUserLoggedIn();
     this.product$ = this.productService.get(this.productCode);
-    this.premiseDetailsStep = "premiseCheckButton";
-    this.userAddressService.loadAddresses();
-    this.addresses$ = this.userAddressService.getAddresses();
+    this.premiseDetailsStep = 'premiseCheckButton';
     this.isMoveIn = true;
-
+    this.userAddressService.loadAddresses();
+    this.page$ = this.cmsService.getCurrentPage();
     this.cartEntry$ = this.cartService.getEntry(this.productCode);
   }
 
@@ -96,14 +110,14 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Validates the provided premise details.
-   * 
+   *
    * @param premiseDetails - The premise details
    * @param product - The product offering
    */
   validatePremiseDetails(premiseDetails: TmaPremiseDetail, product: TmaProduct): void {
     this.premiseDetails = premiseDetails;
     this.premiseDetails.meter.type = this.getMeterType(product);
-    this.premiseDetailsStep = "premiseValidationResult";
+    this.premiseDetailsStep = 'premiseValidationResult';
     this.validationResult$ = this.premiseDetailService.validatePremiseDetails(premiseDetails);
   }
 
@@ -119,7 +133,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Updates the contract start date
-   * 
+   *
    * @param contractStartDate - the contract start date
    */
   updateContractStartDate(contractStartDate: string): void {
@@ -128,7 +142,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Updating the energy supplier
-   * 
+   *
    * @param supplier - edited supplier
    */
   energySupplierEdited(supplier: string): void {
@@ -141,8 +155,27 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Loads and returns the user addresses.
+   *
+   * @return List of {@link Address} as a {@link Observable}
+   */
+  getUserAddresses(): Observable<Address[]> {
+    return this.userAddressService.getAddresses();
+  }
+
+  /**
+   * Adds the selected product to cart for an anonymous user.
+   */
+  anonymousAddToCart(): void {
+    this.translationService.translate('productDetails.loginNeeded').pipe(
+      tap((translatedMessage: string) => this.globalMessageService.add(translatedMessage, GlobalMessageType.MSG_TYPE_ERROR)),
+      takeUntil(this.destroyed$)
+    ).subscribe();
+  }
+
+  /**
    * Adding the selected product to cart
-   * 
+   *
    * @param activeUser - logged in user
    * @param addresses - premise addresses
    */
@@ -174,8 +207,8 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
         addresses.forEach((a: Address) => addressesIds.push(a.id));
         const addedAddressId: string = addressesAllIds.filter(item => addressesIds.indexOf(item) < 0)[0];
         if (addedAddressId) {
-          this.openModal(addedAddressId);
           this.cartService.addCartEntry(this.createCartEntry(addedAddressId));
+          this.openModal(addedAddressId);
         }
       });
   }
@@ -198,7 +231,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
    * Shows the premise details form on the page
    */
   onChangePremiseDetailsStep(): void {
-    this.premiseDetailsStep = "premiseDetailsStep";
+    this.premiseDetailsStep = 'premiseDetailsStep';
   }
 
   /**
@@ -214,7 +247,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Verifies that the premise validation is successful
-   * 
+   *
    * @param validationResult - the premise validation result
    */
   verifyPremiseResultValidity(validationResult: TmaTechnicalResources): boolean {
@@ -222,8 +255,108 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Retrieves the consumption component based on the product's product specification
+   *
+   * @param page The current page
+   * @param product The provided product
+   * @return The consumption component as {@link TmaCmsConsumptionComponent}
+   */
+  getConsumptionComponent(page: Page, product: TmaProduct): TmaCmsConsumptionComponent {
+    const consumptionSlotKey: string = Object.keys(page.slots)
+      .find((key: string) => page.slots[key].components.find((component: ContentSlotComponentData) => component.typeCode === 'ConsumptionListComponent'));
+
+    if (!consumptionSlotKey) {
+      return null;
+    }
+
+    const consumptionSlot = page.slots[consumptionSlotKey];
+
+    const consumptionComponentList: TmaCmsConsumptionComponent[] = [];
+    consumptionSlot.components.forEach((component: ContentSlotComponentData) => {
+      this.cmsService.getComponentData(component.uid)
+        .pipe(first((consumptionComp: TmaCmsConsumptionComponent) => consumptionComp != null))
+        .subscribe((consumptionComp: TmaCmsConsumptionComponent) => consumptionComponentList.push(consumptionComp));
+    });
+
+    if (!consumptionComponentList || consumptionComponentList.length === 0) {
+      return null;
+    }
+
+    const keyValueList: string[] = Object.keys(consumptionComponentList[0].searchByConsumptionComponents);
+
+    if (!keyValueList || keyValueList.length < 1) {
+      return null;
+    }
+
+    const consumptionComponent: TmaCmsConsumptionComponent = Object.assign({}, consumptionComponentList[0]);
+    consumptionComponent.searchByConsumptionComponents = [];
+
+    keyValueList.forEach((keyValue: string) => {
+      if (consumptionComponentList[0].searchByConsumptionComponents[keyValue].productSpecification.id === product.productSpecification.id) {
+        consumptionComponent.searchByConsumptionComponents[keyValue] = consumptionComponentList[0].searchByConsumptionComponents[keyValue];
+      }
+    });
+
+    return consumptionComponent;
+  }
+
+  /**
+   * Returns the average consumption with usage unit and biling frequency (ie 6000 kWh/year)
+   *
+   * @param the consumption component of {@link TmaCmsConsumptionComponent}
+   * @return formatted consumption of {@link string}
+   */
+  getFormattedConsumptionList(consumptionComponent: TmaCmsConsumptionComponent): string[] {
+    if (!consumptionComponent ||
+      !consumptionComponent.searchByConsumptionComponents) {
+      return [];
+    }
+    const keyValueList: string[] = Object.keys(consumptionComponent.searchByConsumptionComponents);
+    if (!keyValueList || keyValueList.length < 1) {
+      return [];
+    }
+    keyValueList.forEach((keyValue: string) => {
+      const consumptionDetails = consumptionComponent.searchByConsumptionComponents[keyValue];
+
+      this.consumptionDisplayList.push(
+        this.getConsumption(consumptionDetails.productSpecification.id, consumptionDetails.usageUnit.id)
+        + ' ' + consumptionDetails.usageUnit.name
+        + '/' + consumptionDetails.billingFrequency
+      );
+    });
+    return this.consumptionDisplayList;
+  }
+
+  protected getConsumption(productSpecification: string, usageUnit: string): number {
+    let consumption: string = null;
+    this.activatedRoute.queryParams.subscribe(params => {
+      consumption = params['consumption'];
+    });
+
+    if (consumption) {
+      return Number(consumption);
+    }
+
+    const consumptionFromLocalStorage = localStorage.getItem('consumption' + SEPARATOR + productSpecification + SEPARATOR + usageUnit);
+
+    if (consumptionFromLocalStorage) {
+      return Number(consumptionFromLocalStorage);
+    }
+
+    const defaultConsumptionValue = this.consumptionConfig.consumption.defaultValues.find((consumptionValue: TmaConsumptionValue) => consumptionValue.productSpecification === productSpecification && consumptionValue.usageUnit === usageUnit);
+    if (!defaultConsumptionValue) {
+      const consumptionValue = this.consumptionConfig.consumption.default;
+      localStorage.setItem('consumption' + SEPARATOR + productSpecification + SEPARATOR + usageUnit, consumptionValue);
+      return Number(consumptionValue);
+    }
+
+    localStorage.setItem('consumption' + SEPARATOR + productSpecification + SEPARATOR + usageUnit, defaultConsumptionValue.value);
+    return Number(defaultConsumptionValue.value);
+  }
+
+  /**
    * Creates a cart entry
-   * 
+   *
    * @param addressId - the address id
    * @returns The created cart entry {@link TmaOrderEntry}
    */
@@ -239,6 +372,10 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
             {
               name: 'meter_id',
               value: this.premiseDetails.meter.id
+            },
+            {
+              name: 'average_consumption_estimation',
+              value: this.consumptionDisplayList[0]
             }
           ],
           place: [
@@ -265,6 +402,10 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
             {
               name: 'meter_id',
               value: this.premiseDetails.meter.id
+            },
+            {
+              name: 'average_consumption_estimation',
+              value: this.consumptionDisplayList[0]
             }
           ],
           place: [
@@ -282,7 +423,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the related party
-   * 
+   *
    * @returns A {@link TmaRelatedParty}
    */
   protected getServiceProvider(): TmaRelatedParty {
@@ -295,7 +436,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Returns the type of the meter for a given product
-   * 
+   *
    * @param product - the product
    * @returns The meter type as a {@link string}
    */
@@ -305,7 +446,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   /**
    * Opens the popup modal
-   * 
+   *
    * @param addedAddressId - entered address id
    */
   protected openModal(addedAddressId: string): void {
@@ -314,21 +455,22 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$),
         first((addr: OrderEntry[]) => addr !== null))
       .subscribe((addr: OrderEntry[]) => {
-        if (addr) {
-          let modalInstance: any;
-          this.modalRef = this.modalService.open(TmaAddedToCartDialogComponent, {
-            centered: true,
-            size: 'lg'
-          });
+          if (addr) {
+            let modalInstance: any;
+            this.modalRef = this.modalService.open(TmaAddedToCartDialogComponent, {
+              centered: true,
+              size: 'lg'
+            });
 
-          modalInstance = this.modalRef.componentInstance;
-          modalInstance.entry$ = this.cartEntry$;
-          modalInstance.cart$ = this.cartService.getActive();
-          modalInstance.loaded$ = this.cartService.getLoaded();
-          modalInstance.quantity = 1;
-          modalInstance.increment = false;
+            modalInstance = this.modalRef.componentInstance;
+            modalInstance.entry$ = this.cartEntry$;
+            modalInstance.cart$ = this.cartService.getActive();
+            modalInstance.loaded$ = this.cartService.isStable();
+            modalInstance.quantity = 1;
+            modalInstance.increment = false;
+            modalInstance.hasPremise = true;
+          }
         }
-      }
       );
   }
 }
