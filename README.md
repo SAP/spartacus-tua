@@ -7,6 +7,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # What is TUA Spartacus?
 
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP/spartacus-tua)](https://api.reuse.software/info/github.com/SAP/spartacus-tua)
+
 Spartacus is a lean, Angular-based JavaScript storefront for SAP Commerce Cloud - Telco & Utilities Accelerator Module. TUA Spartacus talks to SAP Commerce Cloud (with Telco & Utilities Accelerator module embedded) exclusively through a set of REST APIs (OCC APIs). It also makes use of [Spartacus functionalities and libraries site](https://sap.github.io/spartacus-docs/)
 
 - Documentation is hosted on our dedicated [TUA Spartacus Documentation site](https://sap.github.io/spartacus-docs/about-tua-spartacus/).
@@ -105,5 +107,4 @@ Many improvements are coming! All tasks will be posted to our GitHub issue track
 
 # License
 
-Copyright (c) 2020 SAP SE or an SAP affiliate company. All rights reserved.
-This file is licensed under the Apache Software License, v. 2 except as noted otherwise in the [LICENSE](LICENSE) file.
+Copyright 2020-2021 SAP SE or an SAP affiliate company and spartacus-tua contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/spartacus-tua).
