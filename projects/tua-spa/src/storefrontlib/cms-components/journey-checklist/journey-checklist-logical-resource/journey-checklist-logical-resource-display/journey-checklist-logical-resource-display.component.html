@@ -1,0 +1,64 @@
+<ng-container *ngIf="addLogicalResource && showEdit">
+  <div class="font-small clickable">
+    <span class="labelHeading">
+      <a
+        class="font-label pr-0 cx-link clickable"
+        (click)="updateLogicalResource()">
+        {{ 'resource.selectMsisdn' | cxTranslate }}</a>
+  </span>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!item && showEdit">
+  <ng-container *ngIf="availabilityCheckService.getSelectedLogicalResource() | async as selectedResource">
+  <span *ngIf="selectedResource && selectedResource.resource as resource">
+     <span class="font-label pr-0">{{ 'resource.typeMsisdn' | cxTranslate }}:
+       </span>
+    <span (click)="updateLogicalResource(resource)" class="material-icons clickable cx-font-md">edit</span>
+    <div class="font-small">
+        <span class="font-small">{{ resource.value }}</span>
+      </div>
+  </span>
+  </ng-container>
+</ng-container>
+
+
+<ng-container *ngIf="reservationError$ | async; else checkCancelledReservation">
+  <span class="text-danger">
+    {{ 'msisdnReservationError.getReservationError' | cxTranslate }}
+  </span>
+</ng-container>
+<ng-template #checkCancelledReservation>
+  <ng-container *ngIf="logicalResources && logicalResources.length > 0">
+    <ng-container *ngIf="
+      logicalResourceReservationService.hasCancelledReservationForEntry(
+        logicalResources[0].value
+      ) | async;
+      else displayLogicalResource
+    ">
+      <span class="text-danger">
+        {{ 'msisdnReservationError.cancelledReservationError' | cxTranslate }}
+      </span>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #displayLogicalResource>
+  <ng-container *ngFor="let resource of logicalResources">
+    <div class="row mx-auto">
+      <div class="col-12 px-0">
+        <span class="cx-label">{{ 'resource.typeMsisdn' | cxTranslate }}:
+          <ng-container *ngIf="showEdit">
+            <ng-container *ngIf="isResourceTypeMsisdn(resource.type)">
+              <span (click)="updateLogicalResource(resource)" class="material-icons clickable edit_icon">edit</span>
+            </ng-container>
+          </ng-container>
+        </span>
+      </div>
+      <div class="font-small">
+        {{ resource.value }}
+      </div>
+    </div>
+  </ng-container>
+</ng-template>
+

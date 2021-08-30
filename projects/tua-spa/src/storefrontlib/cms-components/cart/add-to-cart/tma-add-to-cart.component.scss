@@ -1,0 +1,13 @@
+@import '~@spartacus/styles/scss/mixins';
+
+.cx-bottom-fixed {
+  position: relative;
+
+  @include media-breakpoint-down(md) {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1001;
+  }
+}
