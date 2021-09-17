@@ -3,12 +3,6 @@ SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company and contributors
 
 SPDX-License-Identifier: Apache-2.0
 -->
-
-![](https://img.shields.io/badge/STATUS-NOT%20CURRENTLY%20MAINTAINED-red.svg?longCache=true&style=flat)
-
-# Important Notice
-This public repository is read-only and no longer maintained.
-
 # What is TUA Spartacus?
 
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP/spartacus-tua)](https://api.reuse.software/info/github.com/SAP/spartacus-tua)
