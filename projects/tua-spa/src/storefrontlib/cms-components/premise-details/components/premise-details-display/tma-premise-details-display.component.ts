@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { BaseSiteService } from '@spartacus/core';
 import { Observable, Subject } from 'rxjs';
-import { TmaChecklistAction, TmaChecklistActionType, TmaPremiseDetail } from '../../../../../core/model';
+import { TmaChecklistAction, TmaChecklistActionType, TmaPremiseDetail, TmaProcessTypeEnum } from '../../../../../core/model';
 import { TmaChecklistActionService } from '../../../../../core/checklistaction/facade';
 import { takeUntil } from 'rxjs/operators';
 import { TmaChecklistActionTypeCheckService, TmaPremiseDetailInteractionService } from '../../../../../core';
@@ -49,7 +49,7 @@ export class TmaPremiseDetailsDisplayComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$))
       .subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
-    this.checklistAction$ = this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, this.productCode);
+    this.checklistAction$ = this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, this.productCode, TmaProcessTypeEnum.ACQUISITION);
     this.premiseDetails$ = this.premiseDetailInteractionService.getPremiseDetails;
   }
 

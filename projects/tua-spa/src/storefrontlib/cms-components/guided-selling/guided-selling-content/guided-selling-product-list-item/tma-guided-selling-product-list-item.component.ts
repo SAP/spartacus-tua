@@ -1,6 +1,6 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
-import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';
+import { TmaProduct, TmaSelectionAction, TmfProduct } from '../../../../../core/model';
 import { Subject } from 'rxjs';
 import { TmaProductListItemComponent } from '../../../product/product-list';
 import { takeUntil } from 'rxjs/operators';
@@ -13,6 +13,9 @@ import { TmaPriceService } from '../../../../../core/product/facade';
   styleUrls: ['./tma-guided-selling-product-list-item.component.scss']
 })
 export class TmaGuidedSellingProductListItemComponent extends TmaProductListItemComponent implements OnInit, OnDestroy {
+
+  @Input()
+  tmfProducts: TmfProduct[];
 
   isSelected: boolean;
 

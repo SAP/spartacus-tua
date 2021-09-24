@@ -38,7 +38,8 @@ import {
   TmaCharacteristic,
   TmaProcessTypeEnum,
   TmaOrderEntry,
-  TmaMessage
+  TmaMessage,
+  TmaActionType
 } from '../../../../../core';
 import { first, map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
@@ -275,7 +276,8 @@ export class TmaCartItemListComponent
 
     if (!items || items.length <= index) {
       this.removeBpo(entryGroupNumber);
-      this.redirectToCgsPage(items[0].rootBpoCode);
+      this.redirectToCgsPage(items[0].rootBpoCode, items);
+
       this.cancelAppointment(items);
       return;
     }
@@ -336,17 +338,17 @@ export class TmaCartItemListComponent
   }
 
   /**
-   * Checks for the given cart entries has the process type as retention.
+   * Checks if the given cart entries have renewal process type.
    *
    * @param items - The cart items
    *
-   * @return true if cart item has process type as retention as a {@link boolean}
+   * @return true if cart item has process type as renewal as a {@link boolean}
    */
   isCartEntryForRenewal(items: TmaItem[]): boolean {
     const renewItem = items.find(
       (item: TmaItem) =>
         item.processType !== undefined &&
-        item.processType.id === TmaProcessTypeEnum.RETENTION
+        item.processType.id === TmaProcessTypeEnum.RENEWAL
     );
     return renewItem !== undefined;
   }
@@ -392,8 +394,10 @@ export class TmaCartItemListComponent
     return cart && cart.rootGroups && cart.rootGroups.length !== 0;
   }
 
-  protected redirectToCgsPage(bpoCode: string): void {
-    this.routingService.go({ cxRoute: 'cgs', params: { code: bpoCode } });
+  protected redirectToCgsPage(bpoCode: string, items: TmaItem[]): void {
+    items.find((item: TmaItem) => item.action && item.action.toString() === TmaActionType.KEEP) ?
+    this.routingService.go({ cxRoute: 'cgs', params: { code: bpoCode, process: TmaProcessTypeEnum.RETENTION } }) :
+    this.routingService.go({ cxRoute: 'cgs', params: { code: bpoCode, process: '' } });
   }
 
   /**

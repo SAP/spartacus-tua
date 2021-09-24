@@ -119,3 +119,7 @@
     white-space: nowrap;
   }
 }
+
+.cx-smaller {
+  font-size: var(--cx-font-small, 0.85rem);
+}

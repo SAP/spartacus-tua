@@ -22,7 +22,9 @@ import {
   TmaSelectionAction,
   TmaTmfCartItem,
   TmaTmfShoppingCart,
-  TmaChecklistAction
+  TmaChecklistAction,
+  TmaTmfActionType,
+  TmfProduct
 } from '../../../../../core/model';
 import { Observable, Subject, Subscriber } from 'rxjs';
 import {
@@ -61,9 +63,9 @@ import {
   TmaTmfCartService,
   TmaActiveCartService,
   TmaChecklistActionService,
-  JourneyChecklistConfig
+  JourneyChecklistConfig,
+  TmfProductMap
 } from '../../../../../core';
-import { TmaItem } from '../../../cart';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 const { CURRENT_SELECTION } = LOCAL_STORAGE.GUIDED_SELLING;
@@ -88,6 +90,15 @@ export class TmaGuidedSellingCurrentSelectionComponent
 
   @Input()
   product: Product;
+
+  @Input()
+  subscriptionDetail: TmfProductMap;
+
+  @Input()
+  tmfProducts: TmfProduct[];
+
+  @Input()
+  isSubscription = false;
 
   currentSelections: TmaProduct[];
   currentSelectionTotal: string;
@@ -296,7 +307,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
             if (Object.keys(journeyCheckLists).length === 0) {
               this.addBpoCart(currentCart);
             } else {
-              this.addToCartWithChecklist(journeyCheckLists,currentCart);
+              this.addToCartWithChecklist(journeyCheckLists, currentCart);
             }
           }
         })
@@ -310,6 +321,27 @@ export class TmaGuidedSellingCurrentSelectionComponent
   clearCurrentSelection(): void {
     this.guidedSellingCurrentSelectionsService.clearCurrentSelections();
     this.guidedSellingStepsService.setFirstStepAsActiveStep();
+  }
+
+  /**
+   * Check if the given product is part of the current selection list
+   *
+   * @param tmfProduct - The tmf product
+   * @returns of {@link Boolean}
+   */
+  isPartOfCurrentSelection(tmfProduct: TmfProduct): boolean {
+    return this.currentSelections.some((product: TmaProduct) => product.code === tmfProduct.productOffering.id);
+  }
+
+  /**
+   * Search for the subscribed product
+   *
+   * @param productCode - Tma product code
+   * @returns the tmf product id as a {@link string}
+   */
+  getSubscribedProduct(productCode: string): string {
+    return this.tmfProducts && this.tmfProducts.some((tmfProduct: TmfProduct) => tmfProduct.productOffering.id === productCode) ?
+      this.tmfProducts.find((tmfProduct: TmfProduct) => tmfProduct.productOffering.id === productCode).id : undefined;
   }
 
   protected calculateTotal(currentSelections: TmaProduct[]): string {
@@ -337,7 +369,6 @@ export class TmaGuidedSellingCurrentSelectionComponent
 
   protected createCartItemList(children: TmaProduct[]): TmaTmfCartItem[] {
     const cartItemList: TmaTmfCartItem[] = [];
-
     children.forEach((child: TmaProduct) => {
       if (child.isBundle) {
         this.productService
@@ -368,8 +399,69 @@ export class TmaGuidedSellingCurrentSelectionComponent
         });
       }
     });
-
     return cartItemList;
+  }
+
+  protected createRetentionCartItemList(
+    children: TmaProduct[]
+  ): TmaTmfCartItem[] {
+    const cartItemList: TmaTmfCartItem[] = [];
+    children.forEach((child: TmaProduct) => {
+      if (child.isBundle) {
+        this.productService
+          .get(child.code)
+          .pipe(
+            first((product: TmaProduct) => product != null),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((product: TmaProduct) => {
+            if (
+              this.createRetentionCartItemList(product.children).length > 0
+            ) {
+              cartItemList.push({
+                productOffering: {
+                  id: child.code
+                },
+                quantity: 1,
+                cartItem: this.createRetentionCartItemList(product.children)
+              });
+            }
+          });
+        return;
+      }
+      const cartItem: TmaTmfCartItem = this.getRetentionCartItem(child);
+      if (cartItem) {
+        cartItemList.push(cartItem)
+      };
+    });
+    return cartItemList;
+  }
+
+  protected getRetentionCartItem(child: TmaProduct): TmaTmfCartItem {
+    const tmfProduct: string[] = this.tmfProducts.map(
+      (tmfProd: TmfProduct) => tmfProd.productOffering.id);
+
+
+    return this.currentSelections
+      .filter(e => !tmfProduct.includes(e.code))
+      .some(selection => selection.code === child.code) ?
+      {
+        productOffering: {
+          id: child.code
+        },
+        quantity: 1,
+        action: TmaTmfActionType.ADD
+      } :
+      tmfProduct.some(productCode => productCode === child.code) ?
+        {
+          product: {
+            id: this.tmfProducts.find(
+              (product: TmfProduct) => product.productOffering.id === child.code
+            ).id
+          },
+          quantity: 1,
+          action: TmaTmfActionType.KEEP
+        } : null;
   }
 
   protected prepareDataForModal(currentCart: TmaCart): void {
@@ -437,7 +529,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
     journeyCheckLists: TmaChecklistAction[],
     currentCart: TmaCart
   ): void {
-    if ( !this.currentUser || this.currentUser.uid === OCC_USER_ID_ANONYMOUS ||
+    if (!this.currentUser || this.currentUser.uid === OCC_USER_ID_ANONYMOUS ||
       this.currentUser.uid === undefined) {
       this.spinner.hide();
       this.translationService
@@ -470,13 +562,13 @@ export class TmaGuidedSellingCurrentSelectionComponent
       cartItem: [
         {
           processType: {
-            id: TmaProcessTypeEnum.ACQUISITION
+            id: this.tmfProducts ? TmaProcessTypeEnum.RETENTION : TmaProcessTypeEnum.ACQUISITION
           },
           productOffering: {
             id: this.bpoCode
           },
           quantity: 1,
-          cartItem: this.createCartItemList(this.parentBpo.children)
+          cartItem: this.tmfProducts ? this.createRetentionCartItemList(this.parentBpo.children) : this.createCartItemList(this.parentBpo.children)
         }
       ],
       relatedParty: [
@@ -485,8 +577,9 @@ export class TmaGuidedSellingCurrentSelectionComponent
         }
       ]
     };
-
     this.tmaTmfCartService.updateCart(shoppingCart);
+
+
     this.addToCartButton.nativeElement.disabled = true;
     this.prepareDataForModal(currentCart);
     this.guidedSellingCurrentSelectionsService.clearCurrentSelections();

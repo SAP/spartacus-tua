@@ -17,6 +17,9 @@ export const guidedSelling = {
     edit: {
       previousAppointmentDeleted:
         'Previously selected Installation details are no longer valid.'
-    }
+    },
+    subscriptionMessage: 'This product is not part of the catalog anymore',
+    addingTo: 'Adding to ',
+    subscribedProduct: 'Subscribed Product: '
   }
 };

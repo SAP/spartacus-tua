@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import {
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest
+} from '@angular/common/http';
 import { AuthStorageService, ClientTokenService } from '@spartacus/core';
 import { TmfEndpointsService } from '../../tmf/services/tmf-endpoints.service';
 import { Observable } from 'rxjs';
@@ -11,8 +16,7 @@ export class TmaUserTokenInterceptor implements HttpInterceptor {
     private authStorageService: AuthStorageService,
     private tmfEndpoints: TmfEndpointsService,
     protected clientTokenService: ClientTokenService
-  ) {
-  }
+  ) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -20,16 +24,18 @@ export class TmaUserTokenInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     return this.authStorageService.getToken().pipe(
       take(1),
-      switchMap(token => {
+      switchMap((token) => {
         if (
-          token && token.token_type && token.access_token &&
-          (this.isTmfUrl(request.url)) &&
+          token &&
+          token.token_type &&
+          token.access_token &&
+          this.isTmfUrl(request.url) &&
           !request.headers.get('Authorization')
         ) {
           request = request.clone({
             setHeaders: {
-              Authorization: `${token.token_type} ${token.access_token}`,
-            },
+              Authorization: `${token.token_type} ${token.access_token}`
+            }
           });
         }
 
@@ -39,6 +45,8 @@ export class TmaUserTokenInterceptor implements HttpInterceptor {
   }
 
   protected isTmfUrl(url: string): boolean {
-    return url.includes(this.tmfEndpoints.getBaseEndpointWithDefaultVersion());
+    return this.tmfEndpoints
+      .getBaseEndpointListWithDefaultVersion()
+      .some((item) => url.includes(item));
   }
 }

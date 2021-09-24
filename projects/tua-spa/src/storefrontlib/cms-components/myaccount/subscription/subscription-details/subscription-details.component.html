@@ -3,9 +3,17 @@
     <ng-container
       *ngIf="subscriptionDetail$ | async as subscriptionDetail; else loading"
     >
+      <ng-container *ngIf="subscriptionDetail.tmfProduct.isBundle && hasActiveSubcribedProduct(subscriptionDetail)">
+        <button
+          class="btn btn-primary btn-action getMore-btn"
+          (click)="updateSubscriptionDetail(subscriptionDetail)"
+        >
+          {{ 'subscriptions.getMore' | cxTranslate }}
+        </button>
+      </ng-container>
       <ng-container
         *ngIf="
-        hasRoleOwner(subscriptionDetail.tmfProduct.relatedParty) as isOwner
+          hasRoleOwner(subscriptionDetail.tmfProduct.relatedParty) as isOwner
         "
       >
         <ng-container

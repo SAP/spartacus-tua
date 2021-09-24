@@ -1,30 +1,31 @@
 import { NgModule } from '@angular/core';
-import { TmaAuthModule } from '../../core/auth';
-import { TmaRoutingModule } from '../cms-structure/routing';
 import {
-  ProductOfferingModule,
-  TmaBillingFrequencyConfigModule,
-  TmaCartModule,
-  TmaConsumptionConfigModule,
-  TmaPremiseDetailModule,
-  TmaProductSpecificationAverageCostModule,
-  TmaProductSpecificationForViewDetailsConfigModule,
-  TmaProductModule,
-  TmaChecklistActionModule,
   AppointmentModule,
-  SearchTimeSlotModule,
-  JourneyChecklistConfigModule,
+  AvailabilityCheckModule,
+  DeliveryModeConfigModule,
   GeographicAddressModule,
+  JourneyChecklistConfigModule,
+  ProductOfferingModule,
+  QueryServiceQualificationModule,
   RecommendationModule,
   ReservationModule,
-  AvailabilityCheckModule,
-  QueryServiceQualificationModule,
-  DeliveryModeConfigModule
+  SearchTimeSlotModule,
+  TmaBillingFrequencyConfigModule,
+  TmaCartModule,
+  TmaChecklistActionModule,
+  TmaConsumptionConfigModule,
+  TmaPremiseDetailModule,
+  TmaProductModule,
+  TmaProductSpecificationAverageCostModule,
+  TmaProductSpecificationForViewDetailsConfigModule
 } from '../../core';
-import { TmaTmfCartModule } from '../../core/tmf-cart';
-import { SubscriptionModule } from '../../core/subscription/subscription.module';
-import { TmaGlobalMessageModule } from '../../core/global-message/tma-global-message.module';
+import { TmaAuthModule } from '../../core/auth';
 import { TmaCheckoutModule } from '../../core/checkout/tma-checkout.module';
+import { TmaGlobalMessageModule } from '../../core/global-message/tma-global-message.module';
+import { SelfcareModule } from '../../core/selfcare/selfcare.module';
+import { SubscriptionModule } from '../../core/subscription/subscription.module';
+import { TmaTmfCartModule } from '../../core/tmf-cart';
+import { TmaRoutingModule } from '../cms-structure/routing';
 
 @NgModule({
   imports: [
@@ -51,10 +52,10 @@ import { TmaCheckoutModule } from '../../core/checkout/tma-checkout.module';
     DeliveryModeConfigModule.forRoot(),
     QueryServiceQualificationModule.forRoot(),
     ProductOfferingModule.forRoot(),
-    TmaProductModule.forRoot()
+    TmaProductModule.forRoot(),
+    SelfcareModule.forRoot()
   ],
   exports: [],
   providers: []
 })
-export class TmaStorefrontFoundationModule {
-}
+export class TmaStorefrontFoundationModule {}

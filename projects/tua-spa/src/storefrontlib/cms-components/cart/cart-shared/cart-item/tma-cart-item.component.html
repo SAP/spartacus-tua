@@ -329,6 +329,7 @@
                       </div>
                     </ng-container>
                   </ng-container>
+ 		            <span *ngIf="!isCartEntryForRenewal([item])">
                   <!-- Reason for purchase -->
                   <div class="col-md-6">
                     <cx-purchase-reason
@@ -339,13 +340,15 @@
                       [compact]="true"
                       [isReadOnly]="isPremiseDetailsReadOnly"
                       [entryNumber]="item.entryNumber"
+                      [processType]="item.processType"
                       (moveIn)="onMoveIn()"
                       (switchProvider)="onServiceProvider()"
                       (updateProvider)="onSwitchServiceProvider($event)"
                       (updateContractStartDate)="onUpdateContractStartDate($event)"
                       ></cx-purchase-reason>
                   </div>
-                </div>
+	              </span>
+               </div>
               </div>
             </div>
           </div>

@@ -43,6 +43,7 @@
                   <cx-guided-selling-product-grid-item
                     *ngFor="let product of model?.products"
                     [product]="product"
+                    [tmfProducts]="tmfProducts"
                     class="col-12 col-sm-6 col-md-4"
                   ></cx-guided-selling-product-grid-item>
                 </div>
@@ -52,6 +53,7 @@
                 <cx-guided-selling-product-list-item
                   *ngFor="let product of model?.products"
                   [product]="product"
+                  [tmfProducts]="tmfProducts"
                   class="cx-product-search-list"
                 ></cx-guided-selling-product-list-item>
               </ng-container>
@@ -62,6 +64,7 @@
               <cx-guided-selling-product-scroll
                 [scrollConfig]="scrollConfig"
                 [model]="model"
+                [tmfProducts]="tmfProducts"
                 [inputViewMode]="viewMode"
               ></cx-guided-selling-product-scroll>
             </ng-template>

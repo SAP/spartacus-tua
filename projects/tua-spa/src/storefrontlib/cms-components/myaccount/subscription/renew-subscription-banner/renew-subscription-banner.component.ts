@@ -117,7 +117,7 @@ export class RenewSubscriptionBannerComponent
       return this.recommendationService.checkRecommendationsFor(
         this.baseSiteId,
         this.user.uid,
-        TmaProcessTypeEnum.RETENTION,
+        TmaProcessTypeEnum.RENEWAL,
         this.validSubscribedProducts[0].productOffering.id,
         subscriptionDetails.tmfProduct.id
       );

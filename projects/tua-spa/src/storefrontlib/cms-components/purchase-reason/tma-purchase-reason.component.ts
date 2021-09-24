@@ -12,7 +12,7 @@ import {
 import { Observable, Subject } from 'rxjs';
 import { BaseSiteService } from '@spartacus/core';
 import { DatePipe } from '@angular/common';
-import { TmaChecklistAction, TmaChecklistActionType } from '../../../core/model';
+import { TmaChecklistAction, TmaChecklistActionType, TmaProcessType, TmaProcessTypeEnum } from '../../../core/model';
 import { TmaChecklistActionService } from '../../../core/checklistaction/facade';
 import { takeUntil } from 'rxjs/operators';
 import { TmaChecklistActionTypeCheckService } from '../../../core';
@@ -45,6 +45,9 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
 
   @Input()
   entryNumber: number;
+
+  @Input()
+  processType?: TmaProcessType;
 
   @Output()
   moveIn = new EventEmitter<any>();
@@ -90,10 +93,15 @@ export class TmaPurchaseReasonComponent implements OnInit, OnDestroy {
     this.maxDate.setFullYear(this.maxDate.getFullYear() + 1000);
     this.baseSiteService.getActive().pipe(takeUntil(this.destroyed$))
       .subscribe((baseSiteId: string) => this.baseSiteId = baseSiteId);
-    this.checklistAction$ = this.tmaChecklistActionService.getChecklistActionForProductCode(this.baseSiteId, this.productCode);
     if (!this.selectedReasonPurchase) {
       this.selectedReasonPurchase = 'move';
     }
+    this.checklistAction$ = this.tmaChecklistActionService
+      .getChecklistActionForProductCode(
+        this.baseSiteId,
+        this.productCode,
+        this.processType ? this.processType.id : TmaProcessTypeEnum.ACQUISITION
+      );
   }
 
   ngOnDestroy(): void {

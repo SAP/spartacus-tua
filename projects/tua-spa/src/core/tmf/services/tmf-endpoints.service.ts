@@ -9,10 +9,9 @@ import { LOCAL_STORAGE } from '../../util';
 const { SLASH, QUESTION_MARK } = LOCAL_STORAGE.COMMON;
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class TmfEndpointsService implements OnDestroy {
-
   protected destroyed$ = new Subject();
 
   constructor(private config: TmfConfig) {}
@@ -26,7 +25,7 @@ export class TmfEndpointsService implements OnDestroy {
    * Gets base URL for provided endpoint.
    * For example: For a given endpoint key as " getUsageConsumptionReports"
    * so outpult will be retrieved as  "http://localhost:9002/occ/v2".
-   * 
+   *
    * @param endpointKey - The key to get endpoint
    * @return The base endpoint as a {@link string}
    */
@@ -60,6 +59,22 @@ export class TmfEndpointsService implements OnDestroy {
    */
   getBaseEndpointWithDefaultVersion(): string {
     return this.config.backend.tmf.baseUrl + this.config.backend.tmf.prefix;
+  }
+
+  /**
+   * Gets base URL for provided endpoint.
+   *
+   * @return The base endpoint with default version as a {@link string}
+   */
+  getBaseEndpointListWithDefaultVersion(): string[] {
+    const tmfEndPoints: string[] = Object.values(
+      this.config.backend.tmf.endpoints
+    )
+      .filter((endPoint: TmfEndpoint) => endPoint.prefix !== undefined)
+      .map((endPoint: TmfEndpoint) => endPoint.baseUrl + endPoint.prefix);
+    return tmfEndPoints.concat(
+      this.config.backend.tmf.baseUrl + this.config.backend.tmf.prefix
+    );
   }
 
   /**
@@ -125,7 +140,7 @@ export class TmfEndpointsService implements OnDestroy {
 
       httpParamsOptions = {
         ...httpParamsOptions,
-        ...{ fromString: queryParamsFromEndpoint },
+        ...{ fromString: queryParamsFromEndpoint }
       };
     }
 

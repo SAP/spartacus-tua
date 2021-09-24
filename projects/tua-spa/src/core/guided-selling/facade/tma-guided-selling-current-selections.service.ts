@@ -26,7 +26,7 @@ export class TmaGuidedSellingCurrentSelectionsService {
    * @param action - The action which indicates if the product offering is added or removed from the current selection
    */
   changeSelection(product: TmaProduct, action: TmaSelectionAction): void {
-    action === TmaSelectionAction.ADD ? this.addToCurrentSelections(product) : this.removeFromCurrentSelections(product);
+    action === TmaSelectionAction.ADD ? this.addToCurrentSelections(product) : (action === TmaSelectionAction.KEEP ? this.addToCurrentSelections(product) : this.removeFromCurrentSelections(product));
     this._selection.next({ product: product, action: action });
   }
 

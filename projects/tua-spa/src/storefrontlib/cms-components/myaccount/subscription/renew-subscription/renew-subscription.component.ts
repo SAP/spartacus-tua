@@ -108,7 +108,7 @@ export class RenewSubscriptionComponent implements OnInit, OnDestroy {
       cartItem: [
         {
           processType: {
-            id: TmaProcessTypeEnum.RETENTION
+            id: TmaProcessTypeEnum.RENEWAL
           },
           action: TmaTmfActionType.KEEP,
           product: {

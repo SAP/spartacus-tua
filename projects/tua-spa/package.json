@@ -1,6 +1,6 @@
 {
   "name": "@spartacus/tua-spa",
-  "version": "3.1.0",
+  "version": "3.2.0-next.1",
   "publishConfig": {
     "access": "public"
   },

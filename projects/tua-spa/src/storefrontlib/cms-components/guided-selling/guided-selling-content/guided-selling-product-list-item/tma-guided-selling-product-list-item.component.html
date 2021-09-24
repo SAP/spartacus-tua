@@ -63,7 +63,9 @@
       <!-- Select/Unselect Button -->
       <div class="col-12 col-md-4">
         <cx-guided-selling-add-selection
+          [product]="product"
           [isSelected]="isSelected"
+          [tmfProducts]="tmfProducts"
           (updateSelected)="updateSelected($event)">
         </cx-guided-selling-add-selection>
       </div>

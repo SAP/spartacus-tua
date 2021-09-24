@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { PageLayoutService, ViewConfig } from '@spartacus/storefront';
 import { TmaProductListComponent } from '../../../product/product-list';
-import { TmaProductSearchService,TmaProductListComponentService } from '../../../../../core';
+import { TmaProductSearchService,TmaProductListComponentService, TmfProduct } from '../../../../../core';
 
 @Component({
   selector: 'cx-guided-selling-product-list',
@@ -9,6 +9,9 @@ import { TmaProductSearchService,TmaProductListComponentService } from '../../..
   styleUrls: ['./tma-guided-selling-product-list.component.scss']
 })
 export class TmaGuidedSellingProductListComponent extends TmaProductListComponent {
+
+  @Input()
+  tmfProducts: TmfProduct[];
 
   constructor(
     pageLayoutService: PageLayoutService,

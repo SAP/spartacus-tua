@@ -31,7 +31,6 @@ import {
   TmaCartService,
   TmaCharacteristic,
   TmaChecklistAction,
-  TmaChecklistActionService,
   TmaChecklistActionTypeCheckService,
   TmaCmsConsumptionComponent,
   TmaInstallationAddressConverter,
@@ -53,7 +52,8 @@ import {
   TmaSubscriptionTerm,
   TmaTechnicalResource,
   TmaTechnicalResources,
-  TmaUsageUnit
+  TmaUsageUnit,
+  TmaChecklistActionService
 } from '../../../../../core';
 import { TmaUserAddressService } from '../../../../../core/user/facade/tma-user-address.service';
 import { TmaConsumptionDialogComponent } from '../../../consumption';
@@ -555,6 +555,22 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
    */
   isCurrentSelectionCollapsed(): boolean {
     return !this.isCurrentSelectionExpanded;
+  }
+
+/**
+   * Checks for the given cart entries have the process type as renewal.
+   *
+   * @param items - The cart items
+   *
+   * @return true if cart item has process type as renewal as a {@link boolean}
+   */
+  isCartEntryForRenewal(items: TmaItem[]): boolean {
+    const renewItem = items.find(
+      (item: TmaItem) =>
+        item.processType !== undefined &&
+        item.processType.id === TmaProcessTypeEnum.RENEWAL
+    );
+    return renewItem !== undefined;
   }
 
   protected checkPremiseValidity(validationResult: TmaTechnicalResources): boolean {

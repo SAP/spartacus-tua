@@ -1,43 +1,40 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {
-  NO_ERRORS_SCHEMA,
   ChangeDetectionStrategy,
   Component,
-  CUSTOM_ELEMENTS_SCHEMA
+  CUSTOM_ELEMENTS_SCHEMA,
+  NO_ERRORS_SCHEMA
 } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {
-  FormsModule,
-  ReactiveFormsModule,
   FormBuilder,
-  FormGroup
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
-import { I18nTestingModule, BaseSiteService } from '@spartacus/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
+import { BaseSiteService, I18nTestingModule } from '@spartacus/core';
+import { FormErrorsModule, ModalService } from '@spartacus/storefront';
+import { Observable, of } from 'rxjs';
 import {
   GeographicAddressService,
   QueryServiceQualificationService
 } from '../../../../../core';
-import { FormErrorsModule, ModalService } from '@spartacus/storefront';
-import { Observable, of } from 'rxjs';
+import { TmaAddressFormComponent } from '../../../address-form/tma-address-form.component';
 import { JourneyChecklistInstallationAddressFormComponent } from './journey-checklist-installation-address-form.component';
 
 const baseSite = 'test-site';
 
 class MockGeographicAddressService {
-  hasGeographicAddressError() {
-  }
+  hasGeographicAddressError() {}
 
-  clearCreatedGeographicAddressState() {
-  }
+  clearCreatedGeographicAddressState() {}
 
-  clearGeographicAddressError() {
-  }
+  clearGeographicAddressError() {}
 }
 
 class MockFormerBuilder {
-  group() {
-  }
+  group() {}
 }
 
 class MockBaseSiteService {
@@ -47,25 +44,20 @@ class MockBaseSiteService {
 }
 
 class MockQueryServiceQualificationService {
-  clearQueryServiceQualificationState() {
-  }
+  clearQueryServiceQualificationState() {}
 
-  clearQueryServiceSearchResultState() {
-  }
+  clearQueryServiceSearchResultState() {}
 
-  clearQueryServiceQualificationErrorState() {
-  }
+  clearQueryServiceQualificationErrorState() {}
 }
 
 @Component({
   selector: 'cx-address-form',
   template: '<p>Mock address form component</p>'
 })
-class MockTmaAddressFormComponent {
-}
+class MockTmaAddressFormComponent {}
 
-class MockModalService {
-}
+class MockModalService {}
 
 describe('JourneyChecklistInstallationAddressFormComponent', () => {
   let component: JourneyChecklistInstallationAddressFormComponent;
@@ -73,50 +65,52 @@ describe('JourneyChecklistInstallationAddressFormComponent', () => {
   let controls: FormGroup['controls'];
   const formBuilder: FormBuilder = new FormBuilder();
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        JourneyChecklistInstallationAddressFormComponent,
-        MockTmaAddressFormComponent
-      ],
-      schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        I18nTestingModule,
-        NgbModule,
-        FormErrorsModule,
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [
+          JourneyChecklistInstallationAddressFormComponent,
+          TmaAddressFormComponent
+        ],
+        schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
+        imports: [
+          FormsModule,
+          ReactiveFormsModule,
+          I18nTestingModule,
+          NgbModule,
+          FormErrorsModule,
 
-        StoreModule.forRoot({})
-      ],
-      providers: [
-        {
-          provide: GeographicAddressService,
-          useClass: MockGeographicAddressService
-        },
-        {
-          provide: FormBuilder,
-          useClass: MockFormerBuilder
-        },
-        {
-          provide: BaseSiteService,
-          useClass: MockBaseSiteService
-        },
-        {
-          provide: QueryServiceQualificationService,
-          useClass: MockQueryServiceQualificationService
-        },
-        {
-          provide: ModalService,
-          useClass: MockModalService
-        }
-      ]
-    })
-      .overrideComponent(JourneyChecklistInstallationAddressFormComponent, {
-        set: { changeDetection: ChangeDetectionStrategy.Default }
+          StoreModule.forRoot({})
+        ],
+        providers: [
+          {
+            provide: GeographicAddressService,
+            useClass: MockGeographicAddressService
+          },
+          {
+            provide: FormBuilder,
+            useClass: MockFormerBuilder
+          },
+          {
+            provide: BaseSiteService,
+            useClass: MockBaseSiteService
+          },
+          {
+            provide: QueryServiceQualificationService,
+            useClass: MockQueryServiceQualificationService
+          },
+          {
+            provide: ModalService,
+            useClass: MockModalService
+          }
+        ]
       })
-      .compileComponents();
-  }));
+        .overrideComponent(JourneyChecklistInstallationAddressFormComponent, {
+          set: { changeDetection: ChangeDetectionStrategy.Default }
+        })
+        .compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(
@@ -124,9 +118,19 @@ describe('JourneyChecklistInstallationAddressFormComponent', () => {
     );
     component = fixture.componentInstance;
 
+    component.addressComponent.installationAddress = formBuilder.group({
+      buildingNumber: '',
+      streetName: '',
+      apartmentNumber: '',
+      city: '',
+      country: null,
+      region: null,
+      postalCode: ''
+    });
+
     component.installationAddressDetails = formBuilder.group({});
-    JourneyChecklistInstallationAddressFormComponent.prototype.ngAfterViewInit = () => {
-    };
+    JourneyChecklistInstallationAddressFormComponent.prototype.ngAfterViewInit =
+      () => {};
     fixture.detectChanges();
     controls = component.installationAddressDetails.controls;
     fixture.detectChanges();

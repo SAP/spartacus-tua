@@ -7,5 +7,6 @@ export interface TmaGuidedSellingStep {
 
 export enum TmaSelectionAction {
   ADD = 'add',
-  REMOVE = 'remove'
+  REMOVE = 'remove',
+  KEEP = 'keep'
 }

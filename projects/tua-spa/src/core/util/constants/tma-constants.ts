@@ -6,7 +6,8 @@ export const LOCAL_STORAGE: TmaConstantResourceModel = {
     FREE_TEXT: 'freeTextSearch:',
     PRODUCT_OFFERING_GROUP: 'productOfferingGroups:',
     PARENT_BPO: 'parentBundledPo:',
-    CODE: 'code:'
+    CODE: 'code:',
+    PROCESS_TYPE: 'process:'
   },
   GUIDED_SELLING: {
     CURRENT_SELECTION: {
@@ -49,10 +50,10 @@ export const LOCAL_STORAGE: TmaConstantResourceModel = {
   ORDER_PROCESSING: {
     ORDER_PROCESSING_ERROR: 'OrderProcessingError'
   },
-  ILLEGAL_ARGUMENT : {
+  ILLEGAL_ARGUMENT: {
     ILLEGAL_ARGUMENT_ERROR: 'IllegalArgumentError'
   },
-  COMMERCE_CART_MODIFICATION : {
+  COMMERCE_CART_MODIFICATION: {
     COMMERCE_CART_MODIFICATION_ERROR: 'CommerceCartModificationError'
   },
   ENDPOINT: {
@@ -62,5 +63,28 @@ export const LOCAL_STORAGE: TmaConstantResourceModel = {
   COMMON: {
     SLASH: '/',
     QUESTION_MARK: '?'
+  },
+  SELFCARE: {
+    SUBSCRIPTIONS: {
+      KEY: 'name',
+      CELLS: ['name', 'status', 'id'],
+      DOMAIN_TYPE: 'selfcare.subscriptions',
+      CELL_DOMAIN_TYPE: 'selfcareSubscriptions',
+      ROUTE: 'selfcareSubscriptionsDetail',
+      CHILD_PRODUCTS_DOMAIN_TYPE: 'selfcare.subscriptions.details.childProducts',
+      ACCOUNT_DOMAIN_TYPE: 'selfcare.subscriptions.details.account',
+      AGREEMENT_DOMAIN_TYPE: 'selfcare.subscriptions.details.agreement',
+      ORDER_DOMAIN_TYPE: 'selfcare.subscriptions.details.order'
+    },
+    BILLING_ACCOUNTS: {
+      KEY: 'name',
+      CELLS: ['name', 'accountType', 'paymentStatus', 'id'],
+      DOMAIN_TYPE: 'selfcare.billingAccounts',
+      CELL_DOMAIN_TYPE: 'selfcareBillingAccounts',
+      ROUTE: 'selfcareBillingAccountsDetail'
+    },
+    BILLING_AGREEMENTS: {
+
+    }
   }
 };

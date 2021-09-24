@@ -72,9 +72,11 @@ export const subscriptions = {
       processType_RETENTION: 'Retention',
       processType_SWITCH_SERVICE_PROVIDER: 'Switch Service Provider',
       processType_TARIFF_CHANGE: 'Tariff Change',
-      processType_TERMINATION: 'Termination'
+      processType_TERMINATION: 'Termination',
+      processType_RENEWAL: 'Renewal',
     },
     deliveryAddressRequired: 'Default Address is required to proceed.',
-    deliveryModeNotEligible: 'Delivery Mode not eligible for default address.'
+    deliveryModeNotEligible: 'Delivery Mode not eligible for default address.',
+    getMore: 'GET MORE'
   }
 };

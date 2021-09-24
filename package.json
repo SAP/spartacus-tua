@@ -1,13 +1,12 @@
 {
   "name": "tua-spa",
-  "version": "3.1.0",
+  "version": "3.2.0-next.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "generate:docs": "npx @compodoc/compodoc -p tsconfig.compodoc.json",
     "e2e": "ng e2e"
   },
   "private": false,
@@ -56,7 +55,6 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
-    "@compodoc/compodoc": "~1.0.0",
     "codelyzer": "^5.1.2",
     "jasmine-core": "~3.5.0",
     "jquery": "^3.5.1",

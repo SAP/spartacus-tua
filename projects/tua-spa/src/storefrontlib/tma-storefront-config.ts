@@ -48,8 +48,8 @@ export type TmaStorefrontConfig =
   | TmfAppointmentConfig
   | TmfResourcePoolManagementConfig
   | JourneyChecklistConfig
-  | DirectionConfig
   | MediaConfig
+  | DirectionConfig
   | PaginationConfig
   | CartConfig
   | SeoConfig

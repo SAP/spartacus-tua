@@ -42,12 +42,22 @@ export class TmaAddedToCartDialogComponent
     this.currency$ = this.currencyService.getActive();
   }
 
-  /**
+ /**
    * Get the retention process type.
    *
    *  @return Retention process type as a {@link string}
+   *  @deprecated since tua-spa 3.2
    */
   getRetentionProcessType(): string {
     return TmaProcessTypeEnum.RETENTION;
+  }
+
+  /**
+   * Get the renewal process type.
+   *
+   *  @return Renewal process type as a {@link string}
+   */
+  getRenewalProcessType(): string {
+    return TmaProcessTypeEnum.RENEWAL;
   }
 }

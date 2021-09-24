@@ -3,15 +3,23 @@
     <div>
       <h5 class="activeGroup">
         <span
+          *ngIf="!isSubscription"
           class="material-icons icon-align icon-cursor"
           (click)="clearCurrentSelection()"
           >highlight_off</span
         >
         <span class="bpo-align">
-          <span>{{ parentBpo?.name }}&nbsp;</span>
-          <span>{{
-            'guidedSelling.currentSelection.newContract' | cxTranslate
-          }}</span>
+          <ng-container *ngIf="!isSubscription; else hasSubscription">
+            <span>{{ parentBpo?.name }}&nbsp;</span>
+            <span>{{
+              'guidedSelling.currentSelection.newContract' | cxTranslate
+            }}</span>
+          </ng-container>
+          <ng-template #hasSubscription>
+            <span>{{ 'guidedSelling.addingTo' | cxTranslate }}&nbsp;</span>
+            <span>{{ parentBpo?.name }}&nbsp;</span>
+            <span>({{ subscriptionDetail.id }})</span>
+          </ng-template>
         </span>
         <span
           *ngIf="!isCurrentSelectionCollapsed() != true; else expand"
@@ -29,13 +37,23 @@
         </ng-template>
       </h5>
       <div [@slideInOut]="isCurrentSelectionCollapsed()">
+        <div *ngFor="let tmfProduct of tmfProducts">
+          <ng-container *ngIf="!isPartOfCurrentSelection(tmfProduct)">
+            <div class="row product">
+              <div class="col-4">{{ tmfProduct.name || tmfProduct.productOffering.id }}</div>
+              <span class="row cx-smaller text-warning">{{ 'guidedSelling.subscriptionMessage' | cxTranslate }}</span>
+            </div>
+          </ng-container>
+        </div>
         <div *ngFor="let product of currentSelections">
           <div class="row product">
             <div class="col-4">{{ product.name || product.code }}</div>
+            <span *ngIf="getSubscribedProduct(product.code)" class="cx-smaller">{{ 'guidedSelling.subscribedProduct' | cxTranslate }}{{ getSubscribedProduct(product.code) }}</span>
               <span class="small-text">
                 <cx-price-display [price]="product.productOfferingPrice[0]"></cx-price-display>
               </span>
             <div
+              *ngIf="!getSubscribedProduct(product.code)"
               class="remove-icon"
               (click)="removeProductFromCurrentSelection(product)"
             >

@@ -2,7 +2,9 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  AfterViewChecked
 } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -10,9 +12,13 @@ import {
   UserService,
   User,
   UserOrderService,
-  BaseSiteService
+  BaseSiteService,
+  ProductSearchPage,
+  ProductSearchService,
+  RoutingService,
+  ProductService
 } from '@spartacus/core';
-import { takeUntil, tap } from 'rxjs/operators';
+import { first, takeUntil, tap, take, filter, distinctUntilChanged, map } from 'rxjs/operators';
 import {
   TmaTmfRelatedParty,
   TmfProductRelatedPartyRole,
@@ -22,18 +28,28 @@ import {
   RecommendationService,
   TmfProduct,
   TmfProductStatus,
-  TmaProcessTypeEnum
+  TmaProcessTypeEnum,
+  SubscriptionDetailDataService,
+  TmaSelectionAction,
+  TmaProduct,
+  TmaGuidedSellingCurrentSelectionsService,
+  LOCAL_STORAGE,
+  TmfProductOfferingType,
+  TmaChecklistActionService,
+  TmaChecklistAction
 } from '../../../../../core';
 
+const { QUERY, FREE_TEXT, CODE } = LOCAL_STORAGE.SEARCH;
 @Component({
   selector: 'cx-subscription-details',
   templateUrl: './subscription-details.component.html',
   styleUrls: ['./subscription-details.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SubscriptionDetailsComponent implements OnInit, OnDestroy {
+export class SubscriptionDetailsComponent implements OnInit, OnDestroy, AfterViewChecked {
   subscriptionId: string;
   subscriptionDetail$: Observable<TmfProductMap>;
+  subscriptionDetail:TmfProductMap;
   user: User;
   baseSiteId: string;
   isEligibleForTermination$: Observable<boolean>;
@@ -46,10 +62,22 @@ export class SubscriptionDetailsComponent implements OnInit, OnDestroy {
     protected userService: UserService,
     protected userOrderService: UserOrderService,
     protected baseSiteService: BaseSiteService,
+    protected subscriptionDetailDataService: SubscriptionDetailDataService,
+    protected productSearchService: ProductSearchService,
+    protected routingService: RoutingService,
+    protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
+    protected productService: ProductService,
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected tmaChecklistActionService: TmaChecklistActionService,
     private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+
+    this.subscriptionDetailDataService.getSubscriptionDetail
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe();
+
     this.userService
       .get()
       .pipe(takeUntil(this.destroyed$))
@@ -63,6 +91,13 @@ export class SubscriptionDetailsComponent implements OnInit, OnDestroy {
     this.subscriptionDetail$ = this.tmfProductService.getTmfProductMap(
       this.subscriptionId
     );
+
+    this.subscriptionDetailDataService.updateSubscriptionDetail({}, true);
+
+  }
+
+  ngAfterViewChecked() {
+    this.changeDetectorRef.detectChanges();
   }
 
   ngOnDestroy(): void {
@@ -135,11 +170,116 @@ export class SubscriptionDetailsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Updates the subscription details in the subscription detail data service
+   *
+   * @param subscriptionDetail - The subscription details
+   */
+  updateSubscriptionDetail(subscriptionDetail: TmfProductMap): void {
+    this.subscriptionDetailDataService.updateSubscriptionDetail(subscriptionDetail, true);
+    this.prepareCgs(subscriptionDetail.tmfProduct.productOffering.id, subscriptionDetail.tmfProducts, 0);
+  }
+
+  /**
+   * Prepares CGS page with necessary information and redirects to CGS page when information is loaded.
+   *
+   * @param tmfProducts - The tmf products
+   * @param index - The index of the tmf product currently being processed
+   */
+   prepareCgs(
+    bpoCode: string,
+    tmfProducts: TmfProduct[],
+    index: number
+  ): void {
+
+    if (!tmfProducts || tmfProducts.length <= index) {
+      this.redirectToCgsPage(bpoCode);
+      return;
+    }
+
+    if (tmfProducts[index].productOffering['@referredType'] === TmfProductOfferingType.OPERATIONAL_PRODUCT_OFFERING) {
+      this.prepareCgs(bpoCode, tmfProducts, index + 1);
+      return;
+    }
+
+    this.productSearchService.search(
+      QUERY + FREE_TEXT + CODE + tmfProducts[index].productOffering.id,
+      { pageSize: 1 }
+    );
+    this.productSearchService
+      .getResults()
+      .pipe(
+        first((productSearchPage: ProductSearchPage) => {
+          return (
+            productSearchPage &&
+            productSearchPage.products &&
+            productSearchPage.products.length !== 0 &&
+            !!productSearchPage.products.find(
+              (product: TmaProduct) =>
+                product.code === tmfProducts[index].productOffering.id
+            )
+          );
+        }),
+        takeUntil(this.destroyed$)
+      )
+      .subscribe((productSearchPage: ProductSearchPage) => {
+        this.guidedSellingCurrentSelectionsService.changeSelection(
+          productSearchPage.products.find(
+            (product: TmaProduct) => product.code === tmfProducts[index].productOffering.id
+          ),
+          TmaSelectionAction.ADD
+        );
+        this.prepareCgs(bpoCode, tmfProducts, index + 1);
+      });
+  }
+
+  /**
    * Gets the process type
    *
    * @return A {@link TmaProcessTypeEnum}
    */
   get processType(): typeof TmaProcessTypeEnum {
     return TmaProcessTypeEnum;
+  }
+
+  /**
+   * Checks the subscription detail has an active subscribed product.
+   *
+   * @return true if subscription base has an active subscribed product as {@link boolean}
+   */
+   hasActiveSubcribedProduct(subscriptionDetail: TmfProductMap): boolean {
+    let count = 0;
+    count = this.hasUnavailableSubscribedProduct(subscriptionDetail.tmfProducts, 0, count) + 1;
+
+    const subscribedProducts = subscriptionDetail.tmfProducts.find(
+      (subscribedProduct: TmfProduct) =>
+        subscribedProduct.status === TmfProductStatus.active
+    );
+    return subscribedProducts && subscriptionDetail.tmfProducts.length === count;
+    }
+
+  protected hasUnavailableSubscribedProduct(tmfProducts: TmfProduct[], index: number, count: number): number {
+
+    if (index < tmfProducts.length) {
+      this.tmaChecklistActionService
+        .getChecklistActionForProductCode(this.baseSiteId, tmfProducts[index].productOffering.id)
+        .pipe(
+          take(2),
+          filter((checklistResult: TmaChecklistAction[]) => !!checklistResult),
+          distinctUntilChanged(),
+          takeUntil(this.destroyed$),
+          map((checklistResult: TmaChecklistAction[]) => {
+            if (checklistResult) {
+              count = count + 1;
+              this.hasUnavailableSubscribedProduct(tmfProducts, index + 1, count);
+            }
+          })
+        )
+        .subscribe();
+    }
+    return count;
+  }
+
+  protected redirectToCgsPage(bpoCode: string): void {
+    this.routingService.go({ cxRoute: 'cgs', params: { code: bpoCode, process: TmaProcessTypeEnum.RETENTION } });
   }
 }
