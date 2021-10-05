@@ -1,6 +1,6 @@
 import { Cart, CartModification, Country, Region } from '@spartacus/core';
 import { TmaCartPrice, TmaOrderEntry } from './tma-cart.entry.model';
-import { TmaProcessType } from './tma-product.model';
+import { TmaProcessType, TmaTimePeriod } from './tma-common.model';
 
 export interface TmaCartModification extends CartModification {
   deliveryModeChanged?: boolean;
@@ -28,6 +28,7 @@ export interface TmaCharacteristic {
 }
 
 export interface TmaSubscribedProduct {
+  id?: string;
   relatedParty?: TmaRelatedParty[];
   place?: TmaPlace[];
   characteristic?: TmaCharacteristic[];
@@ -36,18 +37,25 @@ export interface TmaSubscribedProduct {
 export interface TmaRelatedParty {
   id?: string;
   role?: TmaRelatedPartyRole;
+  '@referredType'?: string;
+  href?: string;
+  name?: string;
+  validFor?: TmaTimePeriod;
 }
 
 export interface TmaPlace {
   id?: string;
   name?: string;
   role?: TmaPlaceRole;
-  country?: Country;
-  region?: Region;
   line1?: string;
   line2?: string;
   town?: string;
   postalCode?: string;
+  region?: Region;
+  country?: Country;
+  '@referredType'?: string;
+  '@schemaLocation'?: string;
+  href?: string;
 }
 
 export interface TmaCart extends Cart {

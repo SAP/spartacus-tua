@@ -1,13 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef, Input, OnDestroy } from '@angular/core';
 import { ProductSearchService } from '@spartacus/core';
-import { ProductListComponentService } from '@spartacus/storefront';
+import { ProductListComponentService, SearchCriteria } from '@spartacus/storefront';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LOCAL_STORAGE } from '../../../../core/util/constants';
-import { TmaGuidedSellingStep } from '../../../../core/model';
+import { TmaGuidedSellingStep, TmaProcessTypeEnum } from '../../../../core/model';
 import { TmaGuidedSellingStepsService } from '../../../../core/guided-selling/facade';
+import { ActivatedRoute, Router } from '@angular/router';
 
-const { QUERY, FREE_TEXT, PRODUCT_OFFERING_GROUP, PARENT_BPO } = LOCAL_STORAGE.SEARCH;
+const { QUERY, FREE_TEXT, PRODUCT_OFFERING_GROUP, PARENT_BPO, PROCESS_TYPE } = LOCAL_STORAGE.SEARCH;
 
 @Component({
   selector: 'cx-guided-selling-steps',
@@ -19,6 +20,9 @@ export class TmaGuidedSellingStepsComponent implements OnInit, OnDestroy {
   @Input()
   bpoCode: string;
 
+  @Input()
+  isSubscription: boolean;
+
   guidedSellingSteps: TmaGuidedSellingStep[];
 
   protected destroyed$ = new Subject();
@@ -27,7 +31,10 @@ export class TmaGuidedSellingStepsComponent implements OnInit, OnDestroy {
     protected guidedSellingStepsService: TmaGuidedSellingStepsService,
     protected productSearchService: ProductSearchService,
     protected productListComponentService: ProductListComponentService,
-    protected changeDetectorRef: ChangeDetectorRef
+    protected changeDetectorRef: ChangeDetectorRef,
+    protected activatedRoute: ActivatedRoute,
+    protected router: Router
+
   ) {
   }
 
@@ -75,13 +82,33 @@ export class TmaGuidedSellingStepsComponent implements OnInit, OnDestroy {
   }
 
   protected displayProducts(id: string, inProductGroup: boolean): void {
+    let query = QUERY + FREE_TEXT + PRODUCT_OFFERING_GROUP + id;
+    let bpoQuery = QUERY + FREE_TEXT + PARENT_BPO + id;
+    if(this.isSubscription){
+      const process = TmaProcessTypeEnum.RETENTION;
+      const processFilterQuery = ':'+ PROCESS_TYPE + process;
+      query = query + processFilterQuery;
+      bpoQuery = bpoQuery + processFilterQuery;
+    }
     if (inProductGroup) {
-      this.productListComponentService.setQuery(QUERY + FREE_TEXT + PRODUCT_OFFERING_GROUP + id);
-      this.productSearchService.search(QUERY + FREE_TEXT + PRODUCT_OFFERING_GROUP + id, { pageSize: 10 });
+      this.tmaSetQuery(query);
+      this.productSearchService.search(query);
     }
     else {
-      this.productListComponentService.setQuery(QUERY + FREE_TEXT + PARENT_BPO + id);
-      this.productSearchService.search(QUERY + FREE_TEXT + PARENT_BPO + id, { pageSize: 10 });
+      this.tmaSetQuery(query);
+      this.productSearchService.search(bpoQuery, { pageSize: 10 });
     }
+  }
+
+  tmaSetQuery(query: string): void {
+    this.tmaRoute({ query, currentPage: undefined });
+  }
+
+  tmaRoute(queryParams: SearchCriteria): void {
+    this.router.navigate([], {
+      queryParams,
+      queryParamsHandling: 'merge',
+      relativeTo: this.activatedRoute,
+    });
   }
 }

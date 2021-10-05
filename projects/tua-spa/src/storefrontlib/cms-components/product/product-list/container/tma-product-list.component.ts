@@ -1,18 +1,10 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, UrlSegment } from '@angular/router';
 import { CmsService, ContentSlotComponentData, Page } from '@spartacus/core';
-import {
-  ModalRef,
-  ModalService,
-  PageLayoutService,
-  ProductListComponent,
-  ProductListComponentService,
-  ViewConfig
-} from '@spartacus/storefront';
+import { ModalRef, ModalService, PageLayoutService, ProductListComponent, ViewConfig } from '@spartacus/storefront';
+import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionConfig, TmaConsumptionValue, TmaProductSearchService, TmaProductListComponentService } from '../../../../../core';
 import { Observable, Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
-import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionValue } from '../../../../../core/model';
 import { TmaConsumptionDialogComponent } from '../../../consumption';
 
 @Component({
@@ -36,23 +28,26 @@ export class TmaProductListComponent extends ProductListComponent implements OnI
 
   constructor(
     protected pageService: PageLayoutService,
-    protected productListService: ProductListComponentService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected activatedRoute: ActivatedRoute,
-    protected cmsService: CmsService,
-    protected viewConfig: ViewConfig,
-    protected modalService: ModalService
+    protected productListService: TmaProductListComponentService,
+    public productSearchService?: TmaProductSearchService,
+    protected viewConfig?: ViewConfig,
+    protected consumptionConfig?: TmaConsumptionConfig,
+    protected activatedRoute?: ActivatedRoute,
+    protected cmsService?: CmsService,
+    protected modalService?: ModalService
   ) {
     super(pageService, productListService, viewConfig);
   }
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.url$ = this.activatedRoute.url;
-    this.page$ = this.cmsService.getCurrentPage();
+    if (this.activatedRoute && this.cmsService) {
+      this.url$ = this.activatedRoute.url;
+      this.page$ = this.cmsService.getCurrentPage();
 
-    this.activatedRoute.queryParams
+      this.activatedRoute.queryParams
       .subscribe((params: Params) => this.queryParams = params);
+    }
   }
 
   ngOnDestroy(): void {
@@ -109,8 +104,7 @@ export class TmaProductListComponent extends ProductListComponent implements OnI
    */
   getConsumptionComponent(page: Page): TmaCmsConsumptionComponent {
     const consumptionSlotKey: string = Object.keys(page.slots)
-      .find((key: string) => page.slots[key].components.find((component: ContentSlotComponentData) => component.typeCode === 'ConsumptionListComponent'));
-
+      .find((key: string) => page.slots[key].components && page.slots[key].components.find((component: ContentSlotComponentData) => component.typeCode === 'ConsumptionListComponent'));
     if (!consumptionSlotKey) {
       return null;
     }

@@ -1,0 +1,150 @@
+<div
+  class="row container mx-auto px-2 py-3 appointment-container stepper-container"
+>
+  <button class="btn clsBtn btn-sm" (click)="closeAndClearModal()">
+    <span class="material-icons"> close </span>
+  </button>
+  <div class="row mx-auto d-flex py-3 justify-content-center">
+    <span class="fontLabel-bold">
+      {{ 'checkList.appointment.headline' | cxTranslate }}
+    </span>
+  </div>
+  <ng-container *ngIf="errPatch">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ 'checkList.appointment.patchError' | cxTranslate }}
+    </div>
+  </ng-container>
+
+  <div class="row mx-auto d-flex py-3 w-100 justify-content-center">
+    <div class="fontLabel-bold w-100 pl-4">
+      {{ 'checkList.appointment.addressHeadline' | cxTranslate }}
+    </div>
+    <ngb-accordion #a="ngbAccordion" class="w-100" [activeIds]="ngbActiveIds">
+      <ngb-panel #addressComponent id="address-panel">
+        <ng-template ngbPanelHeader>
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <button
+                class="btn btn-sm btn-outline-primary ml-2 toggle"
+                (click)="toggleAppointmentAddress()"
+              >
+                <span
+                  class="material-icons"
+                  *ngIf="isAppointmentAddress"
+                >
+                  keyboard_arrow_down
+                </span>
+                <span
+                  class="material-icons"
+                  *ngIf="!isAppointmentAddress"
+                >
+                  keyboard_arrow_right
+                </span>
+              </button>
+              <span class="text-dark" *ngIf="appointmentAddress">
+                {{ appointmentAddress.streetName }},
+                {{ appointmentAddress.streetNr }},
+                {{ appointmentAddress.city }},
+                {{ appointmentAddress.stateOfProvince }},
+                {{ appointmentAddress.country }},
+                {{ appointmentAddress.postcode }}
+              </span>
+              <span class="text-dark" *ngIf="!appointmentAddress">
+                {{ 'checkList.appointment.provideAddress' | cxTranslate }}
+              </span>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div [formGroup]="appointmentAddressDetails">
+            <cx-address-form
+              [address]="installationAddress"
+              [isDialog]="false"
+              [isEdit]="isEdit"
+              (countrySelected)="onCountrySelected($event)"
+              (regionSelected)="onRegionSelected($event)"
+            >
+            </cx-address-form>
+          </div>
+          <div class="row mx-auto d-flex justify-content-center mb-2 w-100">
+            <button
+              (click)="getSearchTimeSlotOnAddressChange()"
+              class="btn btn-primary btn-sm btn-wd-40"
+            >
+              {{ 'checkList.appointment.getTimeSlots' | cxTranslate }}
+            </button>
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+  </div>
+  <ng-container *ngIf="invalidAddress">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ 'addressForm.invalidAddress' | cxTranslate }}
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="searchTimeSlotError">
+    <div class="alert alert-primary w-100" role="alert">
+      {{ 'checkList.appointment.fetchTimeSlotsError' | cxTranslate }}
+    </div>
+  </ng-container>
+
+  <div
+    class="row mx-auto w-100"
+    *ngIf="showTimeSlots && ! isAppointmentAddress"
+  >
+    <ng-container *ngIf="searchTimeSlot$ | async as timeSlot">
+      <div class="fontLabel-bold w-100 pl-4">
+        {{ 'checkList.appointment.timeSlotHeadline' | cxTranslate }}
+      </div>
+      <ng-container
+        *ngFor="
+          let availableTimeSlot of timeSlot.availableTimeSlot;
+          let i = index
+        "
+      >
+        <ng-container *ngIf="i < getRequestedNumberOfTimeSlots()">
+          <div class="col-4 p-1 my-2">
+            <div class="border-round-ph p-2 alignMiddle">
+              <div class="form-group form-check">
+                <input
+                  type="radio"
+                  class="form-check-input"
+                  id="timeSlot"
+                  name="timeSlot"
+                  (change)="
+                    selectedTimeSlot(availableTimeSlot, timeSlot.relatedPlace)
+                  "
+                  [value]="
+                    availableTimeSlot.validFor.startDateTime
+                      | cxDate: 'MMM d, y h:mm a':'UTC'
+                  "
+                />
+                <label class="form-check-label" for="timeSlot">
+                  {{
+                  availableTimeSlot.validFor.startDateTime
+                  | cxDate: 'MMM d, y h:mm a':'UTC'
+                  }}</label
+                >
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+      <div class="row mx-auto d-flex justify-content-center mb-2 w-100">
+        <button
+          [disabled]="!timeSlotChanged"
+          (click)="updateAppointment()"
+          class="btn btn-primary btn-sm btn-wd-40"
+        >
+          {{
+          isEdit
+          ? ('common.update' | cxTranslate)
+          : ('common.select' | cxTranslate)
+          }}
+        </button>
+      </div>
+    </ng-container>
+  </div>
+</div>

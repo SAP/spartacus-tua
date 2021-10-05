@@ -1,9 +1,10 @@
 import { Product } from '@spartacus/core';
-import { TmaTimePeriod } from './tmf-product.model';
+import { TmaTimePeriod } from './tma-common.model';
 
 export interface UsageConsumptionReport {
   bucket?: BucketRef[];
 }
+
 export interface BucketRef {
   bucketBalance?: BucketBalanceRef[];
   bucketCounter?: BucketCounterRef[];
@@ -12,6 +13,7 @@ export interface BucketRef {
   usageType?: string;
   product?: Product;
 }
+
 export interface BucketBalanceRef {
   remainingValue?: number;
   remainingValueLabel?: string;

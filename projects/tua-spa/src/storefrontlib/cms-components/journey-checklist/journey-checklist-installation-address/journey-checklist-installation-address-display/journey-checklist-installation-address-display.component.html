@@ -1,0 +1,116 @@
+<ng-container *ngIf="addInstallationAddress">
+  <div *ngIf="showEdit">
+    <div class="font-small">
+      <a
+        class="font-label pr-0 cx-link clickable"
+        (click)="updateInstallationAddress()"
+        >{{
+          'checkList.installationAddress.selectInstallationAddress'
+            | cxTranslate
+        }}
+      </a>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!item">
+  <div
+    *ngIf="
+      geographicAddressService.getSelectedInstallationAddress()
+        | async as selectedAddress
+    "
+  >
+    <div *ngIf="selectedAddress.postcode">
+      <span class="font-label pr-0">
+        {{ 'checkList.installationAddress.installationAddress' | cxTranslate }}
+      </span>
+      <span *ngIf="showEdit">
+        <span
+          (click)="updateInstallationAddress(null, selectedAddress)"
+          class="material-icons clickable edit_icon"
+        >
+          edit</span
+        >
+      </span>
+      <div class="card-body border-0 py-1 px-0">
+        <div class="col-12 px-0">
+          <span class="font-small" *ngIf="selectedAddress.streetNr">
+            {{ selectedAddress.streetNr }},
+          </span>
+          <span class="font-small" *ngIf="selectedAddress.streetName">
+            {{ selectedAddress.streetName }},
+          </span>
+        </div>
+        <div class="col-12 px-0">
+          <span class="font-small" *ngIf="selectedAddress.city">
+            {{ selectedAddress.city }},
+          </span>
+          <span class="font-small" *ngIf="selectedAddress.country">
+            {{getCountry(selectedAddress.country)}}
+            <div *ngIf="country$ | async as country">
+              {{ country.name }}
+            </div>
+          </span>
+        </div>
+
+        <div class="col-12 px-0">
+          <span class="font-small" *ngIf="selectedAddress.postcode">
+            {{ selectedAddress.postcode }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="getItemInstallationAddress(item) as installationAddress">
+  <ng-container *ngIf="item">
+    <span class="font-label pr-0">
+      {{ 'checkList.installationAddress.installationAddress' | cxTranslate }}
+    </span>
+    <span *ngIf="showEdit">
+      <span
+        (click)="updateInstallationAddress(installationAddress, null)"
+        class="material-icons clickable edit_icon"
+      >
+        edit</span
+      >
+    </span>
+    <div class="card-body border-0 py-1 px-0">
+      <div class="col-12 px-0">
+        <span class="font-small" *ngIf="installationAddress.line1">
+          {{ installationAddress.line1 }},
+        </span>
+        <span class="font-small" *ngIf="installationAddress.line2">
+          {{ installationAddress.line2 }},
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span class="font-small" *ngIf="installationAddress.town">
+          {{ installationAddress.town }},
+        </span>
+        <span
+          class="font-small"
+          *ngIf="installationAddress.region && installationAddress.region.name"
+        >
+          {{ installationAddress.region.name }},
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span
+          class="font-small"
+          *ngIf="
+            installationAddress.country && installationAddress.country.name
+          "
+        >
+          {{ installationAddress.country.name }}
+        </span>
+      </div>
+      <div class="col-12 px-0">
+        <span class="font-small" *ngIf="installationAddress.postalCode">
+          {{ installationAddress.postalCode }}
+        </span>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

@@ -1,0 +1,84 @@
+<cx-selfcare-card
+  *ngIf="model$ | async as model"
+  i18nRoot="{{ domainType }}"
+  [showHint]="true"
+  subtitle="{{ 'selfcare.subscriptions.details.serialNumber' | cxTranslate }}: {{
+    model.productSerialNumber
+  }}"
+>
+  <section main class="details">
+    <div class="property">
+      <label>{{ 'selfcare.subscriptions.name' | cxTranslate }}</label>
+      <span class="value">
+        {{ model.name }}
+      </span>
+    </div>
+    <div class="property">
+      <label>{{ 'selfcare.subscriptions.id' | cxTranslate }}</label>
+      <span class="value">
+        {{ model.id }}
+      </span>
+    </div>
+    <div class="property">
+      <label>{{ 'selfcare.subscriptions.status' | cxTranslate }}</label>
+      <span class="value" [class.is-active]="model.status">
+        {{
+          (model.status
+            ? 'selfcare.subscriptions.enabled'
+            : 'selfcare.subscriptions.disabled'
+          ) | cxTranslate
+        }}
+      </span>
+    </div>
+    <div class="property">
+      <label>{{ 'selfcare.subscriptions.details.contract' | cxTranslate }}</label>
+      <span class="value">
+        {{ 'selfcare.subscriptions.details.startDate' | cxTranslate }}
+        {{ model.startDate | cxDate }}
+        {{ 'selfcare.subscriptions.details.expiresOn' | cxTranslate }}
+        {{ model.terminationDate | cxDate }}
+      </span>
+    </div>
+  </section>
+
+  <section main class="link-list">
+    <ng-container *ngIf="model.id">
+      <ng-container *ngIf="model.product">
+        <a
+          class="link"
+          [routerLink]="
+            { cxRoute: 'SubscriptionsChildProducts', params: model } | cxUrl
+          "
+          routerLinkActive="is-current"
+        >
+          {{ 'selfcare.subscriptions.details.childProducts.title' | cxTranslate }}
+        </a></ng-container
+      >
+      <a
+        class="link"
+        [routerLink]="
+          { cxRoute: 'SubscriptionsAccount', params: model } | cxUrl
+        "
+        routerLinkActive="is-current"
+      >
+        {{ 'selfcare.subscriptions.details.account.title' | cxTranslate }}
+      </a>
+      <a
+        class="link"
+        [routerLink]="
+          { cxRoute: 'SubscriptionsAgreement', params: model } | cxUrl
+        "
+        routerLinkActive="is-current"
+      >
+        {{ 'selfcare.subscriptions.details.agreement.title' | cxTranslate }}
+      </a>
+      <a
+        class="link"
+        [routerLink]="{ cxRoute: 'SubscriptionsOrder', params: model } | cxUrl"
+        routerLinkActive="is-current"
+      >
+        {{ 'selfcare.subscriptions.details.order.title' | cxTranslate }}
+      </a>
+    </ng-container>
+  </section>
+</cx-selfcare-card>

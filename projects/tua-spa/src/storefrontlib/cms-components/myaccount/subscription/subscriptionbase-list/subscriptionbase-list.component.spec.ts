@@ -6,7 +6,7 @@ import {
   Pipe,
   PipeTransform,
 } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { SubscriptionBaseListComponent } from './subscriptionbase-list.component';
 import { SubscriptionBaseService } from '../../../../../core/subscription/subscriptionbase/facade';
@@ -14,7 +14,7 @@ import {
   SubscriptionBase,
   SubscriptionBaseDetail,
 } from '../../../../../core/model';
-import { SubscriptionBaseDetailService } from '../../../../../core/subscription/subscriptionbase-detail/facade';
+import { SubscriptionBaseDetailsService } from '../../../../../core/subscription/subscriptionbase-details/facade';
 import { RouterTestingModule } from '@angular/router/testing';
 import { I18nTestingModule, RoutingService } from '@spartacus/core';
 
@@ -62,17 +62,17 @@ describe('SubscriptionBaseListComponent', () => {
   let component: SubscriptionBaseListComponent;
   let fixture: ComponentFixture<SubscriptionBaseListComponent>;
   let mockSubscriptionBaseService: SubscriptionBaseService;
-  let mockSubscriptionBaseDetailService: SubscriptionBaseDetailService;
+  let mockSubscriptionBaseDetailService: SubscriptionBaseDetailsService;
   let el: DebugElement;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     mockSubscriptionBaseService = <SubscriptionBaseService>{
       getListOfSubscriptionBases() {
         return of(mockSubscriptionBases);
       },
       clearSubscriptionBaseList() {},
     };
-    mockSubscriptionBaseDetailService = <SubscriptionBaseDetailService>{
+    mockSubscriptionBaseDetailService = <SubscriptionBaseDetailsService>{
       getSubscriptionBaseDetails(subscriptionBaseId: string) {
         return of(mockSubscriptionBaseDetails);
       },
@@ -88,7 +88,7 @@ describe('SubscriptionBaseListComponent', () => {
           useValue: mockSubscriptionBaseService,
         },
         {
-          provide: SubscriptionBaseDetailService,
+          provide: SubscriptionBaseDetailsService,
           useValue: mockSubscriptionBaseDetailService,
         },
         { provide: RoutingService, useClass: MockRoutingService },

@@ -1,13 +1,13 @@
-import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
-import { TransferState } from '@angular/platform-browser';
 import { Config, EXTERNAL_CONFIG_TRANSFER_ID, SERVER_REQUEST_URL } from '@spartacus/core';
-import { Observable, of } from 'rxjs';
+import { TransferState } from '@angular/platform-browser';
 import { map, tap } from 'rxjs/operators';
-import { tmaDeepMerge } from '../../utils/tma-deep-merge';
-import { TmaBillingFrequencyLoadedConfig } from './tma-billing-frequency-loaded-config';
-import { TmaBillingFrequencyLoadedConfigConverter } from './tma-billing-frequency-loaded-config-converter';
+import { Observable, of } from 'rxjs';
+import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { TmaBillingFrequencyValuesConfigLoader } from './tma-billing-frequency-values-config-loader';
+import { TmaBillingFrequencyLoadedConfigConverter } from './tma-billing-frequency-loaded-config-converter';
+import { TmaBillingFrequencyLoadedConfig } from './tma-billing-frequency-loaded-config';
+import { tmaDeepMerge } from '../../utils/tma-deep-merge';
 
 @Injectable({ providedIn: 'root' })
 export class TmaBillingFrequencyConfigLoaderService {

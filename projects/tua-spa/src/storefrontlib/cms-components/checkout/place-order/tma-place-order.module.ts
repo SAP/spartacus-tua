@@ -12,6 +12,7 @@ import {
   CheckoutAuthGuard,
   CartNotEmptyGuard,
   PlaceOrderModule,
+  SpinnerComponent,
 } from '@spartacus/storefront';
 
 @NgModule({
@@ -30,7 +31,7 @@ import {
     }),
   ],
   declarations: [TmaPlaceOrderComponent],
-  entryComponents: [TmaPlaceOrderComponent],
+  entryComponents: [TmaPlaceOrderComponent, SpinnerComponent],
   exports: [TmaPlaceOrderComponent],
 })
 export class TmaPlaceOrderModule extends PlaceOrderModule {}

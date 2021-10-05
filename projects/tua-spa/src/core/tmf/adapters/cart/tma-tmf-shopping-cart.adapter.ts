@@ -28,7 +28,7 @@ export class TmaTmfShoppingCartAdapter implements TmaTmfCartAdapter {
     const queryParameters = Array();
     queryParameters['baseSiteId'] = shoppingCart.baseSiteId;
 
-    const url = this.tmfEndpointsService.getUrl('shoppingCart', [{ id: shoppingCart.id }], queryParameters);
+    const url = this.tmfEndpointsService.getUrl('updateShoppingCart', { id: shoppingCart.id }, queryParameters);
 
     return this.http
       .patch<Tmf.TmaTmfShoppingCart>(url, shoppingCart, { headers })

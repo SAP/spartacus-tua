@@ -1,18 +1,21 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { Observable, Subject, of } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { UserService, User } from '@spartacus/core';
 import { take, tap, filter, takeUntil } from 'rxjs/operators';
 import {
   StateWithAppointment,
   AppointmentSelectors,
-  AppointmentActions,
+  AppointmentActions
 } from '../store';
-import { TmaTmfRelatedParty, Appointment, TimeSlot } from '../../model';
-import { LOCAL_STORAGE } from '../../util';
-import { SearchTimeSlotService } from '../../search-time-slot/facade';
-
-const { CALL_TO_SCHEDULE } = LOCAL_STORAGE.APPOINTMENT;
+import {
+  TmaTmfRelatedParty,
+  Appointment,
+  AppointmentStateType,
+  SearchTimeSlot
+} from '../../model';
+import { SearchTimeSlotService } from '../../search-time-slot';
+import { GeographicAddressService } from '../../geographic-address';
 
 @Injectable()
 export class AppointmentService implements OnDestroy {
@@ -23,6 +26,7 @@ export class AppointmentService implements OnDestroy {
     protected store: Store<StateWithAppointment>,
     protected userService: UserService,
     protected searchTimeSlotService: SearchTimeSlotService,
+    protected geographicAddressService: GeographicAddressService
   ) {
     this.userService
       .get()
@@ -31,7 +35,7 @@ export class AppointmentService implements OnDestroy {
         this.currentCustomer = {
           id: user.uid,
           role: 'CUSTOMER',
-          name: user.name,
+          name: user.name
         };
       });
   }
@@ -47,12 +51,6 @@ export class AppointmentService implements OnDestroy {
    * @return the appointment
    */
   getAppointmentById(id: string): Observable<Appointment> {
-    if (id === CALL_TO_SCHEDULE) {
-      const appointment: Appointment = {
-        id: CALL_TO_SCHEDULE,
-      };
-      return of(appointment);
-    }
     return this.store.pipe(
       select(AppointmentSelectors.getAppointmentById, { id }),
       tap((appointment: Appointment) => {
@@ -82,17 +80,13 @@ export class AppointmentService implements OnDestroy {
    * This method is used to create the appointment.
    */
   createAppointmentForTimeSlot(): void {
-    const selectedTimeSlot: TimeSlot = this.getTimeSlot();
-    if (selectedTimeSlot.id === CALL_TO_SCHEDULE) {
-      this.createDefaultAppointment();
-      return;
-    }
-    const appointmentrequest: Appointment = this.populateAppointmentRequest(
+    const selectedTimeSlot: SearchTimeSlot = this.getTimeSlot();
+    const appointmentRequest: Appointment = this.populateAppointmentRequest(
       selectedTimeSlot
     );
     this.store.dispatch(
       new AppointmentActions.CreateAppointment({
-        appointment: appointmentrequest,
+        appointment: appointmentRequest
       })
     );
   }
@@ -110,22 +104,30 @@ export class AppointmentService implements OnDestroy {
    * @param oldAppointmentId The id of the appointment
    */
   updateAppointment(oldAppointmentId: string): void {
-    if (oldAppointmentId === CALL_TO_SCHEDULE) {
-      this.createAppointmentForTimeSlot();
-      return;
-    }
-    const selectedTimeSlot: TimeSlot = this.getTimeSlot();
-    if (selectedTimeSlot.id === CALL_TO_SCHEDULE) {
-      this.createDefaultAppointment();
-      return;
-    }
-    const appointmentrequest: Appointment = this.populateAppointmentRequest(
+    const selectedTimeSlot: SearchTimeSlot = this.getTimeSlot();
+    const appointmentRequest: Appointment = this.populateAppointmentRequest(
       selectedTimeSlot
     );
     this.store.dispatch(
       new AppointmentActions.UpdateAppointment({
         id: oldAppointmentId,
-        appointment: appointmentrequest,
+        appointment: appointmentRequest
+      })
+    );
+  }
+
+  /**
+   * This method cancels the appointment.
+   *
+   * @param appointmentId The id of the appointment which needs to be cancelled
+   */
+  cancelAppointment(appointmentId: string): void {
+    this.store.dispatch(
+      new AppointmentActions.UpdateAppointment({
+        id: appointmentId,
+        appointment: {
+          status: AppointmentStateType.CANCELLED,
+        }
       })
     );
   }
@@ -194,50 +196,41 @@ export class AppointmentService implements OnDestroy {
     );
   }
 
-  protected createDefaultAppointment(): void {
-    const appointment: Appointment = {
-      id: CALL_TO_SCHEDULE,
-    };
-    this.store.dispatch(
-      new AppointmentActions.CreateAppointmentSuccess({
-        newAppointment: appointment,
-      })
-    );
-  }
-
   protected populateAppointmentRequest(
-    selectedTimeSlot: TimeSlot
+    searchTimeSlot: SearchTimeSlot
   ): Appointment {
+    const selectedTimeSlot = searchTimeSlot.requestedTimeSlot[0];
     return {
       validFor: {
         startDateTime: selectedTimeSlot.validFor.startDateTime,
-        endDateTime: selectedTimeSlot.validFor.endDateTime,
+        endDateTime: selectedTimeSlot.validFor.endDateTime
       },
       relatedParty: [
         {
           id: selectedTimeSlot.relatedParty.id,
           role: selectedTimeSlot.relatedParty.role,
-          name: selectedTimeSlot.relatedParty.name,
+          name: selectedTimeSlot.relatedParty.name
         },
         {
           id: this.currentCustomer.id,
           role: this.currentCustomer.role,
-          name: this.currentCustomer.name,
-        },
+          name: this.currentCustomer.name
+        }
       ],
+      relatedPlace: searchTimeSlot.relatedPlace
     };
   }
 
-  private getTimeSlot(): TimeSlot {
-    let selectedTimeSlot: TimeSlot;
+  private getTimeSlot(): SearchTimeSlot {
+    let selectedTimeSlot: SearchTimeSlot;
     this.searchTimeSlotService
       .getSelectedTimeSlot()
       .pipe(
         take(1),
-        filter((result: TimeSlot) => !!result),
+        filter((result: SearchTimeSlot) => !!result),
         takeUntil(this.destroyed$)
       )
-      .subscribe((result: TimeSlot) => {
+      .subscribe((result: SearchTimeSlot) => {
         selectedTimeSlot = result;
       });
     return selectedTimeSlot;

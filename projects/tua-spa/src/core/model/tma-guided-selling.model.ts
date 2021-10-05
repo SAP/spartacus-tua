@@ -1,3 +1,5 @@
+import {TmfProductCharacteristic} from './tmf-product.model';
+
 export interface TmaGuidedSellingStep {
   id: string;
   name: string;
@@ -7,5 +9,17 @@ export interface TmaGuidedSellingStep {
 
 export enum TmaSelectionAction {
   ADD = 'add',
-  REMOVE = 'remove'
+  REMOVE = 'remove',
+  KEEP = 'keep'
+}
+
+export interface TmaGuidedSellingStepConfiguration {
+  stepId: string;
+  product: string;
+  configSelections: TmfProductCharacteristic[];
+}
+
+export interface TmaConfigSelection {
+  name: string;
+  value: string;
 }

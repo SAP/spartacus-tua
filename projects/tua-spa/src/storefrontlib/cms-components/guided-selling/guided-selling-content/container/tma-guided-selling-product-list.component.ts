@@ -1,8 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CmsService } from '@spartacus/core';
-import { ModalService, PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
+import { PageLayoutService, ViewConfig } from '@spartacus/storefront';
+import {
+  TmaConfigurablePscInputsDataHandlingService,
+  TmaGuidedSellingProductConfigSelectionsService,
+  TmaGuidedSellingStep,
+  TmaGuidedSellingStepsService,
+  TmaProductListComponentService,
+  TmaProductSearchService,
+  TmfProduct
+} from '../../../../../core';
 import { TmaProductListComponent } from '../../../product/product-list';
 
 @Component({
@@ -10,17 +17,33 @@ import { TmaProductListComponent } from '../../../product/product-list';
   templateUrl: './tma-guided-selling-product-list.component.html',
   styleUrls: ['./tma-guided-selling-product-list.component.scss']
 })
-export class TmaGuidedSellingProductListComponent extends TmaProductListComponent {
+export class TmaGuidedSellingProductListComponent
+  extends TmaProductListComponent
+  implements OnInit {
+  @Input()
+  tmfProducts: TmfProduct[];
+  guidedSellingSteps: TmaGuidedSellingStep[];
 
   constructor(
-    pageLayoutService: PageLayoutService,
-    productListComponentService: ProductListComponentService,
-    scrollConfig: ViewConfig,
-    protected consumptionConfig: TmaConsumptionConfig,
+    protected guidedSellingProductConfigSelectionsService: TmaGuidedSellingProductConfigSelectionsService,
+    protected configurablePscvusService: TmaConfigurablePscInputsDataHandlingService,
+    protected guidedSellingStepsService: TmaGuidedSellingStepsService,
     protected activatedRoute: ActivatedRoute,
-    protected cmsService: CmsService,
-    protected modalService: ModalService
+    pageLayoutService: PageLayoutService,
+    productListComponentService: TmaProductListComponentService,
+    scrollConfig?: ViewConfig,
+    productSearchService?: TmaProductSearchService
   ) {
-    super(pageLayoutService, productListComponentService, consumptionConfig, activatedRoute, cmsService, scrollConfig, modalService);
+    super(
+      pageLayoutService,
+      productListComponentService,
+      productSearchService,
+      scrollConfig
+    );
+  }
+
+  ngOnInit() {
+    super.ngOnInit();
+    this.configurablePscvusService.cleanData();
   }
 }

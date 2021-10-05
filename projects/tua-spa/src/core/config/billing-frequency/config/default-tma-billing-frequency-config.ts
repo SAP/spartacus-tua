@@ -11,6 +11,10 @@ export const defaultTmaBillingFrequencyConfig: TmaBillingFrequencyConfig = {
       value: 12
     },
     {
+      key: 'years',
+      value: 12
+    },
+    {
       key: 'annually',
       value: 12
     },
@@ -27,11 +31,19 @@ export const defaultTmaBillingFrequencyConfig: TmaBillingFrequencyConfig = {
       value: 1
     },
     {
+      key: 'months',
+      value: 1
+    },
+    {
       key: 'quarterly',
       value: 3
     },
     {
       key: 'quarter',
+      value: 3
+    },
+    {
+      key: 'quarters',
       value: 3
     }
   ]

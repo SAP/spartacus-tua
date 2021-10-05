@@ -1,14 +1,16 @@
-<ng-container *ngIf="tmfProductDetail$ | async as product ; else loading ">
+<ng-container *ngIf="tmfProduct">
   <ng-container *ngIf="currency$ | async as currency">
     <div class="card w-100 border-0">
-      <div class="card-header py-3" [class.background-green]="getProductStatus(product) === true"
-        [class.bg-danger]="getProductStatus(product) === false">
+      <div class="card-header py-3 background-{{tmfProduct.status}}">
         <div class="row mx-auto">
-          <div class="col-8">
-            <span class="labelHeading">{{product.name}} ({{product.id}})</span>
+          <div class="col-6">
+            <span class="labelHeading">{{tmfProduct.name}} ({{tmfProduct.id}})</span>
           </div>
-          <div class="col-4">
-            <span class="labelHeading">{{product.status}}</span>
+          <div class="col-3">
+            {{
+              'subscriptions.status.status'
+                | cxTranslate: { context: tmfProduct.status }
+            }}
           </div>
         </div>
       </div>
@@ -18,7 +20,7 @@
             <span class="label">{{'subscriptions.contractStartDate' | cxTranslate}}</span>
           </div>
           <div class="col-6">
-            <span class="labelText">{{ product.startDate | cxDate}}</span>
+            <span class="labelText">{{ tmfProduct.startDate | cxDate}}</span>
           </div>
         </div>
         <div class="row mx-auto py-2">
@@ -26,21 +28,20 @@
             <span class="label">{{'subscriptions.expiresOn' | cxTranslate}}</span>
           </div>
           <div class="col-6">
-            <span class="labelText">{{product.terminationDate | cxDate}}</span>
+            <span class="labelText">{{tmfProduct.terminationDate | cxDate}}</span>
           </div>
         </div>
-        <ng-container *ngIf="product.productOrder">
-          <ng-container *ngFor="let productOrder of product.productOrder ">
-            <div class="row mx-auto py-2" *ngIf="!getRole(product.relatedParty)">
+        <ng-container *ngIf="tmfProduct.productOrderItem">
+          <ng-container *ngFor="let productOrder of tmfProduct.productOrderItem ">
+              <div class="row mx-auto py-2" *ngIf="!order">
               <div class="col-6">
                 <span class="label">{{'subscriptions.orderNumber' | cxTranslate}}</span>
               </div>
               <div class="col-6">
-                <span class="labelText">{{productOrder.id}}</span>
+                <span class="labelText">{{productOrder.productOrderId}}</span>
               </div>
             </div>
-            <ng-container *ngIf="getRole(product.relatedParty)">
-              <ng-container *ngIf="getProductOrder(productOrder.id) | async as userOrder; else loading">
+              <ng-container *ngIf="order">
                 <div class="row mx-auto py-2">
                   <div class="col-6">
                     <span class="label">{{'subscriptions.orderNumber' | cxTranslate}}</span>
@@ -49,13 +50,13 @@
                     <a [routerLink]="
                   {
                     cxRoute: 'orderDetails',
-                    params: userOrder
+                    params: order
                   } | cxUrl
                 ">
-                      {{ userOrder?.code }}</a>
+                      {{ order?.code }}</a>
                   </div>
                 </div>
-                <ng-container *ngIf="getProductOrderEntry(userOrder, productOrder.orderItemId ) as orderEntry">
+                <ng-container *ngIf="getProductOrderEntry(order, productOrder.orderItemId ) as orderEntry">
                   <div class="row mx-auto">
                     <div class="col mx-auto">
                       <span class="label">{{'subscriptions.contractDuration' | cxTranslate}}</span>
@@ -75,32 +76,13 @@
                             </div>
                           </ng-template>
                           <ng-template ngbPanelContent>
-                            <div class="cx-costs px-3">
-                              <div class="row mx-auto">
-                                <div class="my-2" *ngIf="cartItemPrice.recurringPrices.length">
-                                  <!-- Reccuring Charges Prices -->
-                                  <cx-cart-item-recurring-charge [recurringCharge]="cartItemPrice.recurringPrices">
-                                  </cx-cart-item-recurring-charge>
-                                </div>
-                              </div>
-                              <div class="row mx-auto">
-                                <!-- One Time Charges -->
-                                <cx-cart-item-one-time-charge [oneTimeCharge]="cartItemPrice.oneTimeChargePrices">
-                                </cx-cart-item-one-time-charge>
-                              </div>
-                              <div class="row mx-auto my-2">
-                                <!-- Usage Charges -->
-                                <cx-cart-item-usage-charge [usageCharge]="cartItemPrice.usageChargePrices">
-                                </cx-cart-item-usage-charge>
-                              </div>
-                            </div>
+                            <cx-cart-item-price-display [price]="orderEntry.cartPrice"></cx-cart-item-price-display>
                           </ng-template>
                         </ngb-panel>
                       </ngb-accordion>
                     </ng-container>
                   </div>
                 </ng-container>
-              </ng-container>
             </ng-container>
           </ng-container>
         </ng-container>
@@ -108,8 +90,3 @@
     </div>
   </ng-container>
 </ng-container>
-<ng-template #loading>
-  <div class="cx-spinner">
-    <cx-spinner></cx-spinner>
-  </div>
-</ng-template>

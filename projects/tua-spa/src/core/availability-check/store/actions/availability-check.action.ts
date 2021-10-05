@@ -7,6 +7,7 @@ export enum AvailabilityCheckActionTypes {
   SELECTED_LOGICAL_RESOURCE_SUCCESS = '[availability-check] Selected Logical Resource Success',
   CLEAR_AVAILABILITY_CHECK_STATE = '[availability-check] Clear Availability Check State',
   CLEAR_AVAILABILITY_CHECK_ERROR = '[availability-check] Clear Availability Check Error',
+  CLEAR_SELECTED_LOGICAL_RESOURCE_STATE = '[availability-check] Clear Selected Logical Resource State',
 }
 
 export class LoadAvailabilityCheck implements Action {
@@ -52,10 +53,18 @@ export class ClearAvailabilityCheckError implements Action {
   }
 }
 
+export class ClearSelectedLogicalResourceState implements Action {
+  readonly type = AvailabilityCheckActionTypes.CLEAR_SELECTED_LOGICAL_RESOURCE_STATE;
+
+  constructor() {
+  }
+}
+
 export type AvailabilityCheckActions =
   | LoadAvailabilityCheck
   | LoadAvailabilityCheckSuccess
   | LoadAvailabilityCheckFail
   | SelectedLogicalResourceSuccess
   | ClearAvailabilityCheckState
-  | ClearAvailabilityCheckError;
+  | ClearAvailabilityCheckError
+  | ClearSelectedLogicalResourceState;

@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
-import { ProductAttributesModule, ProductReviewsModule, ProductTabsModule } from '@spartacus/storefront';
+import {  ProductReviewsModule, ProductTabsModule } from '@spartacus/storefront';
 import { TmaProductDetailsTabModule } from './product-details-tab/tma-product-details-tab.module';
+import { TmaProductAttributesModule } from './product-attributes/tma-product-attributes-module';
 
 @NgModule({
   imports: [
-    ProductAttributesModule,
+    TmaProductAttributesModule,
     TmaProductDetailsTabModule,
     ProductReviewsModule
   ]

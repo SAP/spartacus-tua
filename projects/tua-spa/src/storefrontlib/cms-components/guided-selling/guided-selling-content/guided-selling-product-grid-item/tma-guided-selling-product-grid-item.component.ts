@@ -1,17 +1,11 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { CurrencyService, ProductService } from '@spartacus/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { TmaBillingFrequencyConfig } from '../../../../../core/config/billing-frequency/config';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
-import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';
-import {
-  TmaConsumptionChangeService,
-  TmaPriceService,
-  TmaProductService
-} from '../../../../../core';
+import { TmaProduct, TmaSelectionAction, TmfProduct } from '../../../../../core/model';
+import { Subject } from 'rxjs';
 import { TmaProductGridItemComponent } from '../../../product/product-list';
+import { takeUntil } from 'rxjs/operators';
+import { CurrencyService } from '@spartacus/core';
+import { TmaPriceService } from '../../../../../core/product/facade';
 
 @Component({
   selector: 'cx-guided-selling-product-grid-item',
@@ -20,22 +14,20 @@ import { TmaProductGridItemComponent } from '../../../product/product-list';
 })
 export class TmaGuidedSellingProductGridItemComponent extends TmaProductGridItemComponent implements OnInit, OnDestroy {
 
+  @Input()
+  tmfProducts: TmfProduct[];
+
   isSelected: boolean;
 
   protected destroyed$ = new Subject();
 
   constructor(
+    public priceService: TmaPriceService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected changeDetectorRef: ChangeDetectorRef,
-    public priceService: TmaPriceService,
-    protected productService: ProductService,
-    protected currencyService: CurrencyService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected productSpecificationProductService: TmaProductService,
-    protected consumptionChangeService: TmaConsumptionChangeService,
-    protected billingFrequencyConfig: TmaBillingFrequencyConfig
+    protected currencyService?: CurrencyService
   ) {
-    super(priceService, productService, currencyService, consumptionConfig, productSpecificationProductService, consumptionChangeService, billingFrequencyConfig);
+    super(priceService,currencyService);
   }
 
   ngOnInit(): void {

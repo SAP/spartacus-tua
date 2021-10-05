@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { TmfSubscriptionBaseModule } from './subscriptionbase';
-import { TmfSubscriptionBaseDetailModule } from './subscriptionbase-detail';
+import { TmfSubscriptionBaseDetailsModule } from './subscriptionbase-details';
 import { TmfUsageConsumptionModule } from './usage-consumption';
 import { TmfProductAdapterModule } from './tmf-product';
 
@@ -9,7 +9,7 @@ import { TmfProductAdapterModule } from './tmf-product';
   imports: [
     CommonModule,
     TmfSubscriptionBaseModule,
-    TmfSubscriptionBaseDetailModule,
+    TmfSubscriptionBaseDetailsModule,
     TmfProductAdapterModule,
     TmfUsageConsumptionModule,
   ],

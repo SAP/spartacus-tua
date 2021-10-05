@@ -7,16 +7,13 @@
     "inlineSources": true,
     "types": [],
     "lib": [
-      "dom",
-      "es2018"
+      "esnext",
+      "dom"
     ]
   },
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true,
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true,
     "enableResourceInlining": true
   },
   "exclude": [

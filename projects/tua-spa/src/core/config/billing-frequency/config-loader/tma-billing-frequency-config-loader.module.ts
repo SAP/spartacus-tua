@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { ConfigInitializer, CONFIG_INITIALIZER } from '@spartacus/core';
+import { CONFIG_INITIALIZER, ConfigInitializer } from '@spartacus/core';
 import { TmaBillingFrequencyConfig } from '../config';
 import { TmaBillingFrequencyConfigLoaderService } from './tma-billing-frequency-config-loader.service';
 

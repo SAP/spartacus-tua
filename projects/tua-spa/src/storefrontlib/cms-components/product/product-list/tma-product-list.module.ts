@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ConfigModule, FeaturesConfigModule, I18nModule, UrlModule } from '@spartacus/core';
+import {
+  ConfigModule,
+  I18nModule,
+  UrlModule,
+  FeaturesConfigModule
+} from '@spartacus/core';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import {
   defaultScrollConfig,
   IconModule,
@@ -13,15 +19,14 @@ import {
   StarRatingModule,
   ViewConfigModule
 } from '@spartacus/storefront';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
-import { TmaAddToCartModule } from '../../cart';
-import { TmaPriceModule } from '../price';
-import { TmaProductScrollComponent } from './container/product-scroll/tma-product-scroll.component';
 import { TmaProductListComponent } from './container/tma-product-list.component';
-import { TmaProductFacetNavigationComponent } from './product-facet-navigation/tma-product-facet-navigation.component';
-import { TmaProductGridItemComponent } from './product-grid-item/tma-product-grid-item.component';
 import { TmaProductListItemComponent } from './product-list-item/tma-product-list-item.component';
+import { TmaProductGridItemComponent } from './product-grid-item/tma-product-grid-item.component';
+import { TmaProductScrollComponent } from './container/product-scroll/tma-product-scroll.component';
+import { TmaAddToCartModule } from '../../cart';
 import { TmaProductViewComponent } from './product-view/tma-product-view.component';
+import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
+import { QueryServiceQualificationModule } from '../../../../core';
 
 @NgModule({
   imports: [
@@ -37,9 +42,6 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
         },
         SearchResultsListComponent: {
           component: TmaProductListComponent
-        },
-        ProductRefinementComponent: {
-          component: TmaProductFacetNavigationComponent
         }
       }
     }),
@@ -56,11 +58,11 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
     InfiniteScrollModule,
     ViewConfigModule,
     FeaturesConfigModule,
-    TmaPriceModule
+    TmaPriceDisplayModule,
+    QueryServiceQualificationModule
   ],
   declarations: [
     TmaProductListComponent,
-    TmaProductFacetNavigationComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
@@ -68,13 +70,11 @@ import { TmaProductViewComponent } from './product-view/tma-product-view.compone
   ],
   exports: [
     TmaProductListComponent,
-    TmaProductFacetNavigationComponent,
     TmaProductListItemComponent,
     TmaProductGridItemComponent,
     TmaProductViewComponent,
     TmaProductScrollComponent
   ],
-  entryComponents: [TmaProductListComponent, TmaProductFacetNavigationComponent]
+  entryComponents: [TmaProductListComponent]
 })
-export class TmaProductListModule extends ProductListModule {
-}
+export class TmaProductListModule extends ProductListModule {}

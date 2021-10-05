@@ -1,0 +1,16 @@
+@media (min-width: 376px) and (max-width: 575px) {
+  .btn-text {
+    font-size: 0.6rem;
+    height: 30px;
+    text-transform: uppercase;
+  }
+}
+
+@media (max-width: 375.98px) {
+  .btn-text {
+    font-size: 0.6rem;
+    height: 25px;
+    text-transform: uppercase;
+  }
+}
+

@@ -3,9 +3,8 @@ import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import * as TmfProductSelectors from '../store/selectors';
 import { takeUntil, tap } from 'rxjs/operators';
-import { TmaStateWithTmfProduct } from '../store';
+import { TmaStateWithTmfProduct, TmfProductMap } from '../store';
 import * as TmfProductActions from '../store/actions/tmf-product.action';
-import { TmfProduct } from '../../../model';
 import { BaseSiteService } from '@spartacus/core';
 import { Subject } from 'rxjs/internal/Subject';
 
@@ -36,13 +35,13 @@ export class TmfProductService implements OnDestroy {
    * @param tmfProductId The identifier of the TmfProduct
    * @returns TmfProduct details {@link TmfProduct} as an {@link Observable}
    */
-  getTmfProductDetails(tmfProductId: string): Observable<TmfProduct> {
+  getTmfProductDetails(tmfProductId: string): Observable<TmfProductMap> {
     return this.store.pipe(
       select(TmfProductSelectors.getTmfProduct, {
         baseSiteId: this.baseSiteId,
         tmfProductId: tmfProductId,
       }),
-      tap((product: TmfProduct) => {
+      tap((product: TmfProductMap) => {
         if (product == null) {
           this.loadTmfProductDetails(this.baseSiteId, tmfProductId);
         }
@@ -70,5 +69,25 @@ export class TmfProductService implements OnDestroy {
    */
   clearTmfProductDetails(): void {
     this.store.dispatch(new TmfProductActions.ClearTmfProduct());
+  }
+
+ /**
+   * Retrives the TmfProductMap for given product id.
+   * 
+   * @param tmfProductId The identifier of the TmfProduct
+   * @returns TmfProductMap details {@link TmfProductMap} as an {@link Observable}
+   */
+  getTmfProductMap(tmfProductId: string): Observable<TmfProductMap> {
+    return this.store.pipe(
+      select(TmfProductSelectors.getTmfProductMap, {
+        baseSiteId: this.baseSiteId,
+        tmfProductId: tmfProductId
+      }),
+      tap((product: TmfProductMap) => {
+        if (product == null) {
+          this.loadTmfProductDetails(this.baseSiteId, tmfProductId);
+        }
+      })
+    );
   }
 }

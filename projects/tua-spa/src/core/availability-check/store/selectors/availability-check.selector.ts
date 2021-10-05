@@ -31,7 +31,7 @@ export const getLogicalResourceForType: MemoizedSelectorWithProps<StateWithAvail
       availabilityCheckMap.appliedCapacityAmount.resource.forEach(
         (logicalResource: ResourceRef) => {
           if (
-            logicalResource['@referredType '] === props.type &&
+            logicalResource.referredType === props.type &&
             resources.length <= props.capacityDemandAmount
           ) {
             resources.push(logicalResource);

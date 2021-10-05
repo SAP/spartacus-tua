@@ -5,22 +5,24 @@ import {
   ConfigModule,
   OccProductAdapter,
   OccProductReferencesAdapter,
-  OccProductReferencesListNormalizer,
   OccProductReviewsAdapter,
-  OccProductSearchAdapter,
-  OccProductSearchPageNormalizer,
-  PRODUCT_NORMALIZER,
-  PRODUCT_REFERENCES_NORMALIZER,
-  PRODUCT_SEARCH_PAGE_NORMALIZER,
   ProductAdapter,
-  ProductImageNormalizer,
-  ProductNameNormalizer,
-  ProductOccModule,
   ProductReferencesAdapter,
   ProductReviewsAdapter,
-  ProductSearchAdapter
+  ProductSearchAdapter,
+  ProductOccModule
 } from '@spartacus/core';
 import { defaultTmaOccProductConfig } from './default-tma-occ-product-config';
+import {
+  TmaOccProductReferencesListNormalizer,
+  TmaProductImageNormalizer,
+  TmaProductNameNormalizer
+} from './converters';
+import { TMA_PRODUCT_NORMALIZER } from '../../../product/connectors/product/converters';
+import { TMA_PRODUCT_REFERENCES_NORMALIZER } from '../../../product/connectors/references/converters';
+import { TmaOccProductSearchAdapter } from './tma-occ-product-search.adapter';
+import { TmaOccProductSearchPageNormalizer } from './converters';
+import { TMA_PRODUCT_SEARCH_PAGE_NORMALIZER } from '../../../product';
 
 @NgModule({
   imports: [
@@ -34,13 +36,13 @@ import { defaultTmaOccProductConfig } from './default-tma-occ-product-config';
       useClass: OccProductAdapter
     },
     {
-      provide: PRODUCT_NORMALIZER,
-      useExisting: ProductImageNormalizer,
+      provide: TMA_PRODUCT_NORMALIZER,
+      useExisting: TmaProductImageNormalizer,
       multi: true
     },
     {
-      provide: PRODUCT_NORMALIZER,
-      useExisting: ProductNameNormalizer,
+      provide: TMA_PRODUCT_NORMALIZER,
+      useExisting: TmaProductNameNormalizer,
       multi: true
     },
     {
@@ -48,17 +50,17 @@ import { defaultTmaOccProductConfig } from './default-tma-occ-product-config';
       useClass: OccProductReferencesAdapter
     },
     {
-      provide: PRODUCT_REFERENCES_NORMALIZER,
-      useExisting: OccProductReferencesListNormalizer,
+      provide: TMA_PRODUCT_REFERENCES_NORMALIZER,
+      useExisting: TmaOccProductReferencesListNormalizer,
       multi: true
     },
     {
       provide: ProductSearchAdapter,
-      useClass: OccProductSearchAdapter
+      useClass: TmaOccProductSearchAdapter
     },
     {
-      provide: PRODUCT_SEARCH_PAGE_NORMALIZER,
-      useExisting: OccProductSearchPageNormalizer,
+      provide: TMA_PRODUCT_SEARCH_PAGE_NORMALIZER,
+      useExisting: TmaOccProductSearchPageNormalizer,
       multi: true
     },
     {
@@ -67,4 +69,4 @@ import { defaultTmaOccProductConfig } from './default-tma-occ-product-config';
     }
   ]
 })
-export class TmaOccProductModule extends ProductOccModule { }
+export class TmaOccProductModule extends ProductOccModule {}

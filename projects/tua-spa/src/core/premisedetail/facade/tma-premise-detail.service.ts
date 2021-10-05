@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil, tap } from 'rxjs/operators';
 import { TmaPremiseDetail, TmaTechnicalResources } from '../../model';
 import { TmaPremiseDetailState, TmaStateWithPremiseDetail } from '../store';
-import * as TmaPremiseDetailAction from '../store/actions/tma-premise-details.actions';
+import * as TmaPremiseDetailAction from '../store/actions/tma-premise-detail.actions';
 import * as TmaPremiseDetailSelector from '../store/selectors/tma-premise-detail.selector';
 
 @Injectable({

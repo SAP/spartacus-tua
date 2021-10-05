@@ -2,19 +2,25 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { TranslationService } from '@spartacus/core';
 import { Subject } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
-import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../config/billing-frequency/config';
+import { TmaBillingFrequencyConfig, TmaBillingFrequencyMap } from '../../config';
 import {
-  TmaItemType,
   TmaMoney,
   TmaPopBillingEventType,
   TmaPopChargeType,
+  TmaPriceContext,
   TmaProduct,
   TmaProductOfferingPrice,
   TmaProductOfferingTerm,
   TmaProductSpecificationCharacteristicValue,
+  TmaSubscriptionTerm,
   TmaUsageType,
   TmaUsageUnit
 } from '../../model';
+import { LOCAL_STORAGE } from '../../util';
+
+const {
+  RANGE
+} = LOCAL_STORAGE.DECIMAL;
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +30,11 @@ export class TmaPriceService implements OnDestroy {
   protected readonly ID: string = 'id';
 
   protected allPrices = [];
+
+  /**
+   * @deprecated since 2.1
+   */
+  public priceValue: TmaProductOfferingPrice[];
 
   protected destroyed$ = new Subject();
 
@@ -39,31 +50,94 @@ export class TmaPriceService implements OnDestroy {
   }
 
   /**
-   * Returns the minimum price of a product.
+   * Returns the highest priority price of a SPO product.
    *
-   * @param product - The product for which the minimum price will be returned
-   * @return A {@link TmaProductOfferingPrice}
+   * @param product - The product for which the highest priority price will be returned
+   *
+   * @return A {@link TmaProductOfferingPrice} that has highest priority
    */
-  getMinimumPrice(product: TmaProduct): TmaProductOfferingPrice {
-    let minimumPrice: TmaProductOfferingPrice = null;
-
-    if (!product || !product.productOfferingPrice) {
-      return minimumPrice;
+  getHighestPriorityPriceForSPO(product: TmaProduct): TmaProductOfferingPrice {
+    const highestPrioritySPOPrice = product.productOfferingPrice.filter(
+      (bundledPop: TmaProductOfferingPrice) =>
+        bundledPop.isPriceOverride === false
+    );
+    if (highestPrioritySPOPrice.length === 1) {
+      return highestPrioritySPOPrice[0];
     }
-
-    if (product.productOfferingPrice.length === 1) {
-      return product.productOfferingPrice[0];
+    let highestPriorityPrice = highestPrioritySPOPrice[0];
+    if (highestPrioritySPOPrice.length > 0) {
+      highestPrioritySPOPrice.forEach((pop: TmaProductOfferingPrice) => {
+        if (pop.priority >= highestPriorityPrice.priority) {
+          highestPriorityPrice = pop;
+        }
+      });
     }
+    return highestPriorityPrice;
+  }
 
-    minimumPrice = product.productOfferingPrice[0];
+  /**
+   * Gets the eligible subscription terms.
+   *
+   * @param priceContexts - The price contexts for the product offering.
+   *
+   * @return A list of subscription terms as {@link TmaSubscriptionTerm}.
+   */
+  getEligibleSubscriptionTerms(
+    priceContexts: TmaPriceContext[]
+  ): TmaSubscriptionTerm[] {
+    const offeringTerms: TmaProductOfferingTerm[] = [];
+    priceContexts
+      .filter((context: TmaPriceContext) => !context.isPriceOverride)
+      .forEach((price: TmaPriceContext) => {
+        offeringTerms.push(...price.productOfferingTerm)
+      });
+    const eligibleTerms: TmaSubscriptionTerm[] = Object.assign(
+      [],
+      offeringTerms.filter(
+        (n, i) =>
+          offeringTerms.findIndex((v) => v.id === n.id && v.name === n.name) ===
+          i
+      )
+    );
+    return eligibleTerms;
+  }
 
-    product.productOfferingPrice.forEach((pop: TmaProductOfferingPrice) => {
-      if (this.compareInstances(minimumPrice, pop) > 0) {
-        minimumPrice = pop;
-      }
-    });
-
-    return minimumPrice;
+  /**
+   * Gets the highest priority price context for the given selected term.
+   *
+   * @param priceContexts - The price contexts for the product offering.
+   * @param termId - The selected subscription term id
+   *
+   * @return A {@link TmaPriceContext} highest priority price context.
+   */
+  getHighestPriorityPriceContext(
+    priceContext: TmaPriceContext[],
+    termId: string
+  ): TmaPriceContext {
+    const eligiblePriceContext: TmaPriceContext[] = [];
+    priceContext
+      .filter((context: TmaPriceContext) => !context.isPriceOverride)
+      .forEach((context: TmaPriceContext) => {
+        const priceContextForTerm: TmaPriceContext = this.getPriceContextFor(
+          termId,
+          context
+        );
+        if (priceContextForTerm) {
+          eligiblePriceContext.push(priceContextForTerm);
+        }
+      });
+    if (eligiblePriceContext.length === 1) {
+      return eligiblePriceContext[0];
+    }
+    let highestPriorityPriceContext = eligiblePriceContext[0];
+    if (priceContext.length > 0) {
+      eligiblePriceContext.forEach((context: TmaPriceContext) => {
+        if (context.priority >= highestPriorityPriceContext.priority) {
+          highestPriorityPriceContext = context;
+        }
+      });
+    }
+    return highestPriorityPriceContext;
   }
 
   /**
@@ -74,7 +148,7 @@ export class TmaPriceService implements OnDestroy {
    */
   getAllPriceList(price: TmaProductOfferingPrice): TmaProductOfferingPrice[] {
     this.allPrices = [];
-    this.flattenPriceTree(price, null);
+    this.flattenPriceTreeWithDiscount(price, null, []);
     return this.allPrices;
   }
 
@@ -170,146 +244,110 @@ export class TmaPriceService implements OnDestroy {
    * Returns a list containing only the each respective tier usage charges.
    *
    * @param priceList - List containing all prices of a product
-   * @return List of {@link TmaProductOfferingPrice} each respective tier usage charges
+   * @return List of {@link TmaProductOfferingPrice} with the each respective tier usage charges
    */
   getEachRespectiveTierUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
-      .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.EACH_RESPECTIVE_TIER)
-      .sort((s1, s2) => {
-        if (!s1.tierEnd) {
+        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+        .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.EACH_RESPECTIVE_TIER)
+        .sort((s1, s2) => {
+          if (!s1.tierEnd) {
+            return 1;
+          }
+          if (!s2.tierEnd) {
+            return -1;
+          }
+          if (s1.tierEnd < s2.tierEnd) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierEnd) {
-          return -1;
-        }
-        if (s1.tierEnd < s2.tierEnd) {
-          return -1;
-        }
-        return 1;
-      })
-      .sort((s1, s2) => {
-        if (!s1.tierStart) {
+        })
+        .sort((s1, s2) => {
+          if (!s1.tierStart) {
+            return 1;
+          }
+          if (!s2.tierStart) {
+            return -1;
+          }
+          if (s1.tierStart < s2.tierStart) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierStart) {
-          return -1;
-        }
-        if (s1.tierStart < s2.tierStart) {
-          return -1;
-        }
-        return 1;
-      }), this.ID) :
+        }), this.ID) :
       [];
   }
 
   /**
-   * Returns a list containing only the highest respective tier usage charges.
+   * Returns a list containing only the highest applicable tier usage charges.
    *
    * @param priceList - List containing all prices of a product
-   * @return List of {@link TmaProductOfferingPrice} highest respective tier usage charges
+   * @return List of {@link TmaProductOfferingPrice} with the highest applicable tier usage charges
    */
   getHighestApplicableTierUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
-      .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.HIGHEST_APPLICABLE_TIER)
-      .sort((s1, s2) => {
-        if (!s1.tierEnd) {
+        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+        .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.usageType === TmaUsageType.HIGHEST_APPLICABLE_TIER)
+        .sort((s1, s2) => {
+          if (!s1.tierEnd) {
+            return 1;
+          }
+          if (!s2.tierEnd) {
+            return -1;
+          }
+          if (s1.tierEnd < s2.tierEnd) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierEnd) {
-          return -1;
-        }
-        if (s1.tierEnd < s2.tierEnd) {
-          return -1;
-        }
-        return 1;
-      })
-      .sort((s1, s2) => {
-        if (!s1.tierStart) {
+        })
+        .sort((s1, s2) => {
+          if (!s1.tierStart) {
+            return 1;
+          }
+          if (!s2.tierStart) {
+            return -1;
+          }
+          if (s1.tierStart < s2.tierStart) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierStart) {
-          return -1;
-        }
-        if (s1.tierStart < s2.tierStart) {
-          return -1;
-        }
-        return 1;
-      }), this.ID) :
+        }), this.ID) :
       [];
   }
 
   /**
-   * Returns a list containing only the per unit usage charges which don't have a usageType defined.
+   * Returns a list containing only the usage charges without usage type.
    *
    * @param priceList - List containing all prices of a product
-   * @return List of {@link TmaProductOfferingPrice} per unit usage charges which don't have a usageType defined
-   */
-  getNotApplicableUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
-    return priceList && priceList.length !== 0 ? this.groupBy(priceList
-      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.PER_UNIT_USAGE_CHARGE)
-      .filter((unitPrice: TmaProductOfferingPrice) => !unitPrice.usageType || unitPrice.usageType === '')
-      .sort((s1, s2) => {
-        if (!s1.tierEnd) {
-          return 1;
-        }
-        if (!s2.tierEnd) {
-          return -1;
-        }
-        if (s1.tierEnd < s2.tierEnd) {
-          return -1;
-        }
-        return 1;
-      })
-      .sort((s1, s2) => {
-        if (!s1.tierStart) {
-          return 1;
-        }
-        if (!s2.tierStart) {
-          return -1;
-        }
-        if (s1.tierStart < s2.tierStart) {
-          return -1;
-        }
-        return 1;
-      }), this.ID) :
-      [];
-  }
-
-  /**
-   * Returns a list containing only the volume usage charges.
-   *
-   * @param priceList - List containing all prices of a product
-   * @return List of {@link TmaProductOfferingPrice} volume usage charges
+   * @return List of {@link TmaProductOfferingPrice} with the usage charges without usage type
    */
   getVolumeUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
     return priceList && priceList.length !== 0 ? this.groupBy(priceList
-      .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE && bundledPop.itemType === TmaItemType.VOLUME_USAGE_CHARGE)
-      .sort((s1, s2) => {
-        if (!s1.tierEnd) {
+        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+        .filter((unitPrice: TmaProductOfferingPrice) => !unitPrice.usageType)
+        .sort((s1, s2) => {
+          if (!s1.tierEnd) {
+            return 1;
+          }
+          if (!s2.tierEnd) {
+            return -1;
+          }
+          if (s1.tierEnd < s2.tierEnd) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierEnd) {
-          return -1;
-        }
-        if (s1.tierEnd < s2.tierEnd) {
-          return -1;
-        }
-        return 1;
-      })
-      .sort((s1, s2) => {
-        if (!s1.tierStart) {
+        })
+        .sort((s1, s2) => {
+          if (!s1.tierStart) {
+            return 1;
+          }
+          if (!s2.tierStart) {
+            return -1;
+          }
+          if (s1.tierStart < s2.tierStart) {
+            return -1;
+          }
           return 1;
-        }
-        if (!s2.tierStart) {
-          return -1;
-        }
-        if (s1.tierStart < s2.tierStart) {
-          return -1;
-        }
-        return 1;
-      }), this.ID) :
+        }), this.ID) :
       [];
   }
 
@@ -323,7 +361,6 @@ export class TmaPriceService implements OnDestroy {
     if (!price || !price.productOfferingTerm || price.productOfferingTerm.length === 0) {
       return null;
     }
-
     return price.productOfferingTerm[0];
   }
 
@@ -337,8 +374,8 @@ export class TmaPriceService implements OnDestroy {
    * @return A {@link TmaMoney} containing the average cost per month
    */
   getAverageCostPerMonth(product: TmaProduct, currency: string, consumption: number, term: number): TmaMoney {
-    const minimumPrice = this.getMinimumPrice(product);
-    const priceList = this.getAllPriceList(minimumPrice);
+    const highestPriorityPrice = this.getHighestPriorityPriceForSPO(product);
+    const priceList = this.getAllPriceList(highestPriorityPrice);
 
     const onFirstBillOneTimeChargePriceList = this.getOnFirstBillPrices(priceList);
     const onCancellationOneTimeChargePriceList = this.getCancellationFeePrices(priceList);
@@ -346,11 +383,10 @@ export class TmaPriceService implements OnDestroy {
     const recurringChargePriceList = this.getRecurringPrices(priceList);
     const eachRespectiveTierUsageChargePriceList = this.getEachRespectiveTierUsagePrices(priceList);
     const highestApplicableTierUsageChargePriceList = this.getHighestApplicableTierUsagePrices(priceList);
-    const notApplicableUsageChargePriceList = this.getNotApplicableUsagePrices(priceList);
     const volumeUsageChargePriceList = this.getVolumeUsagePrices(priceList);
 
-    const contractTerm = this.getContractTerm(minimumPrice);
 
+    const contractTerm = this.getContractTerm(highestPriorityPrice);
     if (!priceList || priceList.length === 0) {
       return { value: '0.0', currencyIso: currency };
     }
@@ -358,60 +394,60 @@ export class TmaPriceService implements OnDestroy {
     let averageCost = 0;
 
     let oneTimeChargeValue = 0;
-    onFirstBillOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
-    onCancellationOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
-    payNowOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => oneTimeChargeValue += Number(childPrice.price.value));
+
+    onFirstBillOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => {
+      const onFirstBillValue = this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value));
+      oneTimeChargeValue += onFirstBillValue;
+    });
+
+    onCancellationOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => {
+      const onCancellationFeeValue = this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value));
+      oneTimeChargeValue += onCancellationFeeValue;
+    });
+
+    payNowOneTimeChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => {
+      const payNowValue = this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value));
+      oneTimeChargeValue += payNowValue;
+    });
+
+    const contractTermDurationInMonths = this.getContractTermDurationInMonths(contractTerm);
 
     let recurringChargeValue = 0;
     recurringChargePriceList.forEach((childPrice: TmaProductOfferingPrice) => {
       const cycleEnd = childPrice.cycle && childPrice.cycle.cycleEnd ? (childPrice.cycle.cycleEnd === -1 ?
-        contractTerm.duration.amount : childPrice.cycle.cycleEnd) : contractTerm.duration.amount;
-      recurringChargeValue += Number(childPrice.price.value) * (cycleEnd - childPrice.cycle.cycleStart + 1);
+        contractTermDurationInMonths : childPrice.cycle.cycleEnd) : contractTermDurationInMonths;
+      const discountedPrice: number = this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value), childPrice.cycle.cycleStart, cycleEnd);
+      recurringChargeValue += discountedPrice;
     });
 
     if (!consumption) {
-      averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount);
-      return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
-    }
-
-    const billingFrequency: number = this.getBillingFrequency(contractTerm);
-    const consumptionIncluded: number = this.getConsumptionIncludedInPlan(minimumPrice, product);
-    const extraConsumption: number = consumption / (term / billingFrequency) - consumptionIncluded;
-
-    if (extraConsumption <= 0) {
-      averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount);
+      averageCost = (oneTimeChargeValue / contractTermDurationInMonths) + (recurringChargeValue / contractTermDurationInMonths);
       return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
     }
 
     let eachRespectiveTierValue = 0;
     Object.keys(eachRespectiveTierUsageChargePriceList).forEach((key: string) => {
-      const maxTierForEachRespectiveTierPrice = eachRespectiveTierUsageChargePriceList[key].length !== 0 ?
-        eachRespectiveTierUsageChargePriceList[key].reduce((prev, current) => {
-          if (!current.tierEnd) {
-            return prev;
-          }
-          if (prev.tierEnd > current.tierEnd) {
-            return prev;
-          }
-          return current;
-        }).tierEnd : 0;
-
       eachRespectiveTierUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
-        if (Number(childPrice.tierStart) <= extraConsumption) {
-          const consumptionForTier = (extraConsumption > Number(childPrice.tierEnd) ?
-            (Number(childPrice.tierEnd) === -1 ? extraConsumption : Number(childPrice.tierEnd)) :
-            extraConsumption) - Number(childPrice.tierStart) + 1;
-          eachRespectiveTierValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+
+        const billingFrequency: number = this.getBillingFrequency(childPrice.billingEvent);
+        const consumptionIncluded: number = this.getConsumptionIncludedInPlan(highestPriorityPrice, product);
+        const extraConsumption: number = consumption / (term / billingFrequency) - consumptionIncluded;
+
+        if (extraConsumption <= 0) {
+          return;
         }
-        if (!childPrice.tierStart && !childPrice.tierEnd) {
-          const consumptionForTier = extraConsumption > maxTierForEachRespectiveTierPrice ?
-            extraConsumption - maxTierForEachRespectiveTierPrice : 0;
-          eachRespectiveTierValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
+
+        if (Number(childPrice.tierStart) <= extraConsumption) {
+          const tierEnd = !childPrice.tierEnd || childPrice.tierEnd === -1 ?
+            extraConsumption : childPrice.tierEnd;
+
+          const discountedPrice: number = this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value), childPrice.tierStart, tierEnd);
+
+          eachRespectiveTierValue += discountedPrice;
+          eachRespectiveTierValue /= billingFrequency;
         }
       });
     });
-
-    eachRespectiveTierValue /= billingFrequency;
 
     let highestApplicableTierValue = 0;
     Object.keys(highestApplicableTierUsageChargePriceList).forEach((key: string) => {
@@ -420,6 +456,12 @@ export class TmaPriceService implements OnDestroy {
           if (!current.tierEnd) {
             return prev;
           }
+          if (prev.tierEnd === -1) {
+            return prev;
+          }
+          if (current.tierEnd === -1) {
+            return current;
+          }
           if (prev.tierEnd > current.tierEnd) {
             return prev;
           }
@@ -427,76 +469,70 @@ export class TmaPriceService implements OnDestroy {
         }).tierEnd : 0;
 
       let priceForConsumption = highestApplicableTierUsageChargePriceList[key]
-        .find((childPrice: TmaProductOfferingPrice) =>
-          Number(childPrice.tierStart) <= extraConsumption && (Number(childPrice.tierEnd) >= extraConsumption || Number(childPrice.tierEnd) === -1));
-      priceForConsumption = priceForConsumption ?
-        priceForConsumption : extraConsumption > maxTierForHighestApplicableTierPrice ?
-          highestApplicableTierUsageChargePriceList[key].find((childPrice: TmaProductOfferingPrice) => !childPrice.tierStart && !childPrice.tierEnd) :
-          null;
+        .find((childPrice: TmaProductOfferingPrice) => {
+          const billingFrequencyTemp: number = this.getBillingFrequency(childPrice.billingEvent);
+          const consumptionIncludedTemp: number = this.getConsumptionIncludedInPlan(highestPriorityPrice, product);
+          const extraConsumptionTemp: number = consumption / (term / billingFrequencyTemp) - consumptionIncludedTemp;
 
-      highestApplicableTierValue += priceForConsumption ? Number(priceForConsumption.price.value) * extraConsumption : 0;
+          if (extraConsumptionTemp <= 0) {
+            return false;
+          }
+
+          return Number(childPrice.tierStart) <= extraConsumptionTemp && (!childPrice.tierEnd || Number(childPrice.tierEnd) >= extraConsumptionTemp || Number(childPrice.tierEnd) === -1);
+        });
+
+      priceForConsumption = priceForConsumption ? priceForConsumption :
+        highestApplicableTierUsageChargePriceList[key].find((childPrice: TmaProductOfferingPrice) => childPrice.tierEnd === maxTierForHighestApplicableTierPrice);
+
+      const billingFrequency: number = this.getBillingFrequency(priceForConsumption.billingEvent);
+      const consumptionIncluded: number = this.getConsumptionIncludedInPlan(highestPriorityPrice, product);
+      const extraConsumption: number = consumption / (term / billingFrequency) - consumptionIncluded;
+
+      if (extraConsumption <= 0) {
+        return;
+      }
+
+      const tierEnd = !priceForConsumption.tierEnd || priceForConsumption.tierEnd === -1 ?
+        extraConsumption : priceForConsumption.tierEnd;
+
+      const discountedPrice: number = priceForConsumption ?
+        this.getDiscountedPrice(priceForConsumption.alterations, Number(priceForConsumption.price.value), priceForConsumption.tierStart, tierEnd, extraConsumption) :
+        0;
+
+      highestApplicableTierValue += discountedPrice;
+      highestApplicableTierValue /= billingFrequency;
     });
 
-    highestApplicableTierValue /= billingFrequency;
 
-    let notApplicablePriceValue = 0;
-    Object.keys(notApplicableUsageChargePriceList).forEach((key: string) => {
-      const maxTierForNotApplicablePrice = notApplicableUsageChargePriceList[key].length !== 0 ?
-        notApplicableUsageChargePriceList[key].reduce((prev, current) => {
-          if (!current.tierEnd) {
-            return prev;
-          }
-          if (prev.tierEnd > current.tierEnd) {
-            return prev;
-          }
-          return current;
-        }).tierEnd : 0;
-
-      notApplicableUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
-        if (Number(childPrice.tierStart) <= extraConsumption) {
-          const consumptionForTier = (extraConsumption > Number(childPrice.tierEnd) ?
-            (Number(childPrice.tierEnd) === -1 ? extraConsumption : Number(childPrice.tierEnd)) :
-            extraConsumption) - Number(childPrice.tierStart) + 1;
-          notApplicablePriceValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
-        }
-        if (!childPrice.tierStart && !childPrice.tierEnd) {
-          const consumptionForTier = extraConsumption > maxTierForNotApplicablePrice ?
-            extraConsumption - maxTierForNotApplicablePrice : 0;
-          notApplicablePriceValue += childPrice.price.value ? Number(childPrice.price.value) * consumptionForTier : 0;
-        }
-      });
-    });
-
-    notApplicablePriceValue /= billingFrequency;
-
-    let volumeValue = 0;
+    let volumePriceValue = 0;
     Object.keys(volumeUsageChargePriceList).forEach((key: string) => {
-      const maxVolumePrice = volumeUsageChargePriceList[key].length !== 0 ?
-        volumeUsageChargePriceList[key].reduce((prev, current) => {
-          if (!current.tierEnd) {
-            return prev;
-          }
-          if (prev.tierEnd > current.tierEnd) {
-            return prev;
-          }
-          return current;
-        }).tierEnd : 0;
-
       volumeUsageChargePriceList[key].forEach((childPrice: TmaProductOfferingPrice) => {
-        if (Number(childPrice.tierStart) <= extraConsumption) {
-          volumeValue += childPrice.price.value ? Number(childPrice.price.value) : 0;
+
+        const billingFrequency: number = this.getBillingFrequency(childPrice.billingEvent);
+        const consumptionIncluded: number = this.getConsumptionIncludedInPlan(highestPriorityPrice, product);
+        const extraConsumption: number = consumption / (term / billingFrequency) - consumptionIncluded;
+
+        if (extraConsumption <= 0) {
+          return;
         }
-        if (!childPrice.tierStart && !childPrice.tierEnd && maxVolumePrice < extraConsumption) {
-          volumeValue += childPrice.price.value ? Number(childPrice.price.value) : 0;
+
+        if (Number(childPrice.tierStart) <= extraConsumption) {
+          const tierEnd = !childPrice.tierEnd || childPrice.tierEnd === -1 ?
+            extraConsumption : childPrice.tierEnd;
+
+          const discountedPrice: number = childPrice.price.value ?
+            this.getDiscountedPrice(childPrice.alterations, Number(childPrice.price.value), childPrice.tierStart, tierEnd, null, true) :
+            0;
+
+          volumePriceValue += discountedPrice;
+          volumePriceValue /= billingFrequency;
         }
       });
     });
 
-    volumeValue /= billingFrequency;
+    const usageChargeValue = eachRespectiveTierValue + highestApplicableTierValue + volumePriceValue;
 
-    const usageChargeValue = eachRespectiveTierValue + highestApplicableTierValue + notApplicablePriceValue + volumeValue;
-
-    averageCost = (oneTimeChargeValue / contractTerm.duration.amount) + (recurringChargeValue / contractTerm.duration.amount) + usageChargeValue;
+    averageCost = (oneTimeChargeValue / contractTermDurationInMonths) + (recurringChargeValue / contractTermDurationInMonths) + usageChargeValue;
     return { value: averageCost.toFixed(2).toString(), currencyIso: currency };
   }
 
@@ -517,42 +553,26 @@ export class TmaPriceService implements OnDestroy {
   }
 
   /**
-   * Returns the sum of the prices provided.
+   * Calculate sum of the prices provided.
    *
    * @param productOfferingPriceList - List of prices to be added together
    * @return The sum of the prices
    */
   getSumOfPrices(productOfferingPriceList: TmaProductOfferingPrice[]): TmaMoney {
     let sum = 0;
-    productOfferingPriceList.forEach((pop: TmaProductOfferingPrice) => sum += Number(pop.price.value));
 
-    return { value: sum.toString(), currencyIso: productOfferingPriceList[0].price.currencyIso };
-  }
-
-  /**
-   * Returns the highest tier end for the prices provided.
-   *
-   * @param priceList - List of prices
-   * @return The highest tier end
-   */
-  getMaximumTierEnd(priceList: TmaProductOfferingPrice[]): number {
-    const priceWithMaxTierEnd =
-      priceList && priceList.length !== 0 ?
-        priceList.reduce((prev, current) => {
-          if (!current.tierEnd) {
-            return prev;
-          }
-          if (prev.tierEnd > current.tierEnd) {
-            return prev;
-          }
-          return current;
-        }) : null;
-
-    if (!priceWithMaxTierEnd || !priceWithMaxTierEnd.tierEnd) {
-      return 0;
+    if (!productOfferingPriceList) {
+      return { value: '0' };
     }
 
-    return priceWithMaxTierEnd.tierEnd;
+    productOfferingPriceList.forEach(
+      (pop: TmaProductOfferingPrice) => (sum += Number(pop.price.value))
+    );
+
+    return {
+      value: sum.toString(),
+      currencyIso: productOfferingPriceList[0].price.currencyIso
+    };
   }
 
   /**
@@ -562,7 +582,7 @@ export class TmaPriceService implements OnDestroy {
    * @return String containing the formatted price
    */
   getFormattedPrice(price: TmaMoney): string {
-    let currencySymbol: string;
+    let currencySymbol: string = null;
 
     if (!price || !price.currencyIso || !price.value) {
       return '-';
@@ -603,21 +623,168 @@ export class TmaPriceService implements OnDestroy {
    * @return The highest tier end
    */
   getUsageUnits(product: TmaProduct): TmaUsageUnit[] {
-    const minimumPrice = this.getMinimumPrice(product);
-    const priceList = this.getAllPriceList(minimumPrice);
+    const highestPriorityPrice = this.getHighestPriorityPriceForSPO(product);
+    const priceList = this.getAllPriceList(highestPriorityPrice);
     const usageUnits = priceList
       .filter((price: TmaProductOfferingPrice) => price.chargeType === TmaPopChargeType.USAGE)
       .map((price: TmaProductOfferingPrice) => price.usageUnit);
-
-    return usageUnits.filter((n, i) => usageUnits.indexOf(n) === i);
+    
+    return usageUnits.filter((n, i) => usageUnits.findIndex(v => v.id === n.id && v.name === n.name) === i);
   }
 
+  /**
+   * Returns a list containing usage product offering prices.
+   *
+   * @param priceList - List containing all prices of a product
+   * @return List of {@link TmaProductOfferingPrice} usage charges
+   */
+  getUsagePrices(priceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
+    return priceList && priceList.length !== 0 ? this.groupBy(priceList
+        .filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.USAGE)
+        .filter((unitPrice: TmaProductOfferingPrice) => unitPrice.id !== null)
+        .sort((s1, s2) => {
+          if (!s1.tierEnd) {
+            return 1;
+          }
+          if (!s2.tierEnd) {
+            return -1;
+          }
+          if (s1.tierEnd < s2.tierEnd) {
+            return -1;
+          }
+          return 1;
+        })
+        .sort((s1, s2) => {
+          if (!s1.tierStart) {
+            return 1;
+          }
+          if (!s2.tierStart) {
+            return -1;
+          }
+          if (s1.tierStart < s2.tierStart) {
+            return -1;
+          }
+          return 1;
+        }), this.ID) :
+      [];
+  }
+
+  /**
+   * Returns the cumulative sum of prices after alternations
+   *
+   * @param productOfferingPriceList - List of prices to be calculated
+   * @return The actual calculated price (@link TmaMoney)
+   */
+  calculatePrice(productOfferingPriceList: TmaProductOfferingPrice[]): TmaMoney {
+    const sumPrice = this.getSumOfPrices(productOfferingPriceList);
+    let discountCharges: TmaProductOfferingPrice[] = [];
+    productOfferingPriceList.forEach((bundledPop: TmaProductOfferingPrice) => {
+      discountCharges = bundledPop.alterations;
+    });
+    if (discountCharges && discountCharges.length > 0) {
+      return {
+        value: this.calculatePriceWithDiscounts(
+          Number(sumPrice.value),
+          discountCharges
+        ).toFixed(RANGE),
+        currencyIso: productOfferingPriceList[0].price.currencyIso
+      };
+    }
+    return sumPrice;
+  }
+
+  /**
+   * Return the total discount applied on a price
+   * (OriginalPrice is 10, and has discountedPrice is 8 , so total discount available is 2)
+   *
+   * @param originalPrice
+   *                Original Price of an offering
+   * @param discountedPrice
+   *                Discounted Price of an offering
+   * @return Total applied discount on the original price
+   */
+  calculateTotalDiscount(originalPrice: Number, discountedPrice: Number): number {
+    return (Number(originalPrice) - Number(discountedPrice));
+  }
+
+
+  /**
+   * Returns the list of discount charges for product offering prices
+   *
+   * @param productOfferingPriceList(TmaProductOfferingPrice[])- List of prices of an offering
+   * @return (TmaProductOfferingPrice[]) discount charges for a product offering prices
+   */
+  getDiscounts(productOfferingPriceList: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
+    let discountCharges: TmaProductOfferingPrice[] = [];
+    productOfferingPriceList.forEach((bundledPop: TmaProductOfferingPrice) => {
+      discountCharges = bundledPop.alterations;
+    });
+    if (discountCharges && discountCharges.length > 0 && discountCharges.find((charge: TmaProductOfferingPrice) => charge.cycle) === undefined) {
+      return discountCharges;
+    }
+    return [];
+  }
+
+  /**
+   * Returns the sum of the charges with discounts filter out .
+   *
+   * @param productOfferingPriceList - List of charges to be added together
+   * @return The sum of the charges
+   */
+  sumOfCharges(productOfferingPriceList: TmaProductOfferingPrice[]): TmaMoney {
+    const otherCharges = productOfferingPriceList.filter(
+      (bundledPop: TmaProductOfferingPrice) =>
+        bundledPop.chargeType !== TmaPopChargeType.DISCOUNT
+    );
+    return this.getSumOfPrices(otherCharges);
+  }
+
+  /**
+   * Returns the list of all alternations for a price , if any alternation has cycle attached.
+   *
+   * @param productOfferingPriceList - Price for which alterations are to be listed
+   * @return @return List of {@link TmaProductOfferingPrice} alterations of charges
+   */
+  getCycledPriceAlterations(price: TmaProductOfferingPrice): TmaProductOfferingPrice[] {
+    if (price.alterations.find((alteration: TmaProductOfferingPrice) => alteration.cycle)) {
+      return price.alterations.reverse();
+    }
+  }
+
+  /**
+   * Fetch standalone prices for a given product.
+   *
+   * @param product
+   *         The identifier of the base site as {@link TmaProduct}
+   * @return
+   *         The product offering prices as {@link Observable} of {@link TmaProductOfferingPrice}
+   */
+  getStandalonePrices(product: TmaProduct): TmaProductOfferingPrice[] {
+    const tmaProductOfferingPrices: TmaProductOfferingPrice[] = [];
+    const eligibleContext: TmaPriceContext[] = product.priceContext.filter(
+      (priceContext: TmaPriceContext) => priceContext.isPriceOverride === false
+    );
+    product.productOfferingPrice.forEach((price: TmaProductOfferingPrice) => {
+      const productOfferingPrice: TmaProductOfferingPrice = this.populateStandalonePrices(
+        eligibleContext,
+        price
+      );
+      if (productOfferingPrice) {
+        tmaProductOfferingPrices.push(productOfferingPrice);
+      }
+    });
+    return tmaProductOfferingPrices;
+  }
+
+  /**
+   * @deprecated since 2.1
+   */
   protected flattenPriceTree(price: TmaProductOfferingPrice, parent: TmaProductOfferingPrice): void {
-    if (price == null) {
+    if (!price) {
       return;
     }
 
-    if (price.bundledPop == null || price.bundledPop.length === 0) {
+    if (!price.bundledPop || price.bundledPop.length === 0) {
       this.allPrices.push(price);
       return;
     }
@@ -636,6 +803,9 @@ export class TmaPriceService implements OnDestroy {
     });
   }
 
+  /**
+   * @deprecated since 2.1
+   */
   protected compareInstances(instance1: TmaProductOfferingPrice, instance2: TmaProductOfferingPrice): number {
     const instance1RecurringPriceList = this.getRecurringChargesUnsorted(instance1);
     const instance2RecurringPriceList = this.getRecurringChargesUnsorted(instance2);
@@ -647,6 +817,9 @@ export class TmaPriceService implements OnDestroy {
     return this.compare(this.getOtcPrice(instance1), this.getOtcPrice(instance2));
   }
 
+  /**
+   * @deprecated since 2.1
+   */
   protected compareCharges(charges1: TmaProductOfferingPrice[], charges2: TmaProductOfferingPrice[]): number {
     if (!charges1 || charges1.length === 0 || !charges1[0].price || !charges1[0].price.value) {
       return -1;
@@ -659,6 +832,149 @@ export class TmaPriceService implements OnDestroy {
     return this.compare(Number(charges1[0].price.value), Number(charges2[0].price.value));
   }
 
+  /**
+   *  Returns the value of the price with price alterations applied based on the provided parameters.
+   *
+   * @param priceAlterations - The list of price alterations
+   * @param price - The price value on which the price alteration will be applied
+   * @param cycleStart - The cycle start of the price on which the price alteration will be applied
+   * @param cycleEnd - The cycle end of the price on which the price alteration will be applied
+   * @param consumptionValue - The value of the consumption (if provided this will be used instead of cycleStart and cycleEnd)
+   * @param isVolumePrice - Flag indicating that the price alteration is calculated to a volume price
+   */
+  protected getDiscountedPrice(priceAlterations: TmaProductOfferingPrice[], price: number, cycleStart?: number, cycleEnd?: number, consumptionValue?: number, isVolumePrice?: boolean): number {
+    if (!priceAlterations || priceAlterations.length === 0) {
+      if (consumptionValue) {
+        return price * consumptionValue;
+      }
+
+      return price * (cycleEnd - cycleStart + 1);
+    }
+
+    if (!cycleStart && !cycleEnd) {
+      return this.getDiscountedOtcPrice(priceAlterations, price);
+    }
+
+    if (cycleStart <= 0 || (cycleEnd && cycleEnd !== -1 && cycleEnd < cycleStart)) {
+      return price;
+    }
+
+    if (consumptionValue && consumptionValue < 0) {
+      return price;
+    }
+
+    if (isVolumePrice) {
+      return this.getDiscountedVolumePrice(priceAlterations, price, cycleStart, cycleEnd);
+    }
+
+    const uniquePeriodList: { cycleStart: number, cycleEnd: number }[] = this.createPeriodListForDiscounts(cycleStart, cycleEnd, priceAlterations);
+
+    if (!uniquePeriodList || uniquePeriodList.length === 0) {
+      if (consumptionValue) {
+        return price * consumptionValue;
+      }
+
+      return price * (cycleEnd - cycleStart + 1);
+    }
+
+    let discountedPrice = 0;
+    uniquePeriodList.forEach((uniquePeriod: { cycleStart: number, cycleEnd: number }) => {
+      const applicablePriceAlterations: TmaProductOfferingPrice[] = this.getApplicablePriceAlterations(uniquePeriod.cycleStart, uniquePeriod.cycleEnd, priceAlterations);
+
+      if (!applicablePriceAlterations || applicablePriceAlterations.length === 0) {
+        if (consumptionValue) {
+          discountedPrice += price * consumptionValue;
+          return;
+        }
+
+        discountedPrice += price * (uniquePeriod.cycleEnd - uniquePeriod.cycleStart + 1);
+        return;
+      }
+
+      let tempPrice = price;
+      applicablePriceAlterations.forEach((priceAlteration: TmaProductOfferingPrice) => {
+        if (tempPrice <= 0) {
+          return;
+        }
+
+        if (priceAlteration.isPercentage) {
+          tempPrice -= tempPrice * Number(priceAlteration.price.value) / 100;
+          return;
+        }
+
+        tempPrice -= Number(priceAlteration.price.value);
+      });
+
+      if (consumptionValue) {
+        discountedPrice += tempPrice * consumptionValue;
+        return;
+      }
+
+      discountedPrice += tempPrice * (uniquePeriod.cycleEnd - uniquePeriod.cycleStart + 1);
+    });
+
+    return discountedPrice > 0 ? discountedPrice : 0;
+  }
+
+  /**
+   * Returns the value of the one time charge price with price alterations applied based on the provided parameters.
+   *
+   * @param priceAlterations - The list of price alterations
+   * @param price -  The price on which the price alterations will be applied
+   */
+  protected getDiscountedOtcPrice(priceAlterations: TmaProductOfferingPrice[], price: number): number {
+    priceAlterations.forEach((priceAlteration: TmaProductOfferingPrice) => {
+      if (price <= 0) {
+        return;
+      }
+
+      if (priceAlteration.isPercentage) {
+        price -= price * Number(priceAlteration.price.value) / 100;
+        return;
+      }
+
+      price -= Number(priceAlteration.price.value);
+    });
+
+    return price > 0 ? price : 0;
+  }
+
+  /**
+   * Returns the value of the volume price with price alterations applied based on the provided parameters.
+   *
+   * @param priceAlterations - The list of price alterations
+   * @param price - The price value on which the price alteration will be applied
+   * @param cycleStart - The cycle start of the price on which the price alteration will be applied
+   * @param cycleEnd - The cycle end of the price on which the price alteration will be applied
+   */
+  protected getDiscountedVolumePrice(priceAlterations: TmaProductOfferingPrice[], price: number, cycleStart: number, cycleEnd: number): number {
+    priceAlterations.forEach((priceAlteration: TmaProductOfferingPrice) => {
+      if (price <= 0 || !priceAlteration.cycle || !priceAlteration.cycle.cycleStart) {
+        return;
+      }
+
+      if ((!cycleEnd || cycleEnd === -1) && (priceAlteration.cycle.cycleEnd || priceAlteration.cycle.cycleEnd !== -1)) {
+        return;
+      }
+
+      if (cycleStart < priceAlteration.cycle.cycleStart || (priceAlteration.cycle.cycleEnd && priceAlteration.cycle.cycleEnd !== -1 && cycleEnd > priceAlteration.cycle.cycleEnd)) {
+        return;
+      }
+
+      if (priceAlteration.isPercentage) {
+        price -= price * Number(priceAlteration.price.value) / 100;
+        return;
+      }
+
+      price -= Number(priceAlteration.price.value);
+    });
+
+    return price > 0 ? price : 0;
+  }
+
+  /**
+   * @deprecated since 2.1
+   */
   protected getRecurringChargesUnsorted(price: TmaProductOfferingPrice): TmaProductOfferingPrice[] {
     return price && price.bundledPop ?
       price.bundledPop.filter((bundledPop: TmaProductOfferingPrice) => bundledPop.chargeType === TmaPopChargeType.RECURRING) : [];
@@ -677,13 +993,13 @@ export class TmaPriceService implements OnDestroy {
     return 0;
   }
 
-  protected getBillingFrequency(contractTerm: TmaProductOfferingTerm): number {
-    if (!contractTerm || !contractTerm.billingPlan || !contractTerm.billingPlan.billingTime) {
+  protected getBillingFrequency(billingEvent: string): number {
+    if (!billingEvent) {
       return 1;
     }
 
     const billingFrequency: TmaBillingFrequencyMap = this.billingFrequencyConfig.billingFrequency
-      .find((frequency: TmaBillingFrequencyMap) => frequency.key === contractTerm.billingPlan.billingTime);
+      .find((frequency: TmaBillingFrequencyMap) => frequency.key === billingEvent);
 
     if (billingFrequency) {
       return billingFrequency.value;
@@ -692,28 +1008,47 @@ export class TmaPriceService implements OnDestroy {
     return 1;
   }
 
-  protected getConsumptionIncludedInPlan(price: TmaProductOfferingPrice, product: TmaProduct) {
-    const unitOfMeasure: string = this.getUnitOfMeasure(price);
+  /**
+   * Returns the consumption included in the product offering.
+   *
+   * @param price - The price of the product offering
+   * @param product - The product offering
+   * @return The consumption included in the plan
+   */
+  protected getConsumptionIncludedInPlan(price: TmaProductOfferingPrice, product: TmaProduct): number {
+    const unitOfMeasure: string = this.getUsageUnit(price);
     const pscvWithMatchingUnitOfMeasure: TmaProductSpecificationCharacteristicValue = product && product.productSpecCharValues ?
       product.productSpecCharValues.find((pscv: TmaProductSpecificationCharacteristicValue) => pscv.unitOfMeasure === unitOfMeasure) :
       null;
     return pscvWithMatchingUnitOfMeasure ? Number(pscvWithMatchingUnitOfMeasure.value) : 0;
   }
 
-  protected getUnitOfMeasure(price: TmaProductOfferingPrice): string {
+  /**
+   * Returns the first usage unit found on the prices.
+   *
+   * @param price - The price which will be searched for the usage unit
+   * @return The usage unit
+   */
+  protected getUsageUnit(price: TmaProductOfferingPrice): string {
     if (!price || !price.bundledPop || price.bundledPop.length === 0) {
-      return '';
+      return null;
     }
 
-    let priceWithUnitOfMeasure = price.bundledPop.find((childPrice: TmaProductOfferingPrice) => childPrice.usageUnit);
-    if (!priceWithUnitOfMeasure) {
-      priceWithUnitOfMeasure = price.bundledPop
-        .find((childPrice: TmaProductOfferingPrice) => childPrice && childPrice.bundledPop ? childPrice.bundledPop
-          .find((bundledPop: TmaProductOfferingPrice) => bundledPop.usageUnit) : false);
-      priceWithUnitOfMeasure = priceWithUnitOfMeasure ?
-        priceWithUnitOfMeasure.bundledPop.find((childPrice: TmaProductOfferingPrice) => childPrice.usageUnit) : null;
+    const priceWithUnitOfMeasure: TmaProductOfferingPrice = price.bundledPop.find((childPrice: TmaProductOfferingPrice) => childPrice.usageUnit);
+    if (priceWithUnitOfMeasure) {
+      return priceWithUnitOfMeasure.usageUnit.id;
     }
-    return priceWithUnitOfMeasure ? priceWithUnitOfMeasure.usageUnit.id : '';
+
+    let unitOfMeasure: string = null;
+    price.bundledPop.forEach((childPrice: TmaProductOfferingPrice) => {
+      if (unitOfMeasure || !childPrice.bundledPop || childPrice.bundledPop.length === 0) {
+        return;
+      }
+
+      unitOfMeasure = this.getUsageUnit(childPrice);
+    });
+
+    return unitOfMeasure;
   }
 
   protected compare(n1: number, n2: number): number {
@@ -725,5 +1060,177 @@ export class TmaPriceService implements OnDestroy {
       (l[f[field]] = l[f[field]] || []).push(f);
       return l;
     }, {});
+  }
+
+  protected calculatePriceWithDiscounts(price: Number, discountCharges: TmaProductOfferingPrice[]): Number {
+    let discountPrice = price;
+    if (discountCharges.find((charge: TmaProductOfferingPrice) => charge.cycle) === undefined) {
+      discountCharges.forEach((discount: TmaProductOfferingPrice) => {
+        discountPrice = this.calculatePriceWithDiscount(discountPrice, discount);
+      });
+    }
+    return discountPrice;
+  }
+
+  protected calculatePriceWithDiscount(price: Number, discountCharge: TmaProductOfferingPrice): Number {
+    let calculatedPrice: Number;
+    if (discountCharge.isPercentage) {
+      calculatedPrice = Number(price) * (1 - (Number(discountCharge.price.value) / 100));
+    }
+    else {
+      calculatedPrice = Number(price) - Number(discountCharge.price.value);
+    }
+    return calculatedPrice;
+  }
+
+  protected flattenPriceTreeWithDiscount(price: TmaProductOfferingPrice, parent: TmaProductOfferingPrice, priceAlterations: TmaProductOfferingPrice[]): void {
+    if (!price) {
+      return;
+    }
+
+    if (!price.bundledPop || price.bundledPop.length === 0) {
+      price.alterations = price.alterations.filter(
+        (alteration: TmaProductOfferingPrice) =>
+          alteration.billingEvent === price.billingEvent
+      );
+      this.allPrices.push(price);
+      return;
+    }
+
+    const productOfferingPrices = price.bundledPop.filter(
+      (bundledPop: TmaProductOfferingPrice) =>
+        bundledPop.chargeType === undefined ||
+        bundledPop.chargeType !== TmaPopChargeType.DISCOUNT
+    );
+
+    const alterations = price.bundledPop.filter(
+      (bundledPop: TmaProductOfferingPrice) =>
+        bundledPop.chargeType === TmaPopChargeType.DISCOUNT
+    );
+
+    const newAlterations = alterations.concat(priceAlterations);
+
+    productOfferingPrices.forEach((pop: TmaProductOfferingPrice) => {
+      const popCopy = Object.assign({}, parent ? { ...pop, ...parent } : pop);
+      popCopy.alterations = newAlterations;
+      const popParent = pop.bundledPop && pop.bundledPop.length !== 0 ? Object.assign({}, pop) : null;
+
+      if (pop.bundledPop) {
+        popCopy.bundledPop = pop.bundledPop;
+      }
+
+      if (popParent) {
+        popParent.bundledPop = null;
+      }
+
+      if (pop.chargeType !== TmaPopChargeType.DISCOUNT) {
+        this.flattenPriceTreeWithDiscount(popCopy, popParent, popCopy.alterations);
+      }
+    });
+  }
+
+  protected getContractTermDurationInMonths(contractTerm: TmaProductOfferingTerm): number {
+    if (!contractTerm || !contractTerm.duration) {
+      return 1;
+    }
+
+    if (!contractTerm.duration.units) {
+      return contractTerm.duration.amount ? contractTerm.duration.amount : 1;
+    }
+
+    if (!contractTerm.duration.amount) {
+      return this.getBillingFrequency(contractTerm.duration.units);
+    }
+
+    return contractTerm.duration.amount * this.getBillingFrequency(contractTerm.duration.units);
+  }
+
+  private getApplicablePriceAlterations(cycleStart: number, cycleEnd: number, priceAlterations: TmaProductOfferingPrice[]): TmaProductOfferingPrice[] {
+    if (!priceAlterations || priceAlterations.length === 0) {
+      return [];
+    }
+
+    return priceAlterations.filter((priceAlteration: TmaProductOfferingPrice) =>
+      priceAlteration && priceAlteration.cycle && priceAlteration.cycle.cycleStart && priceAlteration.cycle.cycleStart > 0 &&
+      priceAlteration.cycle.cycleStart <= cycleStart &&
+      (!priceAlteration.cycle.cycleEnd || priceAlteration.cycle.cycleEnd === -1 || priceAlteration.cycle.cycleEnd >= cycleEnd)
+    );
+  }
+
+  private createPeriodListForDiscounts(cycleStart: number, cycleEnd: number, priceAlterations: TmaProductOfferingPrice[]): { cycleStart: number, cycleEnd: number }[] {
+    let uniquePeriodList: { cycleStart: number, cycleEnd: number }[] = [];
+
+    let newCycleEnd: number = cycleEnd;
+    priceAlterations
+      .map((priceAlteration: TmaProductOfferingPrice) => priceAlteration.cycle.cycleStart)
+      .forEach((start: number) => {
+        if (start < newCycleEnd && start > cycleStart) {
+          newCycleEnd = start;
+        }
+      });
+
+    if (newCycleEnd === cycleEnd) {
+      uniquePeriodList = uniquePeriodList.concat(this.breakUpGroupsByCycleEnd(cycleStart, newCycleEnd, priceAlterations));
+      return uniquePeriodList;
+    }
+
+    uniquePeriodList = uniquePeriodList.concat(this.breakUpGroupsByCycleEnd(cycleStart, newCycleEnd - 1, priceAlterations));
+    uniquePeriodList = uniquePeriodList.concat(this.createPeriodListForDiscounts(newCycleEnd, cycleEnd, priceAlterations));
+
+    return uniquePeriodList;
+  }
+
+  private breakUpGroupsByCycleEnd(cycleStart: number, cycleEnd: number, priceAlterations: TmaProductOfferingPrice[]): { cycleStart: number, cycleEnd: number }[] {
+    let uniquePeriodList: { cycleStart: number, cycleEnd: number }[] = [];
+
+    if (cycleStart === cycleEnd) {
+      uniquePeriodList.push({ cycleStart: cycleStart, cycleEnd: cycleEnd });
+      return uniquePeriodList;
+    }
+
+    let newCycleEnd: number = cycleEnd;
+    priceAlterations
+      .map((priceAlteration: TmaProductOfferingPrice) => priceAlteration.cycle.cycleEnd)
+      .forEach((end: number) => {
+        if (end >= cycleStart && end < cycleEnd && end < newCycleEnd) {
+          newCycleEnd = end;
+        }
+      });
+
+    uniquePeriodList.push({ cycleStart: cycleStart, cycleEnd: newCycleEnd });
+
+    if (newCycleEnd === cycleEnd) {
+      return uniquePeriodList;
+    }
+
+    uniquePeriodList = uniquePeriodList.concat(this.breakUpGroupsByCycleEnd(newCycleEnd + 1, cycleEnd, priceAlterations));
+
+    return uniquePeriodList;
+  }
+
+  private populateStandalonePrices(
+    eligibleContext: TmaPriceContext[],
+    price: TmaProductOfferingPrice
+  ): TmaProductOfferingPrice {
+    let productOfferingPrice: TmaProductOfferingPrice;
+    eligibleContext.forEach((priceContext: TmaPriceContext) => {
+      if (priceContext.productOfferingPrice.id === price.id) {
+        productOfferingPrice = price;
+      }
+    });
+    return productOfferingPrice;
+  }
+
+  private getPriceContextFor(
+    termId: string,
+    context: TmaPriceContext
+  ): TmaPriceContext {
+    let priceContext: TmaPriceContext;
+    context.productOfferingTerm.forEach((term: TmaProductOfferingTerm) => {
+      if (term.id === termId) {
+        priceContext = context;
+      }
+    });
+    return priceContext;
   }
 }

@@ -42,3 +42,28 @@ export const getSubscriptionBaseForUserId: MemoizedSelectorWithProps<
     return subscription ? subscription.subscription : [];
   }
 );
+
+export const getSubscriptionBaseBySubscriberIdentity: MemoizedSelectorWithProps<
+  StateWithSubscriptionBase,
+  any,
+  SubscriptionBase
+> = createSelector(
+  getAllSubscriptionBase,
+  (state: SubscriptionBaseMap[], props: any) => {
+    let subscription: SubscriptionBase;
+    if (state) {
+      state.find((subscriptionBaseMap: SubscriptionBaseMap) => {
+        subscriptionBaseMap.subscription.forEach(
+          (subscriptionBase: SubscriptionBase) => {
+            if (
+              subscriptionBase.subscriberIdentity === props.subscriberIdentity
+            ) {
+              subscription = subscriptionBase;
+            }
+          }
+        );
+      });
+    }
+    return subscription;
+  }
+);

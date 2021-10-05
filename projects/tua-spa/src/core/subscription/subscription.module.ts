@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { SubscriptionBaseModule } from './subscriptionbase';
-import { SubscriptionBaseDetailModule } from './subscriptionbase-detail';
+import { SubscriptionBaseDetailsModule } from './subscriptionbase-details';
 import { UsageConsumptionModule } from './usage-consumption';
 import { TmfProductModule } from './tmf-product';
 
 @NgModule({
   imports: [
     SubscriptionBaseModule,
-    SubscriptionBaseDetailModule,
+    SubscriptionBaseDetailsModule,
     TmfProductModule,
     UsageConsumptionModule,
   ],

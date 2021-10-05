@@ -9,11 +9,9 @@ import {
   SubscriptionBase,
   SubscriptionBaseDetail,
   SubscriptionBaseRef,
-  ProductRef,
-} from '../../../../../core/model';
-import { SubscriptionBaseDetailService } from '../../../../../core/subscription/subscriptionbase-detail/facade';
-import { SubscriptionBaseService } from '../../../../../core/subscription/subscriptionbase/facade';
-
+  SubscriptionBaseDetailsService,
+  SubscriptionBaseService
+} from '../../../../../core';
 @Component({
   selector: 'cx-subscription-history',
   templateUrl: './subscriptionbase-list.component.html',
@@ -21,20 +19,14 @@ import { SubscriptionBaseService } from '../../../../../core/subscription/subscr
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SubscriptionBaseListComponent implements OnInit, OnDestroy {
-  usageDetails: boolean;
-  subscriptionHistory: boolean;
-  subsId: string;
-  subscribedProductMap = new Map<string, ProductRef[]>();
   subscriptions$: Observable<SubscriptionBase[]>;
 
   constructor(
     protected subscriptionService: SubscriptionBaseService,
-    protected subscriptionDetailService: SubscriptionBaseDetailService
+    protected subscriptionDetailService: SubscriptionBaseDetailsService
   ) {}
 
   ngOnInit(): void {
-    this.usageDetails = true;
-    this.subscriptionHistory = true;
     this.subscriptions$ = this.subscriptionService.getListOfSubscriptionBases();
   }
 
@@ -56,28 +48,5 @@ export class SubscriptionBaseListComponent implements OnInit, OnDestroy {
       return subscription.product.length;
     }
     return 0;
-  }
-
-  hideDiv(selectedDiv: string, id: string, product: ProductRef[]): void {
-    if (selectedDiv === 'usage') {
-      this.usageDetails = false;
-      this.subsId = id;
-      if (!!product) {
-        this.subscribedProductMap.set(id, product);
-      }
-    }
-    if (selectedDiv === 'subscription') {
-      this.subscriptionHistory = false;
-    }
-  }
-
-  goBack(target): void {
-    if (target === 'usage') {
-      this.usageDetails = true;
-      this.subsId = null;
-    }
-    if (target === 'subscriptions') {
-      this.subscriptionHistory = true;
-    }
   }
 }
