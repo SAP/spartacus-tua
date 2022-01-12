@@ -1,0 +1,20 @@
+.cx-dialog-header {
+  padding: 2rem 1.75rem 0.85rem;
+  border-width: 0;
+}
+
+.cx-dialog-title {
+  font-size: var(--cx-font-size, 1.375rem);
+  font-weight: var(--cx-font-weight-semi);
+  line-height: var(--cx-line-height, 1.2222222222);
+}
+
+.cx-dialog-subtitle {
+  font-size: var(--cx-font-size, 1.125rem);
+  font-weight: var(--cx-font-weight-semi);
+  line-height: var(--cx-line-height, 1.2222222222);
+}
+
+.bold {
+  font-weight: var(--cx-font-weight-bold) !important;
+}

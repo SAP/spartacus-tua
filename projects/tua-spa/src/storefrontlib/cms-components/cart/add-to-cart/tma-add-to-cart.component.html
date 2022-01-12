@@ -1,0 +1,144 @@
+<div class="quantity" *ngIf="productCode && showQuantity">
+  <label>{{ 'addToCart.quantity' | cxTranslate }}</label>
+  <cx-item-counter
+    *ngIf="hasStock"
+    [max]="maxQuantity || null"
+    [control]="addToCartForm.get('quantity')"
+  ></cx-item-counter>
+  <span class="info">{{
+      hasStock
+          ? ('addToCart.inStock' | cxTranslate)
+          : ('addToCart.outOfStock' | cxTranslate)
+    }}</span>
+</div>
+<ng-container
+  *ngIf="getChecklistActions(productCode) | async as checklistActions"
+>
+  <ng-container
+    *ngIf="checklistActions.length > 0 && seeDetails; else noChecklist"
+  >
+    <button
+      [routerLink]="{ cxRoute: 'product', params: product } | cxUrl"
+      class="btn btn-primary btn-block"
+      type="button"
+    >
+      {{ 'productList.seeDetails' | cxTranslate }}
+    </button>
+  </ng-container>
+  <ng-template #noChecklist>
+    <ng-container
+      *ngIf="
+        shouldDisplayAddToCartButton(
+          checklistActions,
+          (this.currentProduct$ | async)?.productSpecification?.id
+        )
+        else checkAvailability
+      "
+    >
+
+      <ng-container *ngIf="isPdpTheCurrentPage">
+        <cx-tma-configurable-pscvu
+          *ngIf="configurablePscvusService.setUpContext(currentProduct$ | async);"
+          [product]="(currentProduct$ | async)"
+        >
+        </cx-tma-configurable-pscvu>
+      </ng-container>
+
+      <button
+        *ngIf="hasStock && !checkPoForMandatoryPscvu(product)"
+        class="btn btn-primary btn-block cx-bottom-fixed"
+        type="submit"
+        [disabled]="
+          (quantity <= 0 ||
+          quantity > maxQuantity ||
+          disableAddToCart(checklistActions))
+        "
+        [formGroup]="addToCartForm"
+        (click)="addSpoToCart(checklistActions)"
+      >
+        {{ 'addToCart.addToCart' | cxTranslate }}
+        <ngx-spinner
+          [fullScreen]="false"
+          type="ball-clip-rotate-multiple"
+          size="small"
+        >
+        </ngx-spinner>
+      </button>
+      <button
+        (click)="routingService.go({ cxRoute: 'product', params: this.product })"
+        *ngIf="!isPdpTheCurrentPage && checkPoForMandatoryPscvu(product)"
+        [disabled]="
+          (quantity <= 0 ||
+          quantity > maxQuantity ||
+          disableAddToCart(checklistActions))
+        "
+        [formGroup]="addToCartForm"
+        class="btn btn-primary btn-block cx-bottom-fixed"
+        type="submit"
+      >
+        {{ 'common.viewDetails' | cxTranslate }}
+        <ngx-spinner
+          [fullScreen]="false"
+          size="small"
+          type="ball-clip-rotate-multiple"
+        >
+        </ngx-spinner>
+      </button>
+    </ng-container>
+  </ng-template>
+  <ng-container *ngIf="!isAddToCartForServiceableProducts &&
+  !productSpecificationProductService.isProductSpecificationForViewDetails(
+    (this.currentProduct$ | async)?.productSpecification?.id
+  )">
+    <ng-container *ngIf="checklistActions.length > 0 && !seeDetails">
+      <ng-container
+        *ngIf="
+      tmaChecklistActionTypeCheckService.hasJourneyChecklistAction(
+          checklistActions,
+          tmaChecklistActionTypeCheckService.checklistActionType.INSTALLATION_ADDRESS
+        )
+      "
+      >
+        <cx-journey-checklist-installation-address-display
+          [addInstallationAddress]="!isInstallationAddressSelected()"
+          [showEdit]="true"
+          [tmaProduct]="tmaProduct"
+          class="w-100 px-0 col-12"
+        ></cx-journey-checklist-installation-address-display>
+      </ng-container>
+      <ng-container
+        *ngIf="
+      tmaChecklistActionTypeCheckService.hasJourneyChecklistAction(
+          checklistActions,
+          tmaChecklistActionTypeCheckService.checklistActionType.APPOINTMENT
+        )
+      "
+      >
+        <ng-container>
+          <cx-journey-checklist-appointment-display
+            [addAppointment]="!isSearchTimeSlotSelected()"
+            [showEdit]="true"
+            class="w-100 px-0 col-12"
+          ></cx-journey-checklist-appointment-display>
+        </ng-container>
+      </ng-container>
+      <ng-container
+        *ngIf="tmaChecklistActionTypeCheckService.hasJourneyChecklistAction(
+        checklistActions,
+        tmaChecklistActionTypeCheckService.checklistActionType.MSISDN)"
+      >
+        <cx-journey-checklist-logical-resource-display
+          [addLogicalResource]="!isMsisdnSelected()"
+          [showEdit]="true"
+          [tmaProduct]="tmaProduct"
+        >
+        </cx-journey-checklist-logical-resource-display>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #checkAvailability>
+  <cx-premise-details [productCode]="productCode" [cartEntry$]="cartEntry$">
+  </cx-premise-details>
+</ng-template>

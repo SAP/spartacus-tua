@@ -1,0 +1,26 @@
+{
+  "name": "@spartacus/tua-spa",
+  "version": "3.2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "sass": "node ./src/storefrontstyles/build-styles.js"
+  },
+  "peerDependencies": {
+    "@angular/common": "~10.2.4",
+    "@angular/core": "~10.2.4",
+    "@ngrx/effects": "~10.0.0",
+    "@ngrx/router-store": "~10.0.0",
+    "@ngrx/store": "~10.0.0",
+    "i18next": "^19.3.4",
+    "i18next-xhr-backend": "^3.2.2",
+    "material-design-icons": "^3.0.1",
+    "ng2-charts": "^2.4.2",
+    "chart.js": "^2.9.3"
+  },
+  "prettier":{
+    "singleQuote": true,
+    "trailingComma": "none"
+  }
+}

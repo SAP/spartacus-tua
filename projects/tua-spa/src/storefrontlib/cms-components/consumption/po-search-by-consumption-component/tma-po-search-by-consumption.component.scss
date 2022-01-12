@@ -1,0 +1,16 @@
+.cx-po-search-by-consumption-content {
+  margin-top: -0.5%;
+}
+
+.cx-po-search-by-consumption {
+  margin: 5%;
+}
+
+.cx-consumption-slider-info {
+  color: var(--cx-color-text);
+}
+
+.cx-consumption-slider-info-bold {
+  @extend .cx-consumption-slider-info;
+  font-weight: var(--cx-font-weight-bold) !important;
+}

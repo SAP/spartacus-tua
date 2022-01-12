@@ -1,0 +1,97 @@
+<ng-container *ngIf="addAppointment && showEdit">
+  <div class="font-small">
+    <a class="cx-link clickable font-label pr-0" (click)="updateAppointment()"
+    >{{ 'checkList.appointment.selectAppointment' | cxTranslate }}
+    </a>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="!item && showEdit">
+  <ng-container
+    *ngIf="
+      searchTimeSlotService.getSelectedTimeSlot() | async as selectedTimeSlot
+    "
+  >
+    <ng-container
+      *ngIf="selectedTimeSlot && selectedTimeSlot.requestedTimeSlot"
+    >
+      <span class="font-label pr-0"
+      >{{ 'checkList.appointment.appointment' | cxTranslate }}
+      </span>
+      <span
+        (click)="updateAppointment(null, selectedTimeSlot.relatedPlace)"
+        class="material-icons clickable edit_icon"
+      >
+        edit</span
+      >
+      <div class="font-small">
+        <span class="font-small">
+          {{
+            selectedTimeSlot.requestedTimeSlot[0].validFor.startDateTime
+              | date: 'MMM d, y h:mm a':'UTC'
+          }}</span
+        >
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="errorMessage | async; else appointmentLoad">
+  <ng-container *ngIf="currentPageCode$ | async as currentPage">
+    <div class="row mx-auto text-danger">
+      <span
+        *ngIf="
+          currentPage === 'order' || currentPage === 'orderConfirmationPage'
+        "
+      >
+        {{ 'cartItems.appointmentError.getAppointmentByIdError' | cxTranslate }}
+      </span>
+
+      <span
+        *ngIf="
+          currentPage === 'CheckoutReviewOrder' || currentPage === 'cartPage'
+        "
+      >
+        {{
+          'cartItems.appointmentError.appointmentByIdCartRemoval' | cxTranslate
+        }}
+      </span>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #appointmentLoad>
+  <ng-container *ngIf="getAppointment(appointment$ | async) as appointment">
+    <ng-container
+      *ngIf="
+        appointment.status === getAppointmentStateType();
+        else displayAppointment
+      "
+    >
+      <span class="text-danger">
+        {{
+          'cartItems.appointmentError.cancelledAppointmentError' | cxTranslate
+        }}
+      </span>
+    </ng-container>
+    <ng-template #displayAppointment>
+      <span class="font-label pr-0"
+      >{{ 'checkList.appointment.appointment' | cxTranslate }}
+      </span>
+      <span
+        *ngIf="showEdit"
+        (click)="updateAppointment(appointment)"
+        class="material-icons clickable edit_icon"
+      >
+        edit</span
+      >
+      <div *ngIf="appointment.validFor" class="font-small clickable">
+        <span class="font-small">
+          {{
+            appointment.validFor.startDateTime | date: 'MMM d, y h:mm a':'UTC'
+          }}</span
+        >
+      </div>
+    </ng-template>
+  </ng-container>
+</ng-template>
