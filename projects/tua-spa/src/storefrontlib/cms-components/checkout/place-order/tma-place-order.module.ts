@@ -1,19 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CartNotEmptyGuard, CheckoutAuthGuard, PlaceOrderModule } from "@spartacus/checkout/components";
 import {
   CmsConfig,
   ConfigModule,
   I18nModule,
-  UrlModule,
+  UrlModule
 } from '@spartacus/core';
-import { TmaPlaceOrderComponent } from './tma-place-order.component';
 import {
-  CheckoutAuthGuard,
-  CartNotEmptyGuard,
-  PlaceOrderModule,
-  SpinnerComponent,
+  SpinnerComponent
 } from '@spartacus/storefront';
+import { TmaPlaceOrderComponent } from './tma-place-order.component';
 
 @NgModule({
   imports: [
@@ -34,4 +32,4 @@ import {
   entryComponents: [TmaPlaceOrderComponent, SpinnerComponent],
   exports: [TmaPlaceOrderComponent],
 })
-export class TmaPlaceOrderModule extends PlaceOrderModule {}
+export class TmaPlaceOrderModule extends PlaceOrderModule { }

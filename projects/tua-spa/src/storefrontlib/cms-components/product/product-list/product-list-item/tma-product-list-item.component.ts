@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CurrencyService, ProductService } from '@spartacus/core';
-import { ProductListItemComponent } from '@spartacus/storefront';
+import { ProductListItemComponent, ProductListItemContext, ProductListItemContextSource } from '@spartacus/storefront';
 import { Observable, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { SEPARATOR, TmaBillingFrequencyConfig, TmaBillingFrequencyMap, TmaCmsConsumptionComponent, TmaConsumptionConfig, TmaConsumptionValue, TmaProduct, TmaUsageUnit } from '../../../../../core';
@@ -11,6 +11,13 @@ import { TmaConsumptionChangeService, TmaPriceService, TmaProductService } from 
   templateUrl: './tma-product-list-item.component.html',
   styleUrls: ['./tma-product-list-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    ProductListItemContextSource,
+    {
+      provide: ProductListItemContext,
+      useExisting: ProductListItemContextSource,
+    },
+  ],
 })
 export class TmaProductListItemComponent extends ProductListItemComponent implements OnInit, OnDestroy  {
 
@@ -38,8 +45,8 @@ export class TmaProductListItemComponent extends ProductListItemComponent implem
 
   protected consumptionChangeServiceSubject: Subscription;
 
-
   constructor(
+    public productListItemContextSource: ProductListItemContextSource,
     public priceService?: TmaPriceService,
     protected currencyService?: CurrencyService,
     protected productService?: ProductService,
@@ -48,7 +55,7 @@ export class TmaProductListItemComponent extends ProductListItemComponent implem
     protected consumptionChangeService?: TmaConsumptionChangeService,
     protected billingFrequencyConfig?: TmaBillingFrequencyConfig
   ) {
-    super();
+    super(productListItemContextSource);
   }
 
   ngOnInit() {

@@ -10,7 +10,6 @@ import {
   RoutingService,
   TranslationService,
   User,
-  UserService,
   WindowRef,
   Page,
   ContentSlotComponentData,
@@ -41,6 +40,7 @@ import { TmaInstallationAddressConverter } from '../../../../core/util/converter
 import { TmaAddedToCartDialogComponent } from '../../cart/add-to-cart/added-to-cart-dialog/tma-added-to-cart-dialog.component';
 import { ActivatedRoute } from '@angular/router';
 import { TmaConsumptionConfig } from '../../../../core/config/consumption/config/tma-consumption-config';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-premise-details',
@@ -74,7 +74,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
 
   constructor(
     protected premiseDetailService: TmaPremiseDetailService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected authService: AuthService,
     protected globalMessageService: GlobalMessageService,
     protected translationService: TranslationService,
@@ -93,7 +93,7 @@ export class TmaPremiseDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.activeUser$ = this.userService.get();
+    this.activeUser$ = this.userAccountFacade.get();
     this.isUserLoggedIn$ = this.authService.isUserLoggedIn();
     this.product$ = this.productService.get(this.productCode);
     this.premiseDetailsStep = 'premiseCheckButton';

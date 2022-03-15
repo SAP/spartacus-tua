@@ -1,20 +1,22 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { TmaCartEntryAdapter } from '../../../cart/store/adapters';
-import { TmaOccCartEntryAdapter } from './tma-occ-cart-entry.adapter';
-import { CartOccModule, CartAdapter } from '@spartacus/core';
-import { TmaOccCartAdapter } from './tma-occ-cart.adapter';
-import { TmaOccCartNormalizer } from './converters';
+import { NgModule } from '@angular/core';
+import {
+  CartAdapter,
+  CartEntryAdapter,
+  CartOccModule,
+  CartVoucherAdapter,
+  OccCartVoucherAdapter,
+  SaveCartAdapter
+} from '@spartacus/core';
 import { TMA_CART_NORMALIZER } from '../../../cart/connectors/converters';
+import { TmaCartEntryAdapter } from '../../../cart/store/adapters/tma-cart-entry.adapter';
+import { TmaOccCartNormalizer } from './converters';
+import { TmaOccCartEntryAdapter } from './tma-occ-cart-entry.adapter';
+import { TmaOccCartAdapter } from './tma-occ-cart.adapter';
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule],
   providers: [
-    {
-      provide: TmaCartEntryAdapter,
-      useClass: TmaOccCartEntryAdapter
-    },
     {
       provide: CartAdapter,
       useClass: TmaOccCartAdapter
@@ -23,6 +25,18 @@ import { TMA_CART_NORMALIZER } from '../../../cart/connectors/converters';
       provide: TMA_CART_NORMALIZER,
       useExisting: TmaOccCartNormalizer,
       multi: true
+    },
+    {
+      provide: CartEntryAdapter,
+      useClass: TmaOccCartEntryAdapter
+    },
+    {
+      provide: TmaCartEntryAdapter,
+      useClass: TmaOccCartEntryAdapter
+    },
+    {
+      provide: CartVoucherAdapter,
+      useClass: OccCartVoucherAdapter
     }
   ]
 })

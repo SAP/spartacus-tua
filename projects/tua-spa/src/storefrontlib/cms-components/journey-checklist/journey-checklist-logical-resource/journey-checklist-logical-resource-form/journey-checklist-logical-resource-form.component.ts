@@ -22,13 +22,13 @@ import {
   MsisdnReservationService
 } from '../../../../../core';
 import {
-  UserService,
   BaseSiteService,
   User,
   OCC_USER_ID_ANONYMOUS
 } from '@spartacus/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ModalService } from '@spartacus/storefront';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const { MSISDN_TYPE } = LOCAL_STORAGE.MSISDN_RESERVATION;
 
@@ -73,7 +73,7 @@ export class JourneyChecklistLogicalResourceFormComponent
     protected tmaTmfCartService: TmaTmfCartService,
     protected activeCartService: TmaActiveCartService,
     protected logicalResourceReservationService: LogicalResourceReservationService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected baseSiteService: BaseSiteService,
     protected config: JourneyChecklistConfig,
     protected msisdnReservationService: MsisdnReservationService,
@@ -135,7 +135,7 @@ export class JourneyChecklistLogicalResourceFormComponent
         takeUntil(this.destroyed$)
       )
       .subscribe((cart: TmaCart) => (this.currentCart = cart));
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => !!user),

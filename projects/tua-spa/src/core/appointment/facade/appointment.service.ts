@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { UserService, User } from '@spartacus/core';
+import { User } from '@spartacus/core';
 import { take, tap, filter, takeUntil } from 'rxjs/operators';
 import {
   StateWithAppointment,
@@ -16,6 +16,7 @@ import {
 } from '../../model';
 import { SearchTimeSlotService } from '../../search-time-slot';
 import { GeographicAddressService } from '../../geographic-address';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Injectable()
 export class AppointmentService implements OnDestroy {
@@ -24,11 +25,11 @@ export class AppointmentService implements OnDestroy {
 
   constructor(
     protected store: Store<StateWithAppointment>,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected searchTimeSlotService: SearchTimeSlotService,
     protected geographicAddressService: GeographicAddressService
   ) {
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((user: User) => {

@@ -7,7 +7,8 @@ import {
   OnInit
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BaseSiteService, OccConfig, User, UserService } from '@spartacus/core';
+import { BaseSiteService, OccConfig, User } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 import {
   CmsComponentData,
   MediaService,
@@ -64,7 +65,7 @@ export class RenewSubscriptionBannerComponent
     protected recommendationService: RecommendationService,
     protected tmfProductService: TmfProductService,
     protected baseSiteService: BaseSiteService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     private activatedRoute: ActivatedRoute,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
@@ -74,7 +75,7 @@ export class RenewSubscriptionBannerComponent
       .getActive()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => (this.user = customer));

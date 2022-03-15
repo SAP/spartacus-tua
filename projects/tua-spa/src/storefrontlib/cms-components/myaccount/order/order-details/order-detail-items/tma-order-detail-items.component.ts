@@ -3,7 +3,7 @@ import { Consignment, ConsignmentEntry } from '@spartacus/core';
 import {
   OrderDetailItemsComponent,
   OrderDetailsService,
-  PromotionService
+  
 } from '@spartacus/storefront';
 import { TmaOrder, TmaOrderEntry } from '../../../../../../core';
 
@@ -13,10 +13,10 @@ import { TmaOrder, TmaOrderEntry } from '../../../../../../core';
 })
 export class TmaOrderDetailItemsComponent extends OrderDetailItemsComponent {
   constructor(
-    orderDetailsService: OrderDetailsService,
-    promotionService?: PromotionService
+    orderDetailsService: OrderDetailsService
+    
   ) {
-    super(orderDetailsService, promotionService);
+    super(orderDetailsService );
   }
 
   /**

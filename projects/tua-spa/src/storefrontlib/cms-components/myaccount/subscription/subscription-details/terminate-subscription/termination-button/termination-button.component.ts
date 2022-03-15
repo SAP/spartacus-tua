@@ -2,14 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import {
   BaseSiteService,
   Cart,
-  CheckoutService,
   GlobalMessageService,
   GlobalMessageType,
   TranslationService,
   User,
-  UserAddressService,
-  UserService
+  UserAddressService
 } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 import { LoaderState } from '@spartacus/core/src/state/utils/loader';
 import { ProcessesLoaderState } from '@spartacus/core/src/state/utils/processes-loader';
 import { ModalService } from '@spartacus/storefront';
@@ -25,6 +24,7 @@ import {
 import {
   DeliveryModeConfig,
   TmaCheckoutDeliveryService,
+  TmaCheckoutService,
   TmaMultiCartService,
   TmaTmfCartService
 } from '../../../../../../../core/';
@@ -62,13 +62,13 @@ export class TerminationButtonComponent implements OnInit {
     protected userAddressService: UserAddressService,
     protected globalMessageService: GlobalMessageService,
     protected translationService: TranslationService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected multiCartService: TmaMultiCartService,
     protected tmaTmfCartService: TmaTmfCartService,
     protected baseSiteService: BaseSiteService,
     protected translation: TranslationService,
     protected checkoutDeliveryService: TmaCheckoutDeliveryService,
-    protected checkoutService: CheckoutService,
+    protected checkoutService: TmaCheckoutService,
     protected config: DeliveryModeConfig
   ) {}
 
@@ -94,7 +94,7 @@ export class TerminationButtonComponent implements OnInit {
       (address: TmaAddress) => address.defaultAddress
     );
     if (this.defaultAddress) {
-      this.userService
+      this.userAccountFacade
         .get()
         .pipe(takeUntil(this.destroyed$))
         .subscribe((customer: User) => (this.user = customer));
@@ -181,19 +181,18 @@ export class TerminationButtonComponent implements OnInit {
 
   /**
    * Sets the default delivery address with cart.
-   * Once the delivery address association with cart is successfull then default delivery mode is set.
+   * Once the delivery address association with cart is successfufl then default delivery mode is set.
    * If there is no address associated with an user then required delivery address message is present to an user.
    */
   protected setDefaultDeliveryAddress(): void {
     this.checkoutDeliveryService.setDeliveryAddressTo(
       this.user.uid,
       this.cart.code,
-      this.defaultAddress
-    );
+      this.defaultAddress);
     this.checkoutDeliveryService
       .getSetDeliveryAddressProcess()
       .pipe(
-        take(2),
+        take(3),
         filter((state: LoaderState<void>) => !state.loading),
         distinctUntilChanged(),
         takeUntil(this.destroyed$),
@@ -229,9 +228,8 @@ export class TerminationButtonComponent implements OnInit {
   protected setDefaultDeliveryMode(): void {
     this.checkoutDeliveryService.setDeliveryModeTo(
       this.user.uid,
-      this.cart.code,
-      this.config.deliveryMode.default_delivery_mode
-    );
+      this.cart.code,	
+      this.config.deliveryMode.default_delivery_mode);
     this.checkoutDeliveryService
       .getSetDeliveryModeProcess()
       .pipe(
@@ -270,7 +268,6 @@ export class TerminationButtonComponent implements OnInit {
                 keyboard: false
               }
             );
-
             modalInstance = this.modalRef.componentInstance;
             modalInstance.cart = this.cart;
             modalInstance.subscribedProducts = [this.product];

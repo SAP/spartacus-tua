@@ -9,7 +9,6 @@ import {
 import { Subject, Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import {
-  UserService,
   User,
   UserOrderService,
   BaseSiteService,
@@ -38,6 +37,7 @@ import {
   TmaChecklistActionService,
   TmaChecklistAction
 } from '../../../../../core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const { QUERY, FREE_TEXT, CODE } = LOCAL_STORAGE.SEARCH;
 @Component({
@@ -59,7 +59,7 @@ export class SubscriptionDetailsComponent implements OnInit, OnDestroy, AfterVie
   constructor(
     public recommendationService: RecommendationService,
     protected tmfProductService: TmfProductService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected userOrderService: UserOrderService,
     protected baseSiteService: BaseSiteService,
     protected subscriptionDetailDataService: SubscriptionDetailDataService,
@@ -78,7 +78,7 @@ export class SubscriptionDetailsComponent implements OnInit, OnDestroy, AfterVie
       .pipe(takeUntil(this.destroyed$))
       .subscribe();
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => (this.user = customer));

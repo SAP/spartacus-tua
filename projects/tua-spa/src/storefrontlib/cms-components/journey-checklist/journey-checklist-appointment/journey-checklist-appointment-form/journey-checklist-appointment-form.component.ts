@@ -26,7 +26,6 @@ import {
 import { AppointmentService } from '../../../../../core';
 import {
   User,
-  UserService,
   BaseSiteService,
   OCC_USER_ID_ANONYMOUS,
   Country,
@@ -44,6 +43,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { TmaAddressFormComponent } from '../../../address-form';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const { GEOGRAPHIC_ADDRESS } = LOCAL_STORAGE.INSTALLATION_ADDRESS;
 const { INTERVENTION_ADDRESS } = LOCAL_STORAGE.APPOINTMENT;
@@ -107,7 +107,7 @@ export class JourneyChecklistAppointmentFormComponent
     protected tmaTmfCartService: TmaTmfCartService,
     protected activeCartService: TmaActiveCartService,
     protected baseSiteService: BaseSiteService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected modalService: ModalService,
     protected spinner: NgxSpinnerService,
     protected config?: JourneyChecklistConfig,
@@ -125,7 +125,7 @@ export class JourneyChecklistAppointmentFormComponent
       .pipe(takeUntil(this.destroyed$))
       .subscribe((cart: TmaCart) => (this.currentCart = cart));
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => !!user),

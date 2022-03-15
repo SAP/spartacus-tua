@@ -11,7 +11,7 @@ import {
   FormBuilder,
   FormGroup
 } from '@angular/forms';
-import { I18nTestingModule, BaseSiteService } from '@spartacus/core';
+import { I18nTestingModule, BaseSiteService, Country, Region, Address, AddressValidation, UserAddressService } from '@spartacus/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import {
@@ -20,6 +20,7 @@ import {
 } from '../../../../../core';
 import { FormErrorsModule, ModalService } from '@spartacus/storefront';
 import { Observable, of } from 'rxjs';
+import { TmaAddressFormComponent } from '../../../address-form/tma-address-form.component';
 import { JourneyChecklistInstallationAddressFormComponent } from './journey-checklist-installation-address-form.component';
 
 const baseSite = 'test-site';
@@ -67,6 +68,25 @@ class MockTmaAddressFormComponent {
 class MockModalService {
 }
 
+class MockUserAddressService {
+  getDeliveryCountries(): Observable<Country[]> {
+    return of();
+  }
+
+  loadDeliveryCountries(): void {}
+
+  getRegions(): Observable<Region[]> {
+    return of();
+  }
+
+  getAddresses(): Observable<Address[]> {
+    return of([]);
+  }
+  verifyAddress(): Observable<AddressValidation> {
+    return of({});
+  }
+}
+
 describe('JourneyChecklistInstallationAddressFormComponent', () => {
   let component: JourneyChecklistInstallationAddressFormComponent;
   let fixture: ComponentFixture<JourneyChecklistInstallationAddressFormComponent>;
@@ -77,7 +97,7 @@ describe('JourneyChecklistInstallationAddressFormComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         JourneyChecklistInstallationAddressFormComponent,
-        MockTmaAddressFormComponent
+        TmaAddressFormComponent
       ],
       schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
       imports: [
@@ -109,6 +129,10 @@ describe('JourneyChecklistInstallationAddressFormComponent', () => {
         {
           provide: ModalService,
           useClass: MockModalService
+        },
+        {
+          provide: UserAddressService,
+          useClass: MockUserAddressService
         }
       ]
     })
@@ -123,6 +147,16 @@ describe('JourneyChecklistInstallationAddressFormComponent', () => {
       JourneyChecklistInstallationAddressFormComponent
     );
     component = fixture.componentInstance;
+
+    component.addressComponent.installationAddress = formBuilder.group({
+      buildingNumber: '',
+      streetName: '',
+      apartmentNumber: '',
+      city: '',
+      country: null,
+      region: null,
+      postalCode: ''
+    });
 
     component.installationAddressDetails = formBuilder.group({});
     JourneyChecklistInstallationAddressFormComponent.prototype.ngAfterViewInit = () => {

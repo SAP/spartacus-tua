@@ -15,7 +15,7 @@ export interface TmfEndpoint {
  */
 export interface TmfEndpointWithScope {
   default?: string;
-  [scope: string]: string;
+  [scope: string]: string | undefined;
 }
 
 /**

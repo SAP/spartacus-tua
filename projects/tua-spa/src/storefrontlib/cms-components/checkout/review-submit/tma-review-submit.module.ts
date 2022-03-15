@@ -1,22 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CartNotEmptyGuard, CheckoutAuthGuard } from "@spartacus/checkout/components";
 import {
   CmsConfig,
+  ConfigModule,
   I18nModule,
-  provideDefaultConfig,
-  UrlModule,
+  UrlModule
 } from '@spartacus/core';
-import { TmaReviewSubmitComponent } from './tma-review-submit.component';
 import {
   CardModule,
-  CartNotEmptyGuard,
-  CartSharedModule,
-  CheckoutAuthGuard,
   IconModule,
-  PromotionsModule,
+  PromotionsModule
 } from '@spartacus/storefront';
 import { TmaCartSharedModule } from '../../cart/cart-shared';
+import { TmaReviewSubmitComponent } from './tma-review-submit.component';
 
 @NgModule({
   imports: [
@@ -28,9 +26,7 @@ import { TmaCartSharedModule } from '../../cart/cart-shared';
     RouterModule,
     PromotionsModule,
     IconModule,
-  ],
-  providers: [
-    provideDefaultConfig(<CmsConfig>{
+    ConfigModule.withConfig(<CmsConfig>{
       cmsComponents: {
         CheckoutReviewOrder: {
           component: TmaReviewSubmitComponent,
@@ -43,4 +39,4 @@ import { TmaCartSharedModule } from '../../cart/cart-shared';
   entryComponents: [TmaReviewSubmitComponent],
   exports: [TmaReviewSubmitComponent],
 })
-export class TmaReviewSubmitModule {}
+export class TmaReviewSubmitModule { }

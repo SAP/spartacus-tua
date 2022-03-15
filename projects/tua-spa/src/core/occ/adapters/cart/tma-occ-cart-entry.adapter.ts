@@ -28,10 +28,9 @@ export class TmaOccCartEntryAdapter extends OccCartEntryAdapter implements TmaCa
       'Content-Type': 'application/json'
     });
 
-    const url = this.occEndpointsService.getUrl(
-      'addEntries',
-      { userId, cartId, quantity: cartEntry.quantity, code: cartEntry.product.code }
-    );
+    const url = this.occEndpointsService.buildUrl('addEntries', {
+      urlParams: { userId, cartId, quantity: cartEntry.quantity, code: cartEntry.product.code  }
+    });
     return this.http
       .post<TmaCartModification>(url, cartEntry, { headers })
       .pipe(this.converterService.pipeable(TMA_CART_MODIFICATION_NORMALIZER));
@@ -47,10 +46,9 @@ export class TmaOccCartEntryAdapter extends OccCartEntryAdapter implements TmaCa
     });
 
     const entryNumber = cartEntry.entryNumber;
-    const url = this.occEndpointsService.getUrl(
-      'updateEntries',
-      { userId, cartId, entryNumber }
-    );
+    const url = this.occEndpointsService.buildUrl('updateEntries', {
+      urlParams: { userId, cartId, entryNumber }
+    });
 
     return this.http
       .patch<TmaCartModification>(url, cartEntry, { headers })

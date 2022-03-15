@@ -16,9 +16,9 @@ import {
   Region,
   BaseSiteService,
   ProductService,
-  User,
-  UserService
+  User
 } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 import { ModalService } from '@spartacus/storefront';
 import {
   GeographicAddress,
@@ -88,7 +88,7 @@ export class ServiceabilityCategoryFormComponent
     protected spinner: NgxSpinnerService,
     protected baseSiteService: BaseSiteService,
     protected productService: ProductService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected queryServiceQualificationService: QueryServiceQualificationService,
     protected tmaProductListComponentService?: TmaProductListComponentService
   ) {}
@@ -120,7 +120,7 @@ export class ServiceabilityCategoryFormComponent
       )
       .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),

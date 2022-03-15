@@ -7,12 +7,13 @@ import {
   I18nTestingModule,
   MultiCartService,
   Cart,
-  UserService,
   User,
   AuthService,
   OCC_USER_ID_CURRENT,
   BaseSiteService,
-  AuthToken
+  AuthToken,
+  provideConfig,
+  CmsConfig
 } from '@spartacus/core';
 import createSpy = jasmine.createSpy;
 import {
@@ -33,6 +34,8 @@ import { AvailabilityCheckService } from '../../../../../core/availability-check
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { JourneyChecklistLogicalResourceFormComponent } from './journey-checklist-logical-resource-form.component';
 import { ModalService } from '@spartacus/storefront';
+import { UserAccountFacade, USER_ACCOUNT_CORE_FEATURE, USER_ACCOUNT_FEATURE } from '@spartacus/user/account/root';
+import { HttpClientModule } from '@angular/common/http';
 
 const cartCode = 'xxx';
 const userId = 'testUserId';
@@ -133,7 +136,7 @@ class TmaMockLogicalResourceReservationService {
 class MockMsisdnReservationService {
 }
 
-class MockUserService {
+class MockUserAccountFacade {
   get = createSpy().and.returnValue(of(user));
 }
 
@@ -170,7 +173,7 @@ describe('JourneyChecklistLogicalResourceFormComponent', () => {
     TestBed.configureTestingModule({
       declarations: [JourneyChecklistLogicalResourceFormComponent],
       schemas: [NO_ERRORS_SCHEMA],
-      imports: [FormsModule, I18nTestingModule, StoreModule.forRoot({})],
+      imports: [FormsModule, I18nTestingModule, StoreModule.forRoot({}), HttpClientModule],
       providers: [
         {
           provide: AvailabilityCheckService,
@@ -182,7 +185,7 @@ describe('JourneyChecklistLogicalResourceFormComponent', () => {
           provide: LogicalResourceReservationService,
           useClass: TmaMockLogicalResourceReservationService
         },
-        { provide: UserService, useClass: MockUserService },
+        { provide: UserAccountFacade, useClass: MockUserAccountFacade },
         { provide: AuthService, useClass: AuthServiceStub },
         { provide: BaseSiteService, useClass: MockBaseSiteService },
         {
@@ -196,7 +199,16 @@ describe('JourneyChecklistLogicalResourceFormComponent', () => {
         {
           provide: ModalService,
           useClass: MockModalService
-        }
+        },
+        provideConfig(<CmsConfig>{
+          featureModules: {
+            [USER_ACCOUNT_FEATURE]: {
+              module: () =>
+                import('@spartacus/user/account').then((m) => m.UserAccountModule),
+            },
+            [USER_ACCOUNT_CORE_FEATURE]: USER_ACCOUNT_FEATURE
+          },
+        }),
       ]
     }).compileComponents();
   }));

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CmsConfig, ConfigModule, I18nModule, UrlModule } from '@spartacus/core';
 import { IconModule } from '@spartacus/storefront';
@@ -19,7 +19,7 @@ import { TmaSliderOptionComponent } from './slider-option-component/tma-slider-o
     RouterModule,
     UrlModule,
     I18nModule,
-    NgbModule,
+    NgbNavModule,
     ReactiveFormsModule,
     IconModule,
     ConfigModule.withConfig(<CmsConfig>{

@@ -16,7 +16,8 @@ import {
 } from '../../../../../core/model';
 import { SubscriptionBaseDetailsService } from '../../../../../core/subscription/subscriptionbase-details/facade';
 import { RouterTestingModule } from '@angular/router/testing';
-import { I18nTestingModule, RoutingService } from '@spartacus/core';
+import { CmsConfig, I18nTestingModule, provideConfig, RoutingService } from '@spartacus/core';
+import { USER_ACCOUNT_CORE_FEATURE, USER_ACCOUNT_FEATURE } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-tmf-product',
@@ -83,6 +84,15 @@ describe('SubscriptionBaseListComponent', () => {
       imports: [RouterTestingModule, I18nTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
+        provideConfig(<CmsConfig>{
+          featureModules: {
+            [USER_ACCOUNT_FEATURE]: {
+              module: () =>
+                import('@spartacus/user/account').then((m) => m.UserAccountModule),
+            },
+            [USER_ACCOUNT_CORE_FEATURE]: USER_ACCOUNT_FEATURE
+          },
+        }),
         {
           provide: SubscriptionBaseService,
           useValue: mockSubscriptionBaseService,

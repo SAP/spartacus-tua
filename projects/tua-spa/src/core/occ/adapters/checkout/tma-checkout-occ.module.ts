@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { CheckoutOccModule, CheckoutAdapter } from '@spartacus/core';
-import { TmaOccOrderNormalizer } from './converters';
+import { NgModule } from '@angular/core';
+import { CheckoutAdapter } from "@spartacus/checkout/core";
+import { CheckoutOccModule } from "@spartacus/checkout/occ";
 import { TMA_ORDER_NORMALIZER } from '../../../checkout/connectors';
+import { TmaOccOrderNormalizer } from './converters';
 import { TmaOccCheckoutAdapter } from './tma-occ-checkout.adapter';
 
 @NgModule({
@@ -20,4 +21,4 @@ import { TmaOccCheckoutAdapter } from './tma-occ-checkout.adapter';
     }
   ]
 })
-export class TmaCheckoutOccModule extends CheckoutOccModule {}
+export class TmaCheckoutOccModule extends CheckoutOccModule { }

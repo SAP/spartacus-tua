@@ -10,3 +10,7 @@ export abstract class DeliveryModeConfig {
     default_delivery_mode?: string;
   };
 }
+
+declare module '@spartacus/core' {
+  interface Config extends DeliveryModeConfig {}
+}

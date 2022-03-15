@@ -9,7 +9,7 @@ import {
 } from '@spartacus/core';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import {
-  defaultScrollConfig,
+  defaultViewConfig,
   IconModule,
   ItemCounterModule,
   ListNavigationModule,
@@ -17,7 +17,6 @@ import {
   ProductListModule,
   SpinnerModule,
   StarRatingModule,
-  ViewConfigModule
 } from '@spartacus/storefront';
 import { TmaProductListComponent } from './container/tma-product-list.component';
 import { TmaProductListItemComponent } from './product-list-item/tma-product-list-item.component';
@@ -31,7 +30,7 @@ import { QueryServiceQualificationModule } from '../../../../core';
 @NgModule({
   imports: [
     CommonModule,
-    ConfigModule.withConfig(defaultScrollConfig),
+    ConfigModule.withConfig(defaultViewConfig),
     ConfigModule.withConfig({
       cmsComponents: {
         CMSProductListComponent: {
@@ -56,7 +55,6 @@ import { QueryServiceQualificationModule } from '../../../../core';
     IconModule,
     SpinnerModule,
     InfiniteScrollModule,
-    ViewConfigModule,
     FeaturesConfigModule,
     TmaPriceDisplayModule,
     QueryServiceQualificationModule

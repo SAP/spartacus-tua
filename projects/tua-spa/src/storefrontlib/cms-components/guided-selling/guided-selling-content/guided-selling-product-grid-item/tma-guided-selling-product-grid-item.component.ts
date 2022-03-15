@@ -6,11 +6,19 @@ import { TmaProductGridItemComponent } from '../../../product/product-list';
 import { takeUntil } from 'rxjs/operators';
 import { CurrencyService } from '@spartacus/core';
 import { TmaPriceService } from '../../../../../core/product/facade';
+import { ProductListItemContext, ProductListItemContextSource } from '@spartacus/storefront';
 
 @Component({
   selector: 'cx-guided-selling-product-grid-item',
   templateUrl: './tma-guided-selling-product-grid-item.component.html',
-  styleUrls: ['./tma-guided-selling-product-grid-item.component.scss']
+  styleUrls: ['./tma-guided-selling-product-grid-item.component.scss'],
+  providers: [
+    ProductListItemContextSource,
+    {
+      provide: ProductListItemContext,
+      useExisting: ProductListItemContextSource,
+    },
+  ],
 })
 export class TmaGuidedSellingProductGridItemComponent extends TmaProductGridItemComponent implements OnInit, OnDestroy {
 
@@ -23,11 +31,12 @@ export class TmaGuidedSellingProductGridItemComponent extends TmaProductGridItem
 
   constructor(
     public priceService: TmaPriceService,
+    public productListItemContextSource: ProductListItemContextSource,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected changeDetectorRef: ChangeDetectorRef,
     protected currencyService?: CurrencyService
   ) {
-    super(priceService,currencyService);
+    super(productListItemContextSource, priceService,currencyService);
   }
 
   ngOnInit(): void {

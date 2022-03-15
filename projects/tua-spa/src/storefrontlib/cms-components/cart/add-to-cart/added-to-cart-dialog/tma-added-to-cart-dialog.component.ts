@@ -1,7 +1,6 @@
 import {
   AddedToCartDialogComponent,
-  ModalService,
-  PromotionService
+  ModalService
 } from '@spartacus/storefront';
 import { Component, Input, OnInit } from '@angular/core';
 import {
@@ -31,10 +30,9 @@ export class TmaAddedToCartDialogComponent
     public cartPriceService: TmaCartPriceService,
     protected modalService: ModalService,
     protected cartService: TmaCartService,
-    protected currencyService: CurrencyService,
-    protected promotionService: PromotionService
+    protected currencyService: CurrencyService
   ) {
-    super(modalService, cartService, promotionService);
+    super(modalService, cartService);
   }
 
   ngOnInit() {

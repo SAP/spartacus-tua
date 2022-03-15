@@ -1,11 +1,9 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component
 } from '@angular/core';
-import {
-  CheckoutService,
-} from '@spartacus/core';
-import { OrderConfirmationItemsComponent, PromotionService } from '@spartacus/storefront';
+import { OrderConfirmationItemsComponent } from "@spartacus/checkout/components";
+import { CheckoutFacade } from "@spartacus/checkout/root";
 
 @Component({
   selector: 'cx-order-confirmation-items',
@@ -15,9 +13,8 @@ import { OrderConfirmationItemsComponent, PromotionService } from '@spartacus/st
 export class TmaOrderConfirmationItemsComponent extends OrderConfirmationItemsComponent {
 
   constructor(
-    protected checkoutService: CheckoutService,
-    protected promotionService: PromotionService
+    protected checkoutFacade: CheckoutFacade
   ) {
-    super(checkoutService, promotionService);
+    super(checkoutFacade);
   }
 }

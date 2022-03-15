@@ -21,10 +21,9 @@ import {
   RoutingService,
   SelectiveCartService,
   User,
-  UserService,
   TranslationService,
   GlobalMessageService,
-  GlobalMessageType
+  GlobalMessageType, UserIdService, MultiCartService
 } from '@spartacus/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import {
@@ -53,6 +52,7 @@ import {
   TmaGuidedSellingStepsService,
   LOCAL_STORAGE
 } from '../../../../../core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const { QUERY, FREE_TEXT, CODE } = LOCAL_STORAGE.SEARCH;
 
@@ -122,18 +122,20 @@ export class TmaCartItemListComponent
     protected productSearchService: ProductSearchService,
     protected changeDetectorRef: ChangeDetectorRef,
     protected baseSiteService: BaseSiteService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
+    protected multiCartService: MultiCartService,
     protected tmfCartService: TmaTmfCartService,
     protected guidedSellingStepsService: TmaGuidedSellingStepsService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected routingService: RoutingService,
+    protected userIdService: UserIdService,
     protected translationService?: TranslationService,
     protected globalMessageService?: GlobalMessageService,
     protected appointmentService?: AppointmentService,
     protected logicalResourceReservationService?: LogicalResourceReservationService,
     protected tmaProductService?: TmaProductService
   ) {
-    super(activeCartService, selectiveCartService);
+    super(activeCartService, selectiveCartService, userIdService, multiCartService);
     this.activeCartService
       .getActive()
       .pipe(takeUntil(this.destroyed$))
@@ -150,7 +152,7 @@ export class TmaCartItemListComponent
   ngOnInit(): void {
     this.loadReservationsForCartEntries();
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => !!user),

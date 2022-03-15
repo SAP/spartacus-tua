@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
+import { CheckoutActions, CheckoutDeliveryConnector } from "@spartacus/checkout/core";
 import {
-  CheckoutActions,
-  CheckoutDeliveryConnector,
   SiteContextActions,
   withdrawOn
 } from '@spartacus/core';
@@ -50,5 +49,5 @@ export class TmaCheckoutEffects {
   constructor(
     private actions$: Actions,
     private checkoutDeliveryConnector: CheckoutDeliveryConnector
-  ) {}
+  ) { }
 }

@@ -37,8 +37,8 @@ import { TmfProductComponentModule } from '../tmf-product';
     SubscriptionBaseDetailsService,
     UsageConsumptionService,
   ],
-  declarations: [SubscriptionBaseListComponent],
-  exports: [SubscriptionBaseListComponent],
+  declarations: [],
+  exports: [],
   entryComponents: [SubscriptionBaseListComponent],
 })
 export class SubscriptionHistoryModule {}

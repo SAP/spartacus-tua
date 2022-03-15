@@ -38,7 +38,6 @@ import {
   OCC_USER_ID_ANONYMOUS,
   ProductService,
   User,
-  UserService,
   TranslationService,
   GlobalMessageService,
   Product,
@@ -67,7 +66,8 @@ import {
   JourneyChecklistConfig,
   TmfProductMap
 } from '../../../../../core';
-import {NgxSpinnerService} from 'ngx-spinner';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const {CURRENT_SELECTION} = LOCAL_STORAGE.GUIDED_SELLING;
 
@@ -119,7 +119,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
 
   constructor(
     protected activatedRoute: ActivatedRoute,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected baseSiteService: BaseSiteService,
     protected activeCartService: TmaActiveCartService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
@@ -157,7 +157,7 @@ export class TmaGuidedSellingCurrentSelectionComponent
       )
       .subscribe((product: TmaProduct) => (this.parentBpo = product));
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),

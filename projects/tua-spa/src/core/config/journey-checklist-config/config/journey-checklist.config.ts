@@ -20,3 +20,7 @@ export abstract class JourneyChecklistConfig {
     };
   };
 }
+
+declare module '@spartacus/core' {
+  interface Config extends JourneyChecklistConfig {}
+}

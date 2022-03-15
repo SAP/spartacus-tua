@@ -9,6 +9,7 @@ import { TmaGuidedSellingStepsService } from '../../../../core/guided-selling/fa
 import { ActivatedRoute, Router } from '@angular/router';
 
 const { QUERY, FREE_TEXT, PRODUCT_OFFERING_GROUP, PARENT_BPO, PROCESS_TYPE } = LOCAL_STORAGE.SEARCH;
+const { DEFAULT_PROCESS_TYPE } = LOCAL_STORAGE.GUIDED_SELLING;
 
 @Component({
   selector: 'cx-guided-selling-steps',
@@ -85,7 +86,7 @@ export class TmaGuidedSellingStepsComponent implements OnInit, OnDestroy {
     let query = QUERY + FREE_TEXT + PRODUCT_OFFERING_GROUP + id;
     let bpoQuery = QUERY + FREE_TEXT + PARENT_BPO + id;
 
-    let process = TmaProcessTypeEnum.ACQUISITION;
+    let process = DEFAULT_PROCESS_TYPE;
     let processFilterQuery = ':'+ PROCESS_TYPE + process;
 
     if(this.isSubscription){

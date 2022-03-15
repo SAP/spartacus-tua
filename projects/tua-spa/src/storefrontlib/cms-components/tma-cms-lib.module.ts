@@ -15,9 +15,11 @@ import { ServiceabilityBannerModule } from './serviceability';
 import { ServiceabilityButtonModule } from './serviceability-button';
 import { TmaOrderApprovalModule } from './order-approval';
 import { TmaProductSpecificationModule } from './product/tma-product-specification/tma-product-specification.module';
+import {TmaProductOrderModule} from "../../core/product-order";
 
 @NgModule({
   imports: [
+    TmaProductOrderModule,
     TmaProductListModule,
     TmaProductSummaryModule,
     TmaProductTabsModule,

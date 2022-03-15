@@ -1,4 +1,4 @@
-import { CartDetailsComponent, PromotionService } from '@spartacus/storefront';
+import { CartDetailsComponent,  } from '@spartacus/storefront';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { TmaCartService } from '../../../../core/cart/facade';
 import {
@@ -18,7 +18,6 @@ export class TmaCartDetailsComponent extends CartDetailsComponent implements OnI
 
   constructor(
     activeCartService: ActiveCartService,
-    promotionService: PromotionService,
     selectiveCartService: SelectiveCartService,
     authService: AuthService,
     routingService: RoutingService,
@@ -26,7 +25,6 @@ export class TmaCartDetailsComponent extends CartDetailsComponent implements OnI
   ) {
     super(
       activeCartService,
-      promotionService,
       selectiveCartService,
       authService,
       routingService

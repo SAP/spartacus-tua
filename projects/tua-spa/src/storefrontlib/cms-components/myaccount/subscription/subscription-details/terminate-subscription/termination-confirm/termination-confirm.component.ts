@@ -5,9 +5,9 @@ import {
   PaymentDetails,
   TranslationService,
   User,
-  UserPaymentService,
-  UserService
+  UserPaymentService
 } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 import { LoaderState } from '@spartacus/core/src/state/utils/loader';
 import { ModalService } from '@spartacus/storefront';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -30,6 +30,10 @@ import {
   TmaOrderEntry,
   TmfProduct
 } from '../../../../../../../core/';
+import { CheckoutPaymentFacade } from '@spartacus/checkout/root';
+import { CheckoutDeliveryFacade } from '@spartacus/checkout/root';
+import { CheckoutFacade } from '@spartacus/checkout/root';
+import { CheckoutService } from '@spartacus/checkout/core';
 
 @Component({
   selector: 'cx-termination-confirm',
@@ -47,7 +51,7 @@ export class TerminationConfirmComponent implements OnInit {
 
   constructor(
     protected modalService: ModalService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected multiCartService: TmaMultiCartService,
     protected checkoutService: TmaCheckoutService,
     protected config: DeliveryModeConfig,
@@ -61,7 +65,7 @@ export class TerminationConfirmComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => (this.user = customer));

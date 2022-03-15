@@ -4,9 +4,9 @@
     <div class="cx-dialog-header modal-header">
       <div class="cx-dialog-title modal-title">
         {{
-          (increment
-            ? 'addToCart.itemsIncrementedInYourCart'
-            : 'addToCart.itemsAddedToYourCart') | cxTranslate
+          (addedEntryWasMerged$ | async)
+            ? ('addToCart.itemsIncrementedInYourCart' | cxTranslate)
+            : ('addToCart.itemsAddedToYourCart' | cxTranslate)
         }}
       </div>
       <button
@@ -72,14 +72,15 @@
             <div>
               {{ cart.subTotal?.formattedValue }}
             </div>
+            <div class="cx-dialog-promotions">
+              <cx-promotions
+                [promotions]="
+                  (cart.appliedOrderPromotions || []).concat(
+                    cart.potentialOrderPromotions || []
+                  )
+                "
+              ></cx-promotions>
           </div>
-
-          <!-- Promotions -->
-          <div
-            class="cx-dialog-promotions"
-            *ngIf="orderPromotions$ | async as orderPromotions"
-          >
-            <cx-promotions [promotions]="orderPromotions"></cx-promotions>
           </div>
 
           <!-- Actions -->

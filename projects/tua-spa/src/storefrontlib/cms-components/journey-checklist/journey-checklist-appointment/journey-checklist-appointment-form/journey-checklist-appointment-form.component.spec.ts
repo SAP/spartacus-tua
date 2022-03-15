@@ -9,11 +9,12 @@ import {
 } from '@angular/forms';
 import {
   I18nTestingModule,
-  UserService,
   BaseSiteService,
   User,
   Cart,
-  ConfigModule
+  ConfigModule,
+  provideConfig,
+  CmsConfig
 } from '@spartacus/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
@@ -28,6 +29,7 @@ import { SearchTimeSlotService } from '../../../../../core/search-time-slot';
 import { ModalService } from '@spartacus/storefront';
 import { Observable, of } from 'rxjs';
 import createSpy = jasmine.createSpy;
+import { UserAccountFacade, USER_ACCOUNT_CORE_FEATURE, USER_ACCOUNT_FEATURE } from '@spartacus/user/account/root';
 
 describe('JourneyChecklistAppointmentFormComponent', () => {
   let component: JourneyChecklistAppointmentFormComponent;
@@ -68,7 +70,7 @@ describe('JourneyChecklistAppointmentFormComponent', () => {
     userId = 'userId';
   }
 
-  class MockUserService {
+  class MockUserAccountFacade {
     get = createSpy().and.returnValue(of(user));
   }
 
@@ -127,7 +129,7 @@ describe('JourneyChecklistAppointmentFormComponent', () => {
       providers: [
         { provide: TmaActiveCartService, useClass: MockActiveCartService },
         { provide: TmaTmfCartService, useClass: TmaTmfMockCartService },
-        { provide: UserService, useClass: MockUserService },
+        { provide: UserAccountFacade, useClass: MockUserAccountFacade },
         { provide: AppointmentService, useClass: TmfMockAppointmentService },
         { provide: BaseSiteService, useClass: MockBaseSiteService },
         {
@@ -145,7 +147,16 @@ describe('JourneyChecklistAppointmentFormComponent', () => {
         },
         {
           provide: ControlContainer
-        }
+        },
+        provideConfig(<CmsConfig>{
+          featureModules: {
+            [USER_ACCOUNT_FEATURE]: {
+              module: () =>
+                import('@spartacus/user/account').then((m) => m.UserAccountModule),
+            },
+            [USER_ACCOUNT_CORE_FEATURE]: USER_ACCOUNT_FEATURE
+          },
+        }),
       ]
     }).compileComponents();
   }));

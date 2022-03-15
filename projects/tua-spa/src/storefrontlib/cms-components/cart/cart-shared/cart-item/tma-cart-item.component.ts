@@ -13,7 +13,7 @@ import {
   ProductService,
   TranslationService
 } from '@spartacus/core';
-import { CartItemComponent, ModalRef, ModalService, PromotionService } from '@spartacus/storefront';
+import { CartItemComponent, ModalRef, ModalService,  CartItemContextSource, CartItemContext } from '@spartacus/storefront';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, map, take, takeUntil } from 'rxjs/operators';
 import {
@@ -77,6 +77,10 @@ export interface TmaItem extends OrderEntry {
   selector: 'cx-cart-item',
   templateUrl: './tma-cart-item.component.html',
   styleUrls: ['./tma-cart-item.component.scss'],
+  providers: [
+    CartItemContextSource,
+    { provide: CartItemContext, useExisting: CartItemContextSource },
+  ],
   animations: [
     trigger('slideInOut', [
       state('false', style({ height: '0px', overflow: 'hidden' })),
@@ -140,7 +144,7 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     public cartPriceService: TmaCartPriceService,
     public checklistActionTypeCheckService: TmaChecklistActionTypeCheckService,
     protected currencyService: CurrencyService,
-    protected promotionService: PromotionService,
+    protected cartItemContextSource: CartItemContextSource,
     public productSpecificationProductService?: TmaProductService,
     public priceService?: TmaPriceService,
     protected logicalResourceReservationService?: LogicalResourceReservationService,
@@ -160,11 +164,10 @@ export class TmaCartItemComponent extends CartItemComponent implements OnInit, O
     protected billingFrequencyConfig?: TmaBillingFrequencyConfig,
     protected activatedRoute?: ActivatedRoute,
   ) {
-    super(promotionService);
+    super( cartItemContextSource);
   }
 
   ngOnInit(): void {
-    super.ngOnInit();
     this.serviceProvider = this.getServiceProvider(this.item);
     this.product$ = this.productService.get(this.item.product.code);
     this.url$ = this.activatedRoute.url;

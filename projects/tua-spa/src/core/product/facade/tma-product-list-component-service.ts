@@ -21,7 +21,7 @@ import {
   take,
   takeUntil
 } from 'rxjs/operators';
-import { ProductListComponentService } from '@spartacus/storefront';
+import { ProductListComponentService, ViewConfig } from '@spartacus/storefront';
 import { TmaProductSearchService } from './tma-product-search.service';
 import { QueryServiceQualificationService } from '../../queryServiceQualification';
 import { GeographicAddress, QueryServiceQualification } from '../../model';
@@ -45,7 +45,6 @@ export class TmaProductListComponentService extends ProductListComponentService 
   page$: Observable<Page>;
   page: Page;
 
-  protected defaultPageSize = 10;
   protected destroyed$ = new Subject();
   protected sub: Subscription;
 
@@ -58,6 +57,7 @@ export class TmaProductListComponentService extends ProductListComponentService 
     protected currencyService: CurrencyService,
     protected languageService: LanguageService,
     protected router: Router,
+    protected config: ViewConfig,
     protected cmsService?: CmsService,
     protected queryServiceQualificationService?: QueryServiceQualificationService
   ) {
@@ -67,7 +67,8 @@ export class TmaProductListComponentService extends ProductListComponentService 
       activatedRoute,
       currencyService,
       languageService,
-      router
+      router,
+      config
     );
     this.page$ = this.cmsService.getCurrentPage();
   }
@@ -227,7 +228,7 @@ export class TmaProductListComponentService extends ProductListComponentService 
   ): SearchCriteria {
     return {
       query: queryParams.query || this.getTmaQueryFromRouteParams(routeParams),
-      pageSize: queryParams.pageSize || this.defaultPageSize,
+      pageSize: queryParams.pageSize || this.config.view?.defaultPageSize,
       currentPage: queryParams.currentPage,
       sortCode: queryParams.sortCode
     };

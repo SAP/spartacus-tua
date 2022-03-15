@@ -243,21 +243,9 @@
 
           <!-- Promotion -->
 
-          <ng-container
-            *ngIf="
-              appliedProductPromotions$ | async as appliedProductPromotions
-            "
-          >
-            <div
-              *ngIf="
-                appliedProductPromotions && appliedProductPromotions.length > 0
-              "
-            >
-              <cx-promotions
-                [promotions]="appliedProductPromotions"
-              ></cx-promotions>
-            </div>
-          </ng-container>
+          <cx-promotions
+                [promotions]="item.promotions || []"
+          ></cx-promotions>
           <div *ngIf="showConsumption">
             <div class="row col-md-12">
               <div class="col-md-12">

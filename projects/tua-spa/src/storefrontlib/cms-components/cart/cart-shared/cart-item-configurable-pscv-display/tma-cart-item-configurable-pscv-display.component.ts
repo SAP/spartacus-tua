@@ -4,7 +4,10 @@ import {
   Input,
   OnInit
 } from '@angular/core';
-import { TmaCharacteristic } from '../../../../../core/model';
+import {
+  LogicalResourceType,
+  TmaCharacteristic
+} from '../../../../../core/model';
 
 @Component({
   selector: 'cx-cart-item-configurable-pscv-display',
@@ -19,12 +22,18 @@ export class TmaCartItemConfigurablePscvDisplayComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    const groupedResults = this.groupBy(this.characterstics, 'name');
+    const groupedResults = this.groupBy(
+      this.characterstics.filter(
+        (characteristic: TmaCharacteristic) =>
+          characteristic.name !== LogicalResourceType.MSISDN
+      ),
+      'name'
+    );
     this.groupedCharacterstics = Object.values(groupedResults);
   }
 
   protected groupBy(list: any[], field: string): any {
-    return list.reduce(function(l: any[], f: string) {
+    return list.reduce(function (l: any[], f: string) {
       (l[f[field]] = l[f[field]] || []).push(f);
       return l;
     }, {});

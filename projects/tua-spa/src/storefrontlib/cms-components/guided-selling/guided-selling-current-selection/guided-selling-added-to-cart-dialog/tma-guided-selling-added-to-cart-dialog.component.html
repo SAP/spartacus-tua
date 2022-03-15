@@ -6,7 +6,7 @@
         <h3>
           <strong>
             {{
-              (increment
+              (numberOfEntriesBeforeAdd 
                 ? 'addToCart.itemsIncrementedInYourCart'
                 : 'addToCart.itemsAddedToYourCart'
               ) | cxTranslate
@@ -73,18 +73,17 @@
             <div>
               {{ cart.subTotal?.formattedValue }}
             </div>
-          </div>
-
-          <!-- Promotions -->
-          <ng-container *cxFeatureLevel="'1.5'">
-            <div
-              class="cx-dialog-promotions"
-              *ngIf="orderPromotions$ | async as orderPromotions"
-            >
-              <cx-promotions [promotions]="orderPromotions"></cx-promotions>
+            <div class="cx-dialog-promotions">
+              <cx-promotions
+                [promotions]="
+                  (cart.appliedOrderPromotions || []).concat(
+                    cart.potentialOrderPromotions || []
+                  )
+                "
+              ></cx-promotions>
             </div>
-          </ng-container>
-
+          </div>
+          
           <!-- Actions -->
           <div class="cx-dialog-buttons">
             <a

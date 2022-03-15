@@ -6,11 +6,11 @@ import {
   SearchConfig,
   StateWithProduct,
   User,
-  UserService,
   ProductActions
 } from '@spartacus/core';
 import { first, takeUntil } from 'rxjs/operators';
 import * as TmaProductSearchAction from '../store/actions/tma-product-search.action';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Injectable({
   providedIn: 'root'
@@ -26,13 +26,13 @@ export class TmaProductSearchService extends ProductSearchService implements OnI
 
   constructor(
     protected store: Store<StateWithProduct>,
-    protected userService?: UserService
+    protected userAccountFacade?: UserAccountFacade
   ) {
     super(store);
   }
 
   ngOnInit(): void {
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),

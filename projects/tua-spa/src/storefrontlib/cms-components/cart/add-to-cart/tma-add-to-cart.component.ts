@@ -10,8 +10,7 @@ import {
   RoutingService,
   TranslationService,
   User,
-  UserAddressService,
-  UserService
+  UserAddressService
 } from '@spartacus/core';
 import {AddToCartComponent, CurrentProductService, ModalService} from '@spartacus/storefront';
 import {NgxSpinnerService} from 'ngx-spinner';
@@ -55,6 +54,7 @@ import {
   TmfProductCharacteristic
 } from '../../../../core';
 import {TmaAddedToCartDialogComponent} from './added-to-cart-dialog/tma-added-to-cart-dialog.component';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const {APPOINTMENT, INSTALLATION_ADDRESS, MSISDN_RESERVATION} = LOCAL_STORAGE;
 
@@ -123,7 +123,7 @@ export class TmaAddToCartComponent
     protected baseSiteService?: BaseSiteService,
     protected tmaChecklistActionService?: TmaChecklistActionService,
     protected config?: JourneyChecklistConfig,
-    protected userService?: UserService,
+    protected userAccountFacade?: UserAccountFacade,
     protected geographicAddressService?: GeographicAddressService,
     protected userAddressService?: UserAddressService,
     protected productService?: ProductService,
@@ -152,7 +152,7 @@ export class TmaAddToCartComponent
       )
       .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),
@@ -199,7 +199,7 @@ export class TmaAddToCartComponent
         this.productCode
       ) ||
       !this.configurablePscvusService?.mandatoryConfigurablePscvus?.length ||
-      !!this.msisdnReservationService.getCreatedReservation()
+      this.isMsisdnSelected()
     ) {
       const quantity: number = this.addToCartForm.get('quantity').value;
       if (!this.productCode || quantity <= 0) {

@@ -7,8 +7,7 @@ import {
   ListNavigationModule,
   MediaModule,
   SpinnerModule,
-  StarRatingModule,
-  ViewConfigModule
+  StarRatingModule
 } from '@spartacus/storefront';
 import {FeaturesConfigModule, I18nModule, UrlModule} from '@spartacus/core';
 import {TmaGuidedSellingProductListItemComponent} from './guided-selling-product-list-item/tma-guided-selling-product-list-item.component';
@@ -34,7 +33,6 @@ import {TmaProductSpecificationModule} from '../../product';
     I18nModule,
     StarRatingModule,
     IconModule,
-    ViewConfigModule,
     FeaturesConfigModule,
     TmaProductListModule,
     TmaGuidedSellingCurrentSelectionModule,

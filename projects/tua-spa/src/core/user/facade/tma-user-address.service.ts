@@ -8,7 +8,9 @@ import {
   StateWithUser,
   UserActions,
   UserAddressService,
-  UserIdService
+  UserIdService,
+  UserAddressConnector,
+  CommandService
 } from '@spartacus/core';
 import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -22,9 +24,11 @@ export class TmaUserAddressService extends UserAddressService {
 
   constructor(
     protected store: Store<StateWithUser | StateWithProcess<void>>,
-    protected userIdService: UserIdService
+    protected userIdService: UserIdService,
+    protected userAddressConnector: UserAddressConnector, 
+    protected commandService: CommandService
   ) {
-    super(store, userIdService);
+    super(store, userIdService, userAddressConnector, commandService);
   }
 
   /**

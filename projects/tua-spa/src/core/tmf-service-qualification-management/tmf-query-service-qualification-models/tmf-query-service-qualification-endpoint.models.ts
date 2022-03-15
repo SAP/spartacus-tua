@@ -14,7 +14,7 @@ export interface TmfQueryServiceQualificationEndpoint {
  */
 export interface TmfQueryServiceQualificationWithScope {
   default?: string;
-  [scope: string]: string;
+  [scope: string]: string | undefined;
 }
 
 /**

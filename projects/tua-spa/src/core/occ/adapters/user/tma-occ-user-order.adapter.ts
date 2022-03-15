@@ -34,10 +34,12 @@ export class TmaOccUserOrderAdapter
    * @return The order as {@link Observable} of {@link Order}
    */
   public load(userId: string, orderCode: string): Observable<Order> {
-    const url = this.occEndpoints.getUrl('orderDetail', {
-      userId,
-      orderId: orderCode
-    });
+     const url = this.occEndpoints.buildUrl('orderDetail', {
+       urlParams: {
+         userId,
+         orderId: orderCode
+       }
+     });
 
     let headers = new HttpHeaders();
     if (userId === OCC_USER_ID_ANONYMOUS) {

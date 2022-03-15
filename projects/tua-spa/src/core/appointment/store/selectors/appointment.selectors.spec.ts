@@ -26,11 +26,12 @@ describe('Appointment Selectors', () => {
   });
   describe('getAppointmentState', () => {
     it('should return the appointment state from the store', () => {
-      let result: Appointment;
+      let result: Appointment[];
       store
-        .pipe(select(AppointmentSelectors.getAppointmentById))
+        .pipe(select(AppointmentSelectors.getAllAppointments))
         .subscribe((value) => (result = value));
       expect(result).not.toBeNull();
+      expect(result.length).toEqual(0);
     });
   });
 });

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CurrencyService, ProductService } from '@spartacus/core';
-import { ProductGridItemComponent } from '@spartacus/storefront';
+import { ProductGridItemComponent, ProductListItemContext, ProductListItemContextSource } from '@spartacus/storefront';
 import { Observable, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import {
@@ -24,6 +24,13 @@ import {
   templateUrl: './tma-product-grid-item.component.html',
   styleUrls: ['./tma-product-grid-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    ProductListItemContextSource,
+    {
+      provide: ProductListItemContext,
+      useExisting: ProductListItemContextSource,
+    },
+  ],
 })
 export class TmaProductGridItemComponent extends ProductGridItemComponent implements OnInit, OnDestroy {
 
@@ -53,6 +60,7 @@ export class TmaProductGridItemComponent extends ProductGridItemComponent implem
 
 
   constructor(
+    public productListItemContextSource: ProductListItemContextSource,
     public priceService?: TmaPriceService,
     protected currencyService?: CurrencyService,
     protected productService?: ProductService,
@@ -61,7 +69,7 @@ export class TmaProductGridItemComponent extends ProductGridItemComponent implem
     protected consumptionChangeService?: TmaConsumptionChangeService,
     protected billingFrequencyConfig?: TmaBillingFrequencyConfig
   ) {
-    super();
+    super(productListItemContextSource);
   }
 
   ngOnInit(): void {

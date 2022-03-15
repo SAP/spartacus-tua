@@ -3,10 +3,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { TmaCartDetailsModule } from './cart-details/tma-cart-details.module';
 import { TmaCartSharedModule } from './cart-shared';
 import {
+  AddToWishListModule,
   CartComponentModule,
   CartPageLayoutHandler,
   MiniCartModule,
-  PAGE_LAYOUT_HANDLER
+  PAGE_LAYOUT_HANDLER,
+  SaveForLaterModule
 } from '@spartacus/storefront';
 import { CartModule } from '@spartacus/core';
 import { TmaCartTotalsModule } from './cart-totals/tma-cart-totals.module';
@@ -17,9 +19,11 @@ import { TmaAddToCartModule } from './add-to-cart/tma-add-to-cart.module';
     NgbModule,
     TmaCartDetailsModule,
     TmaCartTotalsModule,
-    TmaCartSharedModule
+    TmaCartSharedModule,
+    SaveForLaterModule
   ],
   exports: [
+    AddToWishListModule,
     TmaCartDetailsModule,
     TmaCartTotalsModule,
     TmaCartSharedModule,

@@ -17,8 +17,7 @@ import {
   Region,
   BaseSiteService,
   ProductService,
-  User,
-  UserService
+  User
 } from '@spartacus/core';
 import { ModalService } from '@spartacus/storefront';
 import {
@@ -37,7 +36,7 @@ import {
 } from '../../../../core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ProductDetailsDialogComponent } from '../../product/product-details-dialog/product-details-dialog.component';
-
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-serviceability-form',
@@ -88,7 +87,7 @@ export class ServiceabilityFormComponent implements OnInit, OnDestroy, AfterView
     protected spinner: NgxSpinnerService,
     protected baseSiteService: BaseSiteService,
     protected productService: ProductService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected queryServiceQualificationService: QueryServiceQualificationService
   ) {}
 
@@ -119,7 +118,7 @@ export class ServiceabilityFormComponent implements OnInit, OnDestroy, AfterView
       )
       .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),

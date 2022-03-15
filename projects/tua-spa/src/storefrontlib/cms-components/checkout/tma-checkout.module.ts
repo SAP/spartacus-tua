@@ -1,16 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import {
-  CheckoutComponentModule,
+  CheckoutComponentsModule,
   CheckoutOrchestratorModule,
   CheckoutProgressMobileBottomModule,
   CheckoutProgressMobileTopModule,
   CheckoutProgressModule,
   DeliveryModeModule,
   PaymentMethodModule,
-  PromotionsModule,
-  ShippingAddressModule,
-} from '@spartacus/storefront';
+  ShippingAddressModule 
+} from "@spartacus/checkout/components";
+import { PromotionsModule } from '@spartacus/storefront';
 import { TmaCheckoutOrderSummaryModule } from './checkout-order-summary/tma-checkout-order-summary.module';
 import { TmaReviewSubmitModule } from './review-submit/tma-review-submit.module';
 import { TmaPlaceOrderModule } from './place-order/tma-place-order.module';
@@ -31,4 +31,4 @@ import { TmaPlaceOrderModule } from './place-order/tma-place-order.module';
     TmaPlaceOrderModule,
   ],
 })
-export class TmaCheckoutComponentModule extends CheckoutComponentModule {}
+export class TmaCheckoutComponentModule extends CheckoutComponentsModule { }

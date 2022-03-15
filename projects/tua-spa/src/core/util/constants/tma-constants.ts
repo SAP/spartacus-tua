@@ -1,3 +1,4 @@
+import { TmaProcessTypeEnum } from '../../model/tma-common.model';
 import { TmaConstantResourceModel } from './tma-constant-resource.model';
 
 export const LOCAL_STORAGE: TmaConstantResourceModel = {
@@ -7,12 +8,13 @@ export const LOCAL_STORAGE: TmaConstantResourceModel = {
     PRODUCT_OFFERING_GROUP: 'productOfferingGroups:',
     PARENT_BPO: 'parentBundledPo:',
     CODE: 'code:',
-    PROCESS_TYPE: 'process:'
+    PROCESS_TYPE: 'process_string_mv:'
   },
   GUIDED_SELLING: {
     CURRENT_SELECTION: {
       DASH: '-'
-    }
+    },
+    DEFAULT_PROCESS_TYPE: TmaProcessTypeEnum.ACQUISITION
   },
   MSISDN_RESERVATION: {
     MSISDN_TYPE: 'phone number',

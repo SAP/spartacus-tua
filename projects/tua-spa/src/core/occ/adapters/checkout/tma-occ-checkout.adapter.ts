@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   OccEndpointsService,
-  OccCheckoutAdapter,
-  CheckoutAdapter,
   ConverterService,
   Order,
   OCC_USER_ID_ANONYMOUS,
@@ -13,6 +11,8 @@ import {
   Occ,
 } from '@spartacus/core';
 import { TMA_ORDER_NORMALIZER } from '../../../checkout/connectors';
+import { CheckoutAdapter } from '@spartacus/checkout/core';
+import { OccCheckoutAdapter } from '@spartacus/checkout/occ';
 
 const FULL_PARAMS = 'fields=FULL';
 const ORDERS_ENDPOINT = '/orders';
@@ -34,13 +34,11 @@ export class TmaOccCheckoutAdapter
    *
    * @param userId The identifier of the user
    * @param cartId The identifier of the cart
+   * @param termsChecked The identifier of the termsChecked
    * @return The order as {@link Observable} of {@link Order}
    */
-  public placeOrder(userId: string, cartId: string): Observable<Order> {
-    const url = this.getEndpoint(userId, ORDERS_ENDPOINT);
-    const params = new HttpParams({
-      fromString: 'cartId=' + cartId + '&' + FULL_PARAMS,
-    });
+  public placeOrder(userId: string, cartId: string, termsChecked: boolean): Observable<Order> {
+    const url = this.getPlaceOrderEndpoint(userId, cartId, termsChecked.toString());
 
     let headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -50,7 +48,7 @@ export class TmaOccCheckoutAdapter
     }
 
     return this.http
-      .post<Occ.Order>(url, {}, { headers, params })
+      .post<Occ.Order>(url, {}, { headers })
       .pipe(this.converter.pipeable(TMA_ORDER_NORMALIZER));
   }
 }

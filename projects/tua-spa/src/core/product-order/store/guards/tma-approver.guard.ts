@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate } from '@angular/router';
-import { B2BUserRole, GlobalMessageService, GlobalMessageType, RoutingService, User, UserService } from '@spartacus/core';
+import { B2BUserRole, GlobalMessageService, GlobalMessageType, RoutingService, User } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 import { Observable } from 'rxjs';
 import { filter, map, pluck } from 'rxjs/operators';
 
@@ -9,7 +10,7 @@ import { filter, map, pluck } from 'rxjs/operators';
 })
 export class TmaApproverGuard implements CanActivate {
   constructor(
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected routingService: RoutingService,
     protected globalMessageService: GlobalMessageService
   ) {
@@ -19,7 +20,7 @@ export class TmaApproverGuard implements CanActivate {
    * Controls the user role to be Approver or Admin and redirects to home page it is not
    */
   canActivate(): Observable<boolean> {
-    return this.userService.get().pipe(
+    return this.userAccountFacade.get().pipe(
       filter((user: User) => user && Object.keys(user).length > 0),
       pluck('roles'),
       map((roles: string[]) => {

@@ -33,7 +33,9 @@ export class TmaOccCartAdapter extends OccCartAdapter implements CartAdapter {
    */
   public loadAll(userId: string): Observable<Cart[]> {
     return this.http
-      .get<Occ.CartList>(this.occEndpointsService.getUrl('carts', { userId }))
+      .get<Occ.CartList>(
+        this.occEndpointsService.buildUrl('carts', { urlParams: { userId } })
+      )
       .pipe(
         pluck('carts'),
         this.converterService.pipeableMany(TMA_CART_NORMALIZER)
@@ -64,7 +66,7 @@ export class TmaOccCartAdapter extends OccCartAdapter implements CartAdapter {
     } else {
       return this.http
         .get<Occ.Cart>(
-          this.occEndpointsService.getUrl('cart', { userId, cartId })
+          this.occEndpointsService.buildUrl('cart', { urlParams: { userId, cartId } })
         )
         .pipe(this.converterService.pipeable(TMA_CART_NORMALIZER));
     }

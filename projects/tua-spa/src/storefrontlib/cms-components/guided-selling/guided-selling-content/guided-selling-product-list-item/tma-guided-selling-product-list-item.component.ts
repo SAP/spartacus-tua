@@ -24,11 +24,19 @@ import {
 } from '../../../../../core/model';
 import {TmaPriceService} from '../../../../../core/product/facade';
 import {TmaProductListItemComponent} from '../../../product/product-list';
+import { ProductListItemContext, ProductListItemContextSource } from '@spartacus/storefront';
 
 @Component({
   selector: 'cx-guided-selling-product-list-item',
   templateUrl: './tma-guided-selling-product-list-item.component.html',
-  styleUrls: ['./tma-guided-selling-product-list-item.component.scss']
+  styleUrls: ['./tma-guided-selling-product-list-item.component.scss'],
+  providers: [
+    ProductListItemContextSource,
+    {
+      provide: ProductListItemContext,
+      useExisting: ProductListItemContextSource,
+    },
+  ],
 })
 export class TmaGuidedSellingProductListItemComponent
   extends TmaProductListItemComponent
@@ -41,6 +49,7 @@ export class TmaGuidedSellingProductListItemComponent
   protected destroyed$ = new Subject();
 
   constructor(
+    public productListItemContextSource: ProductListItemContextSource,
     public priceService: TmaPriceService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected changeDetectorRef: ChangeDetectorRef,
@@ -50,7 +59,7 @@ export class TmaGuidedSellingProductListItemComponent
     protected configurablePscvusService?: TmaConfigurablePscInputsDataHandlingService,
     protected guidedSellingProductConfigSelectionsService?: TmaGuidedSellingProductConfigSelectionsService
   ) {
-    super(priceService, currencyService);
+    super(productListItemContextSource, priceService,currencyService);
   }
 
   ngOnInit(): void {

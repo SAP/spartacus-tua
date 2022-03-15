@@ -1,21 +1,21 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TerminationButtonComponent } from './termination-button/termination-button.component';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { I18nModule } from '@spartacus/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { PaymentMethodModule } from "@spartacus/checkout/components";
+import { I18nModule } from '@spartacus/core';
 import {
   CardModule,
   FormErrorsModule,
   IconModule,
-  PaymentMethodModule,
   SpinnerModule
 } from '@spartacus/storefront';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { TmaPriceDisplayModule } from '../../../../product/price/price-display/tma-price-display.module';
-import { TmaCartSharedModule } from '../../../../cart';
-import { TerminationConfirmComponent } from './termination-confirm/termination-confirm.component';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { TmaCartSharedModule } from '../../../../cart';
+import { TmaPriceDisplayModule } from '../../../../product/price/price-display/tma-price-display.module';
+import { TerminationButtonComponent } from './termination-button/termination-button.component';
+import { TerminationConfirmComponent } from './termination-confirm/termination-confirm.component';
 
 @NgModule({
   declarations: [
@@ -41,4 +41,4 @@ import { NgxSpinnerModule } from 'ngx-spinner';
   exports: [TerminationButtonComponent],
   entryComponents: [TerminationConfirmComponent]
 })
-export class TerminateSubscriptionModule {}
+export class TerminateSubscriptionModule { }

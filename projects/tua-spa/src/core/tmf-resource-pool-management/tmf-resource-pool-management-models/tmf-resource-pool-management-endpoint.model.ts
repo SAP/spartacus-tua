@@ -14,8 +14,7 @@ export interface TmfResourcePoolManagementEndpoint {
  */
 export interface TmfResourcePoolManagementEndpointWithScope {
   default?: string;
-
-  [scope: string]: string;
+  [scope: string]: string | undefined;
 }
 
 /**

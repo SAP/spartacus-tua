@@ -14,7 +14,8 @@ import {
   ReservationAction,
   ReservationSelectors
 } from '../store';
-import { UserService, User } from '@spartacus/core';
+import { User } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Injectable()
 export class LogicalResourceReservationService implements OnDestroy {
@@ -23,9 +24,9 @@ export class LogicalResourceReservationService implements OnDestroy {
 
   constructor(
     protected store: Store<StateWithReservation>,
-    protected userService: UserService
+    protected userAccountFacade: UserAccountFacade
   ) {
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => {

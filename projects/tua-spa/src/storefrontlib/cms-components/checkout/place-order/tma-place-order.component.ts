@@ -1,9 +1,11 @@
-import { Component, ChangeDetectionStrategy, OnInit, ViewContainerRef } from '@angular/core';
-import { CheckoutService, RoutingService } from '@spartacus/core';
-import { CheckoutReplenishmentFormService, LaunchDialogService, PlaceOrderComponent } from '@spartacus/storefront';
-import { AppointmentService } from '../../../../core/appointment/facade';
-import { Observable } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnInit, ViewContainerRef } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { CheckoutReplenishmentFormService, PlaceOrderComponent } from "@spartacus/checkout/components";
+import { CheckoutFacade } from "@spartacus/checkout/root";
+import { RoutingService } from '@spartacus/core';
+import { LaunchDialogService } from '@spartacus/storefront';
+import { Observable } from 'rxjs';
+import { AppointmentService } from '../../../../core/appointment/facade';
 import { LogicalResourceReservationService } from '../../../../core/reservation/facade';
 
 @Component({
@@ -19,7 +21,7 @@ export class TmaPlaceOrderComponent extends PlaceOrderComponent implements OnIni
   hasCancelledReservations$: Observable<boolean>;
 
   constructor(
-    protected tmaCheckoutService: CheckoutService,
+    protected checkoutFacade: CheckoutFacade,
     protected tmaRoutingService: RoutingService,
     protected fb: FormBuilder,
     protected checkoutReplenishmentFormService: CheckoutReplenishmentFormService,
@@ -29,7 +31,7 @@ export class TmaPlaceOrderComponent extends PlaceOrderComponent implements OnIni
     protected logicalResourceReservationService?: LogicalResourceReservationService
 
   ) {
-    super(tmaCheckoutService, tmaRoutingService, fb, checkoutReplenishmentFormService, launchDialogService, vcr);
+    super(checkoutFacade, tmaRoutingService, fb, checkoutReplenishmentFormService, launchDialogService, vcr);
   }
 
   toggleTAndC(): void {

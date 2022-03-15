@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { BaseSiteService, PaginationModel, SearchConfig, UserService } from '@spartacus/core';
+import { BaseSiteService, PaginationModel, SearchConfig } from '@spartacus/core';
 import { TmaProductOrderService } from '../../../../core/product-order/facade';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { TmaPaginatedProductOrder } from '../../../../core/model';
 import { takeUntil } from 'rxjs/operators';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-order-approval-list',
@@ -22,7 +23,7 @@ export class TmaOrderApprovalListComponent implements OnInit, OnDestroy {
   constructor(
     protected productOrderService: TmaProductOrderService,
     protected baseSiteService: BaseSiteService,
-    protected userService: UserService
+    protected userAccountFacade: UserAccountFacade
   ) {
   }
 
@@ -32,7 +33,7 @@ export class TmaOrderApprovalListComponent implements OnInit, OnDestroy {
       pageSize: this.PAGE_SIZE
     };
 
-    combineLatest([this.userService.get(), this.baseSiteService.getActive()])
+    combineLatest([this.userAccountFacade.get(), this.baseSiteService.getActive()])
       .pipe(takeUntil(this.destroyed$))
       .subscribe((values: any[]) =>
         this.productOrderService.loadProductOrders(values[0].uid, values[1], fetchParams)
@@ -72,7 +73,7 @@ export class TmaOrderApprovalListComponent implements OnInit, OnDestroy {
 
     this.currentPage = page;
 
-    combineLatest([this.userService.get(), this.baseSiteService.getActive()])
+    combineLatest([this.userAccountFacade.get(), this.baseSiteService.getActive()])
       .pipe(takeUntil(this.destroyed$))
       .subscribe((values: any[]) =>
         this.productOrderService.loadProductOrders(values[0].uid, values[1], fetchParams)

@@ -15,7 +15,6 @@ import {
   SubscriptionTermService
 } from '../../../../../core';
 import {
-  UserService,
   BaseSiteService,
   User,
   UserOrderService,
@@ -26,6 +25,7 @@ import { first, takeUntil } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ModalRef, ModalService } from '@spartacus/storefront';
 import { TmaAddedToCartDialogComponent } from '../../../cart';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-renew-subscription',
@@ -51,7 +51,7 @@ export class RenewSubscriptionComponent implements OnInit, OnDestroy {
 
   constructor(
     public subscriptionTermService: SubscriptionTermService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected baseSiteService: BaseSiteService,
     protected recommendationService: RecommendationService,
     protected activeCartService: TmaActiveCartService,
@@ -68,7 +68,7 @@ export class RenewSubscriptionComponent implements OnInit, OnDestroy {
       .getActive()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => (this.user = customer));

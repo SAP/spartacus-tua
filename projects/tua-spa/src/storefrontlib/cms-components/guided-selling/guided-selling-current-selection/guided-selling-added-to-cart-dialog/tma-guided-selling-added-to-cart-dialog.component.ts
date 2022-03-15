@@ -11,7 +11,7 @@ import {
   TmaProduct,
   TmaProductOfferingPrice,
 } from '../../../../../core/model';
-import { ModalService, PromotionService } from '@spartacus/storefront';
+import { ModalService } from '@spartacus/storefront';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
 import { TmaPriceService } from '../../../../../core/product/facade';
 import { Observable } from 'rxjs';
@@ -38,7 +38,6 @@ export class TmaGuidedSellingAddedToCartDialogComponent
     protected activeCartService: TmaActiveCartService,
     protected fb: FormBuilder,
     protected currencyService: CurrencyService,
-    protected promotionService: PromotionService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected priceService: TmaPriceService
   ) {
@@ -46,8 +45,7 @@ export class TmaGuidedSellingAddedToCartDialogComponent
       cartPriceService,
       modalService,
       cartService,
-      currencyService,
-      promotionService
+      currencyService
     );
   }
 

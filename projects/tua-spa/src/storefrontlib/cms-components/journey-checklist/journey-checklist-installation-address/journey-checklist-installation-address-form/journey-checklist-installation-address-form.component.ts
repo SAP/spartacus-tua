@@ -14,7 +14,6 @@ import {
   User,
   Country,
   Region,
-  UserService,
   BaseSiteService,
   OCC_USER_ID_ANONYMOUS,
   UserAddressService
@@ -43,6 +42,7 @@ import { TmaAddressFormComponent } from '../../../address-form';
 import { ModalService } from '@spartacus/storefront';
 import { first, takeUntil, filter, take } from 'rxjs/operators';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Component({
   selector: 'cx-journey-checklist-installation-address-form',
@@ -95,7 +95,7 @@ export class JourneyChecklistInstallationAddressFormComponent
     protected changeDetectorRef: ChangeDetectorRef,
     protected modalService: ModalService,
     protected activeCartService: TmaActiveCartService,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected baseSiteService: BaseSiteService,
     protected queryServiceQualificationService: QueryServiceQualificationService,
     protected spinner: NgxSpinnerService,
@@ -105,7 +105,7 @@ export class JourneyChecklistInstallationAddressFormComponent
 
   ngOnInit() {
     this.currentCart$ = this.activeCartService.getActive();
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(
         first((user: User) => user != null),
