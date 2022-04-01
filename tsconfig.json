@@ -15,7 +15,7 @@
       "node_modules/@types"
     ],
     "lib": [
-      "es2018",
+      "es2020",
       "dom"
     ],
     "paths": {
@@ -25,16 +25,23 @@
       "tua-spa/*": [
         "dist/tua-spa/*"
       ],
-      "storefrontapp": [
-        "dist/storefrontapp"
+      "application": [
+        "dist/application"
       ],
-      "storefrontapp/*": [
-        "dist/storefrontapp/*"
+      "application/*": [
+        "dist/application/*"
+      ],
+      "b2bapplication": [
+        "dist/b2bapplication"
+      ],
+      "b2bapplication/*": [
+        "dist/b2bapplication/*"
       ]
     }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
+    "strictInjectionParameters": true,
+    "enableIvy": true
   }
 }
