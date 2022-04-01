@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { ProductListComponentService } from '@spartacus/storefront';
+import { TmfProduct } from '../../../../../../core';
 import { TmaProductScrollComponent } from '../../../../product/product-list';
 
 @Component({
@@ -8,6 +9,9 @@ import { TmaProductScrollComponent } from '../../../../product/product-list';
   styleUrls: ['./tma-guided-selling-product-scroll.component.scss']
 })
 export class TmaGuidedSellingProductScrollComponent extends TmaProductScrollComponent {
+
+  @Input()
+  tmfProducts: TmfProduct[];
 
   constructor(
     protected tmaProductListComponentService: ProductListComponentService,

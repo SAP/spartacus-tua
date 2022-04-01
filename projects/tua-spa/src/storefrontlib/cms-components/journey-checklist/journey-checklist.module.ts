@@ -1,30 +1,18 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { JourneyChecklistAppointmentComponent } from './journey-checklist-appointment/journey-checklist-appointment.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
-import { I18nModule, CxDatePipe } from '@spartacus/core';
-import { NgxSpinnerModule } from 'ngx-spinner';
-import { JourneyChecklistStepComponent } from './journey-checklist-step/journey-checklist-step.component';
-import { JourneyChecklistLogicalResourceComponent } from './journey-checklist-logical-resource/journey-checklist-logical-resource.component';
+import { CxDatePipe } from '@spartacus/core';
+import { JourneyChecklistInstallationAddressModule } from './journey-checklist-installation-address';
+import { JourneyChecklistLogicalResourceModule } from './journey-checklist-logical-resource';
+import { JourneyChecklistAppointmentModule } from './journey-checklist-appointment';
 
 @NgModule({
-  imports: [CommonModule, I18nModule, NgbModule, FormsModule, NgxSpinnerModule],
+  imports: [
+    JourneyChecklistLogicalResourceModule,
+    JourneyChecklistInstallationAddressModule,
+    JourneyChecklistAppointmentModule
+  ],
   providers: [CxDatePipe],
-  declarations: [
-    JourneyChecklistStepComponent,
-    JourneyChecklistAppointmentComponent,
-    JourneyChecklistLogicalResourceComponent
-  ],
-  entryComponents: [
-    JourneyChecklistStepComponent,
-    JourneyChecklistAppointmentComponent
-  ],
-  exports: [
-    JourneyChecklistStepComponent,
-    JourneyChecklistAppointmentComponent
-  ]
+  declarations: [],
+  entryComponents: [],
+  exports: []
 })
-export class JourneyChecklistComponentModule {
-}
-
+export class JourneyChecklistComponentModule {}

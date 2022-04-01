@@ -6,7 +6,7 @@ import { TmfProductService } from '../../../../../core/subscription/tmf-product'
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SpinnerModule } from '@spartacus/storefront';
-import { CartItemPriceModule } from '../../../cart/cart-shared/cart-item-price';
+import { TmaCartItemPriceDisplayModule } from '../../../cart/cart-shared/cart-item-price-display/tma-cart-item-price-display.module';
 @NgModule({
   imports: [
     CommonModule,
@@ -15,11 +15,11 @@ import { CartItemPriceModule } from '../../../cart/cart-shared/cart-item-price';
     RouterModule,
     UrlModule,
     SpinnerModule,
-    CartItemPriceModule,
+    TmaCartItemPriceDisplayModule
   ],
   providers: [TmfProductService],
   declarations: [TmfProductComponent],
   exports: [TmfProductComponent],
-  entryComponents: [TmfProductComponent],
+  entryComponents: [TmfProductComponent]
 })
 export class TmfProductComponentModule {}

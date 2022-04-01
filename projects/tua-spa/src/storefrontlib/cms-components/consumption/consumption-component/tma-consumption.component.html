@@ -1,20 +1,20 @@
 <ng-container *ngIf="url$ |async as url">
   <ng-container *ngIf="url?.length == 0">
     <div class="row cx-consumption d-flex justify-content-center">
-      <section class="col-md-10" *ngIf="data$ | async as consumptionComponent">
-        <ngb-tabset type="pills">
-          <ngb-tab *ngFor="let poConsumption of consumptionComponent?.searchByConsumptionComponents | keyvalue">
-            <ng-template ngbTabTitle>
+      <section class="col-md-8" *ngIf="data$ | async as consumptionComponent">
+        <ul ngbNav #nav="ngbNav" class="nav-pills">
+          <li ngbNavItem  *ngFor="let poConsumption of consumptionComponent?.searchByConsumptionComponents | keyvalue">
+            <ng-template ngbNavTitle>
               <span>{{ poConsumption.value.productSpecification.name }}</span>
             </ng-template>
-            <ng-template ngbTabContent>
-              <cx-po-search-by-consumption
-                [poConsumption]="poConsumption.value"
-                [isModal]="false">
-              </cx-po-search-by-consumption>
-            </ng-template>
-          </ngb-tab>
-        </ngb-tabset>
+          <ng-template ngbNavContent>
+            <cx-po-search-by-consumption
+            [poConsumption]="poConsumption.value"
+            [isModal]="false">
+          </cx-po-search-by-consumption>
+          </ng-template>
+          </li>
+        </ul>
       </section>
     </div>
   </ng-container>

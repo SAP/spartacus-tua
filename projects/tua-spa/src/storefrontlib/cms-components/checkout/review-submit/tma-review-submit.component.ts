@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CheckoutStepService, ReviewSubmitComponent } from "@spartacus/checkout/components";
+import { CheckoutCostCenterFacade, CheckoutDeliveryFacade, CheckoutPaymentFacade, PaymentTypeFacade } from "@spartacus/checkout/root";
 import {
-  CartService,
-  CheckoutDeliveryService,
-  CheckoutPaymentService,
+  ActiveCartService,
   TranslationService,
   UserAddressService,
+  UserCostCenterService
 } from '@spartacus/core';
-import { CheckoutConfigService, PromotionService, ReviewSubmitComponent } from '@spartacus/storefront';
 
 @Component({
   selector: 'cx-review-submit',
@@ -16,14 +16,16 @@ import { CheckoutConfigService, PromotionService, ReviewSubmitComponent } from '
 export class TmaReviewSubmitComponent extends ReviewSubmitComponent {
 
   constructor(
-    protected checkoutDeliveryService: CheckoutDeliveryService,
-    protected checkoutPaymentService: CheckoutPaymentService,
+    protected checkoutDeliveryFacade: CheckoutDeliveryFacade,
+    protected checkoutPaymentFacade: CheckoutPaymentFacade,
     protected userAddressService: UserAddressService,
-    protected cartService: CartService,
+    protected activeCartService: ActiveCartService,
     protected translation: TranslationService,
-    protected checkoutConfigService: CheckoutConfigService,
-    protected promotionService: PromotionService
+    protected checkoutStepService: CheckoutStepService,
+    protected paymentTypeFacade: PaymentTypeFacade,
+    protected checkoutCostCenterFacade: CheckoutCostCenterFacade,
+    protected userCostCenterService: UserCostCenterService
   ) {
-    super(checkoutDeliveryService, checkoutPaymentService, userAddressService, cartService, translation, checkoutConfigService, promotionService);
+    super(checkoutDeliveryFacade, checkoutPaymentFacade, userAddressService, activeCartService, translation, checkoutStepService, paymentTypeFacade, checkoutCostCenterFacade, userCostCenterService);
   }
 }

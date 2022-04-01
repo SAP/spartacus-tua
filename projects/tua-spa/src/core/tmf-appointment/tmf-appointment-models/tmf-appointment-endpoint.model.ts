@@ -14,7 +14,7 @@ export interface TmfAppointmentEndpoint {
  */
 export interface TmfAppointmentEndpointWithScope {
   default?: string;
-  [scope: string]: string;
+  [scope: string]: string | undefined;
 }
 
 /**

@@ -8,23 +8,23 @@ import {
   updateAppointmentErrorReducer,
 } from './appointment.reducer';
 import { Appointment } from '../../..';
-import { loaderReducer } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 
 export function getReducers(): ActionReducerMap<AppointmentState> {
   return {
-    appointments: loaderReducer<Appointment[]>(
+    appointments: StateUtils.loaderReducer<Appointment[]>(
       APPOINTMENT_DATA,
       appointmentReducer
     ),
-    newAppointment: loaderReducer<Appointment>(
+    newAppointment: StateUtils.loaderReducer<Appointment>(
       APPOINTMENT_DATA,
       createAppointmentReducer
     ),
-    error: loaderReducer<AppointmentError[]>(
+    error: StateUtils.loaderReducer<AppointmentError[]>(
       APPOINTMENT_DATA,
       appointmentErrorReducer
     ),
-    updateAppointmentError: loaderReducer<AppointmentError>(
+    updateAppointmentError: StateUtils.loaderReducer<AppointmentError>(
       APPOINTMENT_DATA,
       updateAppointmentErrorReducer
     ),

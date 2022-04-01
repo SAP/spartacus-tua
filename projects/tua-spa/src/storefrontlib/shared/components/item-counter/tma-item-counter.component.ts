@@ -1,5 +1,5 @@
 import { ItemCounterComponent } from '@spartacus/storefront';
-import { Component, forwardRef, Input, OnInit, Renderer2 } from '@angular/core';
+import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 const COUNTER_CONTROL_ACCESSOR = {
@@ -22,14 +22,10 @@ export class TmaItemCounterComponent extends ItemCounterComponent implements OnI
   @Input()
   entryNumber: number;
 
-  constructor(
-    protected renderer2: Renderer2
-  ) {
-    super(renderer2);
-  }
+  @Input()
+  quantityDisable: boolean;
 
   ngOnInit() {
     super.ngOnInit();
-    this.writeValue(this.quantity || this.value || this.min || 0);
   }
 }

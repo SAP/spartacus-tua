@@ -1,28 +1,30 @@
 import {
   AnonymousConsentsConfig,
-  AsmConfig,
   AuthConfig,
+  CartConfig,
   CmsConfig,
   ExternalRoutesConfig,
   GlobalMessageConfig,
   I18nConfig,
-  KymaConfig,
   OccConfig,
-  PersonalizationConfig,
   RoutingConfig,
   SiteContextConfig,
   StateConfig
 } from '@spartacus/core';
-import { CheckoutConfig, IconConfig, LayoutConfig, PWAModuleConfig, QualtricsConfig, ViewConfig } from '@spartacus/storefront';
-import { FeatureToggles } from '@spartacus/storefront/feature-toggles';
-import { TmaBillingFrequencyConfig, TmfAppointmentConfig, TmfConfig } from '../core';
-import { JourneyChecklistConfig } from '../core/journey-checklist-config';
-import { PremiseLookupConfig } from '../core/premiselookup';
+import { TmfConfig } from '../core/tmf/config/tmf-config';
+import { DirectionConfig, IconConfig, LayoutConfig, MediaConfig, PaginationConfig, PWAModuleConfig, ViewConfig } from '@spartacus/storefront';
+import { TmfAppointmentConfig } from '../core/tmf-appointment';
 import { TmfResourcePoolManagementConfig } from '../core/tmf-resource-pool-management';
+import { SeoConfig } from '@spartacus/storefront/cms-structure/seo/config';
+import { TmaBillingFrequencyConfig } from '../core/config/billing-frequency';
+import { JourneyChecklistConfig } from '../core/config/journey-checklist-config';
+import { TmfQueryServiceQualificationConfig } from '../core/tmf-service-qualification-management';
+import { AsmConfig } from '@spartacus/asm/core';
+import { CheckoutConfig } from '@spartacus/checkout/root';
+import { PersonalizationConfig } from '@spartacus/tracking/personalization/root';
+import { QualtricsConfig } from '@spartacus/qualtrics/components';
 
-
-class SkipLinkConfig {
-}
+class SkipLinkConfig {}
 
 export type TmaStorefrontConfig =
   | AnonymousConsentsConfig
@@ -41,14 +43,17 @@ export type TmaStorefrontConfig =
   | PersonalizationConfig
   | IconConfig
   | CheckoutConfig
-  | KymaConfig
   | GlobalMessageConfig
   | ExternalRoutesConfig
   | ViewConfig
-  | FeatureToggles
   | AsmConfig
   | SkipLinkConfig
   | TmfAppointmentConfig
-  | PremiseLookupConfig
   | TmfResourcePoolManagementConfig
-  | JourneyChecklistConfig;
+  | JourneyChecklistConfig
+  | DirectionConfig
+  | MediaConfig
+  | PaginationConfig
+  | CartConfig
+  | SeoConfig
+  | TmfQueryServiceQualificationConfig;

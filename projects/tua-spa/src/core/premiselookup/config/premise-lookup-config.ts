@@ -1,12 +1,20 @@
-import { SiteContextConfig } from '@spartacus/core';
+import { Injectable } from '@angular/core';
+import { BackendConfig, Config, SiteContextConfig } from '@spartacus/core';
 import { PremiseLookupEndpoints } from '../models';
 
-export abstract class PremiseLookupConfig extends SiteContextConfig {
-  backend?: {
-    premiseLookup?: {
-      baseUrl?: string;
-      prefix?: string;
-      endpoints?: PremiseLookupEndpoints;
-    };
+interface PremiseLookupBackendConfig extends BackendConfig {
+  premiseLookup?: {
+    baseUrl?: string;
+    prefix?: string;
+    endpoints?: PremiseLookupEndpoints;
   };
 }
+
+@Injectable({
+  providedIn: 'root',
+  useExisting: Config
+})
+export abstract class PremiseLookupConfig extends SiteContextConfig {
+  backend?: PremiseLookupBackendConfig;
+}
+

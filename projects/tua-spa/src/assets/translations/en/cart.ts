@@ -1,10 +1,8 @@
 export const cart = {
   cartItems: {
     contractStartDate: 'Contract Start Date',
-    installationAddress: 'Installation Address',
     meterNo: 'Meter NO',
-    appointment: 'Appointment:',
-    defaultAppointment: 'Please call to Schedule',
+    subscription: 'Subscription',
     appointmentError: {
       getAppointmentByIdError:
         'There is a problem in fetching appointment details.Please try again later',
@@ -12,12 +10,12 @@ export const cart = {
         'Your appointment cannot be displayed. Please remove the cart entry to proceed',
       errorPost: 'Something went wrong. Could not add item to the shopping cart.',
       cancelledAppointmentError:
-        'There is a problem with appointment. Please  remove this entry from the cart to proceed.',
+        'There is a problem with appointment. Please  remove this entry from the cart to proceed.'
     },
     price: {
       common: {
         from: 'From',
-        onwards: 'onwards',
+        onwards: 'onwards'
       },
       month: 'month',
       months: 'Months',
@@ -31,12 +29,14 @@ export const cart = {
         abbreviation_year: 'year',
         abbreviation_yearly: 'year',
         abbreviation_quarter: 'quarter',
-        abbreviation_quarterly: 'quarter',
-      },
+        abbreviation_quarterly: 'quarter'
+      }
     },
+    consumption:'Average Consumption',
+    itemDetails: 'More details:'
   },
   orderCost: {
     toBeDetermined: 'TBD',
-    totalPayOnCheckout: 'Total Pay On Checkout',
-  },
+    totalPayOnCheckout: 'Total Pay On Checkout'
+  }
 };

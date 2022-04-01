@@ -1,5 +1,5 @@
 import { I18nTestingModule } from '@spartacus/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { UsageConsumptionReport } from '../../../../../../core/model';
@@ -48,7 +48,7 @@ describe('UsageConsumptionPiechartComponent', () => {
   let component: UsageConsumptionPiechartComponent;
   let fixture: ComponentFixture<UsageConsumptionPiechartComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [UsageConsumptionPiechartComponent],
       schemas: [NO_ERRORS_SCHEMA],

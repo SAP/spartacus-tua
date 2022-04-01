@@ -1,5 +1,5 @@
 import { I18nTestingModule } from '@spartacus/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -48,7 +48,7 @@ describe("UsageConsumptionGridComponent", () => {
   let component: UsageConsumptionGridComponent;
   let fixture: ComponentFixture<UsageConsumptionGridComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [UsageConsumptionGridComponent],
       schemas: [NO_ERRORS_SCHEMA],

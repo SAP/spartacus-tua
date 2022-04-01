@@ -35,10 +35,28 @@ export const getTmfProduct: MemoizedSelectorWithProps<
     const tmfProduct: TmfProductMap = state
       ? state.find(
           (sp: TmfProductMap) =>
-            sp.tmfProductId === props.tmfProductId &&
+            sp.id === props.tmfProductId &&
             sp.baseSiteId === props.baseSiteId
         )
       : undefined;
     return tmfProduct ? tmfProduct.tmfProduct : undefined;
+  }
+);
+
+export const getTmfProductMap: MemoizedSelectorWithProps<
+  TmaStateWithTmfProduct,
+  any,
+  TmfProductMap
+> = createSelector(
+  getTmfProductDetails,
+  (state: TmfProductMap[], props: any) => {
+    const tmfProductMap: TmfProductMap = state
+      ? state.find(
+          (productMap: TmfProductMap) =>
+          productMap.id === props.tmfProductId &&
+          productMap.baseSiteId === props.baseSiteId
+        )
+      : undefined;
+    return tmfProductMap ? tmfProductMap : undefined;
   }
 );

@@ -12,6 +12,11 @@ import {
 } from '../auth/http-interceptors';
 import { TmfSubscriptionModule } from './adapters/subscription';
 import { TmaTmfShoppingCartModule } from './adapters/cart';
+import { TmfRecommendationModule } from './adapters/recommendation';
+import { TmfGeographicAddressModule } from './adapters/geographic-address';
+import { TmfProductOfferingModule } from './adapters';
+import { TmfProductOrderModule } from './adapters/product-order';
+import { TmfSelfcareModule } from './adapters/selfcare';
 
 @NgModule({
   imports: [
@@ -19,6 +24,11 @@ import { TmaTmfShoppingCartModule } from './adapters/cart';
     TmfSubscriptionModule,
     TmaTmfShoppingCartModule,
     TmfConfigLoaderModule.forRoot(),
+    TmfRecommendationModule,
+    TmfGeographicAddressModule,
+    TmfProductOfferingModule,
+    TmfProductOrderModule,
+    TmfSelfcareModule
   ],
 })
 export class TmfModule {
@@ -32,12 +42,12 @@ export class TmfModule {
         {
           provide: HTTP_INTERCEPTORS,
           useClass: TmaClientTokenInterceptor,
-          multi: true,
+          multi: true
         },
         {
           provide: HTTP_INTERCEPTORS,
           useClass: TmaUserTokenInterceptor,
-          multi: true,
+          multi: true
         },
       ],
     };

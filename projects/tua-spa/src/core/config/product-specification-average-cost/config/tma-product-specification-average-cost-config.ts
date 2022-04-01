@@ -1,3 +1,8 @@
 export abstract class TmaProductSpecificationAverageCostConfig {
-  productSpecificationAverageCost?: string[];
+    productSpecificationAverageCost?: string[];
 }
+
+declare module '@spartacus/core' {
+  interface Config extends TmaProductSpecificationAverageCostConfig {}
+}
+  

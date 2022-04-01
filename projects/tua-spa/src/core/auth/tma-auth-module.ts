@@ -1,16 +1,26 @@
-import { AuthConfig, AuthModule, Config, ConfigModule } from '@spartacus/core';
-import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import {
+  AuthConfig,
+  AuthModule,
+  ClientAuthModule,
+  Config,
+  ConfigModule,
+  UserAuthModule
+} from '@spartacus/core';
 import { defaultTmaAuthConfig } from './config/default-tma-auth-config';
-import { TmaClientTokenInterceptor, TmaUserTokenInterceptor } from './http-interceptors';
+import { TmaClientTokenInterceptor } from './http-interceptors/tma-client-token.interceptor';
+import { TmaUserTokenInterceptor } from './http-interceptors/tma-user-token.interceptor';
 
 @NgModule({
   imports: [
     CommonModule,
+    ClientAuthModule.forRoot(),
+    UserAuthModule.forRoot(),
     HttpClientModule,
-    ConfigModule.withConfig(defaultTmaAuthConfig),
-  ],
+    ConfigModule.withConfig(defaultTmaAuthConfig)
+  ]
 })
 export class TmaAuthModule extends AuthModule {
   static forRoot(): ModuleWithProviders<TmaAuthModule> {
@@ -29,7 +39,7 @@ export class TmaAuthModule extends AuthModule {
             multi: true
           }
         ],
-        { provide: AuthConfig, useExisting: Config },
+        { provide: AuthConfig, useExisting: Config }
       ]
     };
   }

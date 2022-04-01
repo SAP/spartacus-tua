@@ -1,13 +1,14 @@
-import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { Inject, Injectable, Optional, PLATFORM_ID } from '@angular/core';
+import { Config, SERVER_REQUEST_URL } from '@spartacus/core';
 import { TransferState } from '@angular/platform-browser';
-import { Config, EXTERNAL_CONFIG_TRANSFER_ID, SERVER_REQUEST_URL } from '@spartacus/core';
-import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { tmaDeepMerge } from '../../utils/tma-deep-merge';
-import { TmaBillingFrequencyLoadedConfig } from './tma-billing-frequency-loaded-config';
-import { TmaBillingFrequencyLoadedConfigConverter } from './tma-billing-frequency-loaded-config-converter';
+import { Observable, of } from 'rxjs';
+import { DOCUMENT, isPlatformBrowser, isPlatformServer } from '@angular/common';
 import { TmaBillingFrequencyValuesConfigLoader } from './tma-billing-frequency-values-config-loader';
+import { TmaBillingFrequencyLoadedConfigConverter } from './tma-billing-frequency-loaded-config-converter';
+import { TmaBillingFrequencyLoadedConfig } from './tma-billing-frequency-loaded-config';
+import { tmaDeepMerge } from '../../utils/tma-deep-merge';
+import { EXTERNAL_CONFIG_TRANSFER_ID } from '../../../tmf/config-loader';
 
 @Injectable({ providedIn: 'root' })
 export class TmaBillingFrequencyConfigLoaderService {
@@ -51,7 +52,7 @@ export class TmaBillingFrequencyConfigLoaderService {
    */
   protected rehydrate(): TmaBillingFrequencyLoadedConfig {
     if (this.transferState && isPlatformBrowser(this.platform)) {
-      return this.transferState.get(EXTERNAL_CONFIG_TRANSFER_ID, undefined);
+      return this.transferState.get(EXTERNAL_CONFIG_TRANSFER_ID, undefined as any);
     }
   }
 
@@ -79,7 +80,7 @@ export class TmaBillingFrequencyConfigLoaderService {
       isPlatformServer(this.platform) &&
       externalConfig
     ) {
-      this.transferState.set(EXTERNAL_CONFIG_TRANSFER_ID, externalConfig);
+      this.transferState.set(EXTERNAL_CONFIG_TRANSFER_ID, externalConfig as any);
     }
   }
 

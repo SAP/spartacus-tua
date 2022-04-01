@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Params } from '@angular/router';
-import { ICON_TYPE, ModalService } from '@spartacus/storefront';
+import { Page } from '@spartacus/core';
+import { ICON_TYPE, ModalService, PageLayoutService } from '@spartacus/storefront';
+import { Observable, Subject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { TmaCmsConsumptionComponent } from '../../../../../core/model';
 import { TmaConsumptionChangeService } from '../../../../../core/product/facade';
 
@@ -8,7 +11,7 @@ import { TmaConsumptionChangeService } from '../../../../../core/product/facade'
   selector: 'cx-consumption',
   templateUrl: './tma-consumption-dialog.component.html',
   styleUrls: ['./tma-consumption-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TmaConsumptionDialogComponent implements OnInit {
 
@@ -21,14 +24,24 @@ export class TmaConsumptionDialogComponent implements OnInit {
   @Input()
   queryParams: Params;
 
+  @Input()
+  cartEntryConsumption?: string;
+
   @Output()
   updateConsumption = new EventEmitter<any>();
 
+  currentPageCode$: Observable<string> = this.pageService.page$.pipe(
+    filter(Boolean),
+    map((p: Page) => p.pageId)
+  );
+
   iconTypes = ICON_TYPE;
+  protected destroyed$ = new Subject();
 
   constructor(
     protected modalService: ModalService,
     protected consumptionChangeService: TmaConsumptionChangeService,
+    protected pageService?: PageLayoutService
   ) {
   }
 
@@ -38,7 +51,7 @@ export class TmaConsumptionDialogComponent implements OnInit {
   dismissModal(
     {
       consumption,
-      productSpecification,
+      productSpecification
     }: {
       consumption?: number,
       productSpecification?: string

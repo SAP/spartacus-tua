@@ -7,11 +7,13 @@ import {
   StateWithProcess,
   StateWithUser,
   UserActions,
-  UserAddressService
+  UserAddressService,
+  UserIdService,
+  UserAddressConnector,
+  CommandService
 } from '@spartacus/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-import * as TmaUserAddressSelector from '../store/selectors/tma-user-address.selectors';
 
 @Injectable({
   providedIn: 'root'
@@ -22,9 +24,11 @@ export class TmaUserAddressService extends UserAddressService {
 
   constructor(
     protected store: Store<StateWithUser | StateWithProcess<void>>,
-    protected authService?: AuthService
+    protected userIdService: UserIdService,
+    protected userAddressConnector: UserAddressConnector, 
+    protected commandService: CommandService
   ) {
-    super(store, authService);
+    super(store, userIdService, userAddressConnector, commandService);
   }
 
   /**
@@ -44,9 +48,9 @@ export class TmaUserAddressService extends UserAddressService {
   }
 
   protected getUserId(callback: (userId: string) => void): void {
-    if (this.authService) {
-      this.authService
-        .getOccUserId()
+    if (this.userIdService) {
+      this.userIdService
+        .getUserId()
         .pipe(
           takeUntil(this.destroyed$),
           take(1)

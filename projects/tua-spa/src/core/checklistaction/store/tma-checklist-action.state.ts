@@ -1,4 +1,4 @@
-import { TmaProcessTypeEnum, TmaChecklistAction } from './../../model';
+import { TmaProcessTypeEnum, TmaChecklistAction } from '../../model';
 
 export const TMA_CHECKLIST_ACTION_FEATURE = 'checklist-action';
 export const TMA_CHECKLIST_ACTION_DATA =

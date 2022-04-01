@@ -1,4 +1,2 @@
-export * from './tma-b2c-storefront.module';
-export * from './tma-storefront.module';
-export * from './tma-storefront-foundation.module';
-export * from './config/index';
+export * from './b2b';
+export * from './b2c';

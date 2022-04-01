@@ -14,7 +14,8 @@ import {
   ReservationAction,
   ReservationSelectors
 } from '../store';
-import { UserService, User } from '@spartacus/core';
+import { User } from '@spartacus/core';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Injectable()
 export class LogicalResourceReservationService implements OnDestroy {
@@ -23,9 +24,9 @@ export class LogicalResourceReservationService implements OnDestroy {
 
   constructor(
     protected store: Store<StateWithReservation>,
-    protected userService: UserService
+    protected userAccountFacade: UserAccountFacade
   ) {
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => {
@@ -84,10 +85,10 @@ export class LogicalResourceReservationService implements OnDestroy {
   }
 
   /**
-   * Fetch the created reservation details.
+   * This method is used to fetch the created reservation details.
    *
-   * @returns Observable<Reservation>
-   *             the details of created reservation
+   * @return
+   *       the details of created reservation
    */
   public getCreatedReservation(): Observable<Reservation> {
     return this.store.pipe(select(ReservationSelectors.getCreatedReservation));
@@ -96,8 +97,8 @@ export class LogicalResourceReservationService implements OnDestroy {
   /**
    * This method is used to determine error during reservation creation.
    *
-   * @returns Observable<string>
-   *            the error message indicating error occurred during reservation creation.
+   * @return
+   *        the error message indicating error occurred during reservation creation.
    */
   public getCreateReservationError(): Observable<string> {
     return this.store.pipe(
@@ -108,10 +109,10 @@ export class LogicalResourceReservationService implements OnDestroy {
   /**
    * This method will return the reservation based on logical Resource value.
    *
-   *  @param resourceValue string
+   *  @param resourceValue
    *            the resource value
-   *  @returns Observable<Reservation>
-   *                the reservation based on logical Resource value.
+   *  @return
+   *         the reservation based on logical Resource value.
    */
   public getReservationByLogicalResourceValue(
     resourceValue: string
@@ -126,10 +127,10 @@ export class LogicalResourceReservationService implements OnDestroy {
   /**
    * This method is used to determine the reservation error during update.
    *
-   * @param cartEntryResourceValue - The resource value of the cart entry
-   *
-   * @returns Observable<string>
-   *                the error message indicating error occurred while updating reservation.
+   * @param cartEntryResourceValue
+   *             The selected logical resource value for the cart entry
+   * @return
+   *       the error message indicating error occurred while updating reservation.
    */
   public getUpdateReservationError(
     cartEntryResourceValue: string
@@ -154,8 +155,8 @@ export class LogicalResourceReservationService implements OnDestroy {
   /**
    * This method is used to determine if there are any cancelled reservation.
    *
-   * @returns Observable<boolean>
-   *                  true if there are cancelled/rejected reservations in cart
+   * @return
+   *       true if there are cancelled/rejected reservations in cart
    */
   public hasCancelledReservations(): Observable<boolean> {
     return this.store.pipe(
@@ -166,10 +167,10 @@ export class LogicalResourceReservationService implements OnDestroy {
   /**
    * This method is used to determine if reservation is cancelled/rejected for cart entry.
    *
-   * @param cartEntryResourceValue - The resource value of the cart entry
-   *
-   * @return Observable<boolean>
-   *                  true if reservation is cancelled/rejected
+   * @param cartEntryResourceValue
+   *             The selected logical resource value for the cart entry
+   * @return
+   *       true if reservation is cancelled/rejected
    */
   public hasCancelledReservationForEntry(
     cartEntryResourceValue: string
@@ -182,10 +183,10 @@ export class LogicalResourceReservationService implements OnDestroy {
   }
 
   /**
-   * This method is used to determine if any reservation has error.
+   * This method is used to determine if reservation has any error.
    *
-   * @returns Observable<boolean>
-   *                  true if reservation has error
+   * @return
+   *       true if reservation has error
    */
   public hasReservationError(): Observable<boolean> {
     return this.store.pipe(select(ReservationSelectors.hasReservationError));
@@ -195,7 +196,7 @@ export class LogicalResourceReservationService implements OnDestroy {
    * This method is used to load the reservations based on user and resource value.
    *
    * @param cartEntryResourceValues
-   *             The resource values of the cart entry
+   *             The selected logical resource values for the cart entry
    **/
   public loadReservationByUserIdAndResource(
     cartEntryResourceValues: string[]
@@ -209,50 +210,40 @@ export class LogicalResourceReservationService implements OnDestroy {
   }
 
   /**
-   * This method is used to clear the reservation state.
+   * Clears the reservation state.
    */
   public clearReservationState(): void {
     this.store.dispatch(new ReservationAction.ClearReservation());
   }
 
   /**
-   * This method is used to clear the created reservation state.
+   * Clears the created reservation state.
    */
   public clearCreatedReservationState(): void {
     this.store.dispatch(new ReservationAction.ClearCreatedReservation());
   }
 
   /**
-   * This method is used to update reservation for logical resource.
-   *  @param newResource
-   *          The new resource to be updated
-   *  @param  cartEntryResourceValue
-   *           The old resource value from cart entry
-   *  @returns Observable<Reservation>
-   *             returns the updated reservation as {@link Observable}
+   * Update reservation for logical resource.
+   *
+   *  @param resourceRef
+   *          The new resource to be updated as {@link ResourceRef}
+   *  @param reservationId
+   *           The selected logical resource reservation id for the cart entry as {@link string}
    */
-  public updateReservationForLogicalResource(
-    newResource: ResourceRef,
-    cartEntryResourceValue: string
-  ): Observable<Reservation> {
+  public updateReservationFor(
+    resourceRef: ResourceRef,
+    reservationId: string
+  ): void {
     const updatedReservation = {
-      value: newResource,
+      value: resourceRef,
       op: 'replace'
     };
-    this.getReservationByLogicalResourceValue(cartEntryResourceValue)
-      .pipe(
-        filter((result: Reservation) => !!result),
-        take(1),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe((result: Reservation) => {
-        this.store.dispatch(
-          new ReservationAction.UpdateReservation({
-            updatedReservation: updatedReservation,
-            reservationId: result.id
-          })
-        );
-      });
-    return this.getReservationByLogicalResourceValue(newResource.value);
+    this.store.dispatch(
+      new ReservationAction.UpdateReservation({
+        updatedReservation: updatedReservation,
+        reservationId: reservationId
+      })
+    );
   }
 }

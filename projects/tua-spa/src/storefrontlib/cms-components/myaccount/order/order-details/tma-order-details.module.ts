@@ -12,12 +12,15 @@ import { TmaOrderDetailItemsComponent } from './order-detail-items/tma-order-det
 import {
   CardModule,
   CmsPageGuard,
+  OrderDetailShippingComponent,
   OrderDetailsModule, OrderDetailsService,
   PageLayoutComponent,
   PromotionsModule, SpinnerModule
 } from '@spartacus/storefront';
 import { TmaOrderDetailTotalsComponent } from './order-detail-totals/tma-order-detail-totals.component';
 import { TmaCartSharedModule } from '../../../cart/cart-shared';
+import { TmaOrderDetailShippingComponent } from './order-detail-shipping/tma-order-detail-shipping.component';
+import { TmaOrderOverviewModule } from '../../../../shared/components';
 
 @NgModule({
   imports: [
@@ -28,6 +31,7 @@ import { TmaCartSharedModule } from '../../../cart/cart-shared';
     FeaturesConfigModule,
     PromotionsModule,
     UrlModule,
+    TmaOrderOverviewModule,
     RouterModule.forChild([
       {
         path: null,
@@ -49,7 +53,10 @@ import { TmaCartSharedModule } from '../../../cart/cart-shared';
         },
         AccountOrderDetailsTotalsComponent: {
           component: TmaOrderDetailTotalsComponent
-        }
+        },
+        AccountOrderDetailsShippingComponent: {
+          component: TmaOrderDetailShippingComponent
+        },
       },
       features: {
         consignmentTracking: '1.2',
@@ -58,8 +65,8 @@ import { TmaCartSharedModule } from '../../../cart/cart-shared';
     SpinnerModule
   ],
   providers: [OrderDetailsService],
-  declarations: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent],
-  exports: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent],
-  entryComponents: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent]
+  declarations: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent,TmaOrderDetailShippingComponent],
+  exports: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent,TmaOrderDetailShippingComponent],
+  entryComponents: [TmaOrderDetailItemsComponent, TmaOrderDetailTotalsComponent,TmaOrderDetailShippingComponent]
 })
 export class TmaOrderDetailsModule extends OrderDetailsModule { }

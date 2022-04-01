@@ -35,5 +35,5 @@ export interface ResourceRef {
   href?: string;
   value: string;
   type?: string;
-  '@referredType': string;
+  referredType: string;
 }

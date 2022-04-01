@@ -5,6 +5,19 @@ cx-page-slot.SiteContext::after {
 header {
   background-color: var(--cx-color-inverse);
   color: var(--cx-color-dark);
+
+  cx-link a {
+    color: var(--cx-color-dark);
+  }
+
+  cx-site-context-selector select {
+    background-color: var(--cx-color-inverse);
+    color: var(--cx-color-dark);
+  }
+
+  cx-icon, .cx-icon {
+    color: var(--cx-color-dark);
+  }
 }
 
 .hamburger-inner,
@@ -26,6 +39,42 @@ cx-navigation-ui {
   justify-content: space-around;
 }
 
+cx-product-view .cx-product-layout{
+  position: relative !important;
+  display: inline-block !important;
+    overflow: hidden !important;
+    border-radius: 4px !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: var(--cx-color-light) !important;
+    max-height: 48px !important;
+}
+
+.cx-product-grid {
+  display: inline-block;
+  padding: 20px;
+  max-width: 53px;
+}
+
+.fa-th-large {
+  color: var(--cx-color-secondary);
+  font-size: 24px;
+  position: relative;
+  bottom: 1px;
+}
+
+.fa-bars {
+  color: var(--cx-color-secondary);
+  font-size: 24px;
+  position: relative;
+  bottom: 1px;
+}
+
+.cx-product-list {
+  display: inline-block;
+  padding: 20px;
+  max-width: 53px;
+}
 .stepper-container {
   ul[role=tablist] .nav-link.active {
     background-color: var(--cx-color-inverse);
@@ -77,13 +126,20 @@ cx-navigation-ui {
     height: 14px;
     width: 14px;
     border-radius: 50%;
-    left: 4px;
-    top: 4px;
+    left: 2px;
+    top: 2px;
+  }
+
+  :focus {
+    outline-width: 0 !important;
   }
   .btn-primary.disabled,
   .btn-primary:disabled {
     background-color: var(--cx-color-secondary) !important;
     border-color: var(--cx-color-secondary) !important;
+  }
+  ul[role=tablist] .nav-link {
+    display: none !important;
   }
 }
 
@@ -94,4 +150,25 @@ cx-navigation-ui {
     background-color: var(--cx-color-secondary) !important;
     border-color: var(--cx-color-secondary) !important;
   }
+}
+.font-label {
+  font-size: var(--cx-font-size, 0.875rem);
+  font-weight: var(--cx-font-weight-bold);
+  line-height: var(--cx-line-height, 1.2222222222);
+  overflow-wrap: break-word;
+  padding-right: 1rem;
+}
+
+.fontLabel-bold {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--cx-color-text);
+
+  .cx-product-price {
+  font-size: var(--cx-font-size, 1rem) !important;
+  font-weight: 500 !important;
+  line-height: var(--cx-line-height, 1.2222222222) !important;
+  text-align: left;
+  margin: 15px 0 0 0;
+}
 }

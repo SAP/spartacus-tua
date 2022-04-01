@@ -1,5 +1,23 @@
 import { Product } from '@spartacus/core';
+import { TmaBillingAccountRef } from './tma-billing-account.model';
 import { TmaBillingPlan } from './tma-cart.entry.model';
+import { TmaPlace, TmaRelatedParty } from './tma-cart.model';
+import {
+  TmaCycle,
+  TmaProcessType,
+  TmaQuantity,
+  TmaTimePeriod
+} from './tma-common.model';
+import { TmaProductPrice } from './tma-price.model';
+import {
+  TmaProductOfferingRef,
+  TmaRealizingService
+} from './tma-product-offering.model';
+import { TmaProductOrderRef } from './tma-product-order.model';
+import {
+  TmaProductSpecCharValueUse, TmaProductSpecification
+} from './tma-product-specification.model';
+import { TmaRealizingResource } from './tma-resource.model';
 
 export interface TmaProduct extends Product {
   productSpecification?: TmaProductSpecification;
@@ -8,30 +26,61 @@ export interface TmaProduct extends Product {
   children?: TmaProduct[];
   isBundle?: boolean;
   offeringGroup?: TmaProductOfferingGroup[];
-}
-
-export interface TmaProcessType {
-  id: TmaProcessTypeEnum;
-}
-
-export enum TmaProcessTypeEnum {
-  ACQUISITION = 'ACQUISITION',
-  DEVICE_ONLY = 'DEVICE_ONLY',
-  RETENTION = 'RETENTION',
-  SWITCH_SERVICE_PROVIDER = 'SWITCH_SERVICE_PROVIDER',
-  TARIFF_CHANGE = 'TARIFF_CHANGE'
-}
-
-export interface TmaProductSpecification {
-  id: string;
-  name?: string;
-  href?: string;
+  priceContext?: TmaPriceContext[];
+  poSpecCharValueUses?: TmaProductSpecCharValueUse[];
 }
 
 export interface TmaProductSpecificationCharacteristicValue {
   id?: string;
   unitOfMeasure?: string;
   value?: string;
+}
+
+export interface TmaTmfProduct {
+  '@baseType'?: string;
+  '@schemaLocation'?: string;
+  '@type'?: string;
+  billingAccount?: TmaBillingAccountRef[];
+  characteristic?: TmaProductCharacteristic[];
+  description?: string;
+  href?: string;
+  id?: string;
+  isBundle?: boolean;
+  isCustomerVisible?: boolean;
+  name?: string;
+  place?: TmaPlace[];
+  productOffering?: TmaProductOfferingRef;
+  productOrder?: TmaProductOrderRef[];
+  productPrice?: TmaProductPrice[];
+  productRelationship?: TmaProductRelationship[];
+  productSerialNumber?: string;
+  productSpecification?: TmaProductSpecification;
+  productTerm?: TmaProductTerm[];
+  realizingResource?: TmaRealizingResource[];
+  realizingService?: TmaRealizingService[];
+  relatedParty?: TmaRelatedParty[];
+  startDate?: Date;
+  status?: TmaStatusType;
+  terminationDate?: Date;
+}
+
+export enum TmaStatusType {
+  CREATED = 'CREATED',
+  PENDINGACTIVE = 'PENDINGACTIVE',
+  CANCELLED = 'CANCELLED',
+  ACTIVE = 'ACTIVE',
+  PENDINGTERMINATE = 'PENDINGTERMINATE',
+  TERMINATED = 'TERMINATED',
+  SUSPENDED = 'SUSPENDED',
+  ABORTED = 'ABORTED'
+}
+
+export interface TmaProductTerm {
+  '@type'?: string;
+  description?: string;
+  duration?: TmaQuantity;
+  name?: string;
+  validFor?: TmaTimePeriod;
 }
 
 export interface TmaProductOfferingPrice {
@@ -55,23 +104,29 @@ export interface TmaProductOfferingPrice {
   tierStart?: number;
   tierEnd?: number;
   region?: TmaRegion[];
+  priority?: number;
+  isPercentage?: boolean;
+  alterations?: TmaProductOfferingPrice[];
 }
 
 export enum TmaPopChargeType {
   ONE_TIME = 'oneTime',
   RECURRING = 'recurring',
-  USAGE = 'usage'
+  USAGE = 'usage',
+  DISCOUNT = 'discount',
+  ALLOWANCE = 'allowance'
 }
 
 export enum TmaPopBillingEventType {
   ON_CANCELLATION = 'oncancellation',
   PAY_NOW = 'paynow',
-  ON_FIRST_BILL = 'onfirstbill'
+  ON_FIRST_BILL = 'onfirstbill',
+  MONTHLY = 'monthly'
 }
 
 export enum TmaUsageType {
   EACH_RESPECTIVE_TIER = 'each_respective_tier',
-  HIGHEST_APPLICABLE_TIER = 'highest_applicable_tier',
+  HIGHEST_APPLICABLE_TIER = 'highest_applicable_tier'
 }
 
 export enum TmaItemType {
@@ -95,11 +150,6 @@ export interface TmaMoney {
   value?: string;
 }
 
-export interface TmaCycle {
-  cycleStart?: number;
-  cycleEnd?: number;
-}
-
 export interface TmaUsageUnit {
   id?: string;
   name?: string;
@@ -113,11 +163,6 @@ export interface TmaRegion {
   role?: string;
 }
 
-export interface TmaQuantity {
-  amount?: number;
-  units?: string;
-}
-
 export interface TmaProductOfferingGroup {
   id?: string;
   name?: string;
@@ -126,4 +171,39 @@ export interface TmaProductOfferingGroup {
 
 export interface TmaBillingEvent {
   name?: string;
+}
+
+export interface TmaPriceContext {
+  id: string;
+  name: string;
+  isPriceOverride: boolean;
+  productOfferingPrice: TmaProductOfferingPrice;
+  isBundle: boolean;
+  isSellable: boolean;
+  productOfferingTerm: TmaProductOfferingTerm[];
+  processType: TmaProcessType;
+  priority: number;
+}
+
+export interface TmaProductRef {
+  id?: string;
+  href?: string;
+}
+
+export interface TmaProductCharacteristic {
+  '@schemaLocation'?: string;
+  '@type'?: string;
+  name?: string;
+  value?: string;
+}
+
+export interface TmaPscvuProductCharaceristic {
+  productCode?: string;
+  name?: string;
+  value?: string;
+}
+
+export interface TmaProductRelationship {
+  type?: string;
+  product?: TmaProductRef;
 }

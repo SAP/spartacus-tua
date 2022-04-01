@@ -3,16 +3,20 @@
   "compilerOptions": {
     "outDir": "../../out-tsc/lib",
     "target": "es2015",
+    "module": "es2020",
+    "moduleResolution": "node",
     "declaration": true,
+    "sourceMap": true,
     "inlineSources": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
     "types": [],
     "lib": [
-      "dom",
-      "es2018"
+      "esnext",
+      "dom"
     ]
   },
   "angularCompilerOptions": {
-    "annotateForClosureCompiler": true,
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true,
     "fullTemplateTypeCheck": true,

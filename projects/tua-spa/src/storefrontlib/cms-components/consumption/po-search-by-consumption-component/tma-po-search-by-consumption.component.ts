@@ -23,6 +23,12 @@ export class TmaPoSearchByConsumptionComponent implements OnInit {
   @Input()
   queryParams: Params;
 
+  @Input()
+  isCartPage?: boolean;
+
+  @Input()
+  cartEntryConsumption?: string;
+
   @Output()
   closeModal = new EventEmitter<any>();
 
@@ -41,7 +47,9 @@ export class TmaPoSearchByConsumptionComponent implements OnInit {
 
   ngOnInit(): void {
     this.createSliderOptionList();
-    this.consumption = this.getConsumption(this.poConsumption.productSpecification.id, this.poConsumption.usageUnit.id);
+    !this.isCartPage ? 
+    this.consumption = this.getConsumption(this.poConsumption.productSpecification.id, this.poConsumption.usageUnit.id) :
+    this.consumption = this.cartEntryConsumption;
     this.consumptionForm['controls'].consumptionInput.setValue(this.consumption);
   }
 

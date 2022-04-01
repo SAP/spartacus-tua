@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component
 } from '@angular/core';
-import { CheckoutService } from '@spartacus/core';
-import { OrderConfirmationTotalsComponent } from '@spartacus/storefront';
+import { OrderConfirmationTotalsComponent } from "@spartacus/checkout/components";
+import { CheckoutFacade } from "@spartacus/checkout/root";
 import { Observable } from 'rxjs';
 import { TmaOrder } from '../../../../../core/model';
 
@@ -16,7 +16,7 @@ export class TmaOrderConfirmationTotalsComponent extends OrderConfirmationTotals
 
   order$: Observable<TmaOrder>;
 
-  constructor(protected checkoutService: CheckoutService) {
+  constructor(protected checkoutService: CheckoutFacade) {
     super(checkoutService);
   }
 }

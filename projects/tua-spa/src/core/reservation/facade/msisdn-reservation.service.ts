@@ -6,12 +6,14 @@ import {
   Reservation
 } from '../../model';
 import { StateWithReservation, ReservationAction } from '../store';
-import { UserService, OCC_USER_ID_ANONYMOUS } from '@spartacus/core';
+import { OCC_USER_ID_ANONYMOUS } from '@spartacus/core';
 import { LOCAL_STORAGE } from '../../util';
 import { AvailabilityCheckService } from '../../availability-check/facade';
 import { LogicalResourceReservationService } from './logical-resource-reservation.service';
 import { Store } from '@ngrx/store';
-import { JourneyChecklistConfig } from '../../journey-checklist-config/config';
+import { JourneyChecklistConfig } from '../../config';
+import { take, filter, takeUntil } from 'rxjs/operators';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 const { MSISDN_TYPE } = LOCAL_STORAGE.MSISDN_RESERVATION;
 
@@ -21,20 +23,28 @@ export class MsisdnReservationService extends LogicalResourceReservationService 
 
   constructor(
     protected store: Store<StateWithReservation>,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected availabilityCheckService: AvailabilityCheckService,
     protected config: JourneyChecklistConfig
   ) {
-    super(store, userService);
+    super(store, userAccountFacade);
   }
 
   /**
-   * Create reservation for selected MSISDN by customer from the list of available MSISDNs
+   * Creates reservation for logical resource selected by user from the list of available logical resources
    *
    * @param product - The product for which the MSISDN will be reserved
    */
-  public createReservationForMsisdn(product: TmaProduct): void {
-    const selectedMsisdn: ResourceRef = this.availabilityCheckService.getSelectedLogicalResource();
+  public createReservationFor(product: TmaProduct): void {
+    let selectedMsisdn: ResourceRef;
+    this.availabilityCheckService.getSelectedLogicalResource().pipe(
+      filter((result: ResourceRef) => !!result),
+      take(2),
+      takeUntil(this.destroyed$)
+    )
+      .subscribe((result: ResourceRef) => {
+        selectedMsisdn = result;
+      });
     if (!selectedMsisdn) {
       return;
     }
@@ -75,10 +85,7 @@ export class MsisdnReservationService extends LogicalResourceReservationService 
       reservation = {
         relatedParty: [
           {
-            id:
-              this.currentUser.id === undefined
-                ? OCC_USER_ID_ANONYMOUS
-                : this.currentUser.id,
+            id: this.currentUser.id,
             role: this.currentUser.role
           }
         ],

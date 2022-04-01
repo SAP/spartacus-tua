@@ -1,14 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { OrderConfirmationGuard, OrderConfirmationModule } from "@spartacus/checkout/components";
+import { ConfigModule, FeaturesConfigModule, I18nModule } from '@spartacus/core';
 import {
   CardModule,
-  OrderConfirmationGuard,
-  OrderConfirmationModule,
   PromotionsModule,
   PwaModule
 } from '@spartacus/storefront';
-import { CommonModule } from '@angular/common';
-import { ConfigModule, FeaturesConfigModule, I18nModule } from '@spartacus/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { TmaCartSharedModule } from '../cart/cart-shared';
 import { TmaOrderConfirmationItemsComponent, TmaOrderConfirmationTotalsComponent } from './components';
 

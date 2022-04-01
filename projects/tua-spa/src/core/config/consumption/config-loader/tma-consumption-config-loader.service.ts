@@ -52,7 +52,7 @@ export class TmaConsumptionConfigLoaderService {
    */
   protected rehydrate(): TmaConsumptionLoadedConfig {
     if (this.transferState && isPlatformBrowser(this.platform)) {
-      return this.transferState.get(EXTERNAL_CONFIG_TRANSFER_ID, undefined);
+      return this.transferState.get(EXTERNAL_CONFIG_TRANSFER_ID, undefined as any);
     }
   }
 
@@ -80,7 +80,7 @@ export class TmaConsumptionConfigLoaderService {
       isPlatformServer(this.platform) &&
       externalConfig
     ) {
-      this.transferState.set(EXTERNAL_CONFIG_TRANSFER_ID, externalConfig);
+      this.transferState.set(EXTERNAL_CONFIG_TRANSFER_ID, externalConfig as any);
     }
   }
 

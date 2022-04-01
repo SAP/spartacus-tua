@@ -42,16 +42,22 @@
   <!-- Price -->
   <div class="cx-product-price-container">
     <div class="cx-product-price" aria-label="Product price">
-      <div *ngIf="product.price?.formattedValue">
+      <div *ngIf="product.price?.formattedValue; else compositePrice">
         {{ 'guidedSelling.currentSelection.startingFrom' | cxTranslate }}
       </div>
       {{ product.price?.formattedValue }}
     </div>
   </div>
 
+  <ng-template #compositePrice>
+    <cx-price-display [price]="product.productOfferingPrice[0]"></cx-price-display>
+  </ng-template>
+
   <!-- Select/Unselect Button -->
   <cx-guided-selling-add-selection
+    [product]="product"
     [isSelected]="isSelected"
+    [tmfProducts]="tmfProducts"
     (updateSelected)="updateSelected($event)"
   ></cx-guided-selling-add-selection>
 </div>

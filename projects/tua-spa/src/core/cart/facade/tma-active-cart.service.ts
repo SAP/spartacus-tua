@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActiveCartService, AuthService, MultiCartSelectors, OCC_CART_ID_CURRENT, StateWithMultiCart } from '@spartacus/core';
+import { ActiveCartService, AuthService, MultiCartSelectors, OCC_CART_ID_CURRENT, StateWithMultiCart, UserIdService } from '@spartacus/core';
 import { select, Store } from '@ngrx/store';
 import { TmaMultiCartService } from './tma-multi-cart.service';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
@@ -23,10 +23,10 @@ export class TmaActiveCartService extends ActiveCartService {
 
   constructor(
     protected store: Store<StateWithMultiCart>,
-    protected authService: AuthService,
+    protected userIdService: UserIdService,
     protected multiCartService: TmaMultiCartService
   ) {
-    super(store, authService, multiCartService);
+    super(store, multiCartService, userIdService);
   }
 
   /**

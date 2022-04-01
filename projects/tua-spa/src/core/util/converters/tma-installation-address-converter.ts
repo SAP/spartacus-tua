@@ -53,5 +53,4 @@ export class TmaInstallationAddressConverter extends TmaConverter<TmaInstallatio
       city: target.town
     } : null;
   }
-
 }

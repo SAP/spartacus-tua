@@ -15,8 +15,12 @@ export const defaultTmaStorefrontRoutesConfig: RoutesConfig = {
     paths: ['/my-account/subscription'],
   },
   cgs: {
-    paths: ['cgs/:bpoCode'],
-    paramsMapping: { bpoCode: 'code' }
+    paths: ['cgs/:bpoCode/:process'],
+    paramsMapping: { bpoCode: 'code', process: 'process' }
+  },
+  subscriptionDetail: {
+    paths: ['my-account/subscription/subscriptionDetail/:subscriptionId'],
+    paramsMapping: { subscriptionId: 'code' }
   }
 };
 

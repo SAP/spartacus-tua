@@ -4,7 +4,9 @@ export const defaultTmfSubscriptionBaseConfig: TmfConfig = {
   backend: {
     tmf: {
       endpoints: {
-        subscriptionBase: 'subscriptionBase',
+        getSubscriptionBases: {
+          endpoint: 'subscriptionBase'
+        },
       },
     },
   },

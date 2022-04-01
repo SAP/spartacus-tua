@@ -5,9 +5,9 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { makeErrorSerializable } from '../../../config/utils/tma-serialization-utils';
 import { TmaTechnicalResource } from '../../../model';
-import { TmaPremiseDetailConnector } from '../../connectors';
-import * as TmaPremiseDetailAction from '../actions/tma-premise-details.actions';
-import { TmaPremiseDetailActionTypes } from '../actions/tma-premise-details.actions';
+import { TmaPremiseDetailConnector } from '../../connectors/tma-premise-detail.connector';
+import * as TmaPremiseDetailAction from '../actions/tma-premise-detail.actions';
+import { TmaPremiseDetailActionTypes } from '../actions/tma-premise-detail.actions';
 
 @Injectable()
 export class TmaPremiseDetailEffect {
@@ -26,7 +26,8 @@ export class TmaPremiseDetailEffect {
     ofType(TmaPremiseDetailActionTypes.VALIDATE_PREMISE_DETAIL),
     map((action: TmaPremiseDetailAction.ValidatePremiseDetail) => action.payload),
     mergeMap(payload => {
-        return this.tmaPremiseDetailConnector.validatePremiseDetails(payload.premiseDetail).pipe(
+        return this.tmaPremiseDetailConnector.validatePremiseDetails(payload.premiseDetail)
+        .pipe(
           map((technicalResources: TmaTechnicalResource[]) => {
             return new TmaPremiseDetailAction.ValidatePremiseDetailSuccess({
               premiseDetail: payload.premiseDetail,

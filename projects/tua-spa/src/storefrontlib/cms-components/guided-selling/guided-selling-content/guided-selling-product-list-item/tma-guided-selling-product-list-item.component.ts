@@ -1,51 +1,85 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { CurrencyService, ProductService } from '@spartacus/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { TmaBillingFrequencyConfig } from '../../../../../core/config/billing-frequency/config';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
-import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
-import { TmaProduct, TmaSelectionAction } from '../../../../../core/model';
 import {
-  TmaConsumptionChangeService,
-  TmaPriceService,
-  TmaProductService
-} from '../../../../../core';
-import { TmaProductListItemComponent } from '../../../product/product-list';
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnDestroy,
+  OnInit
+} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {CurrencyService} from '@spartacus/core';
+import {TmaConfigurablePscInputsDataHandlingService} from '../../../../../core';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {
+  TmaGuidedSellingCurrentSelectionsService,
+  TmaGuidedSellingProductConfigSelectionsService,
+  TmaGuidedSellingStepsService
+} from '../../../../../core/guided-selling/facade';
+import {
+  TmaProduct,
+  TmaPscvuProductCharaceristic,
+  TmaSelectionAction,
+  TmfProduct,
+  TmfProductCharacteristic
+} from '../../../../../core/model';
+import {TmaPriceService} from '../../../../../core/product/facade';
+import {TmaProductListItemComponent} from '../../../product/product-list';
+import { ProductListItemContext, ProductListItemContextSource } from '@spartacus/storefront';
 
 @Component({
   selector: 'cx-guided-selling-product-list-item',
   templateUrl: './tma-guided-selling-product-list-item.component.html',
-  styleUrls: ['./tma-guided-selling-product-list-item.component.scss']
+  styleUrls: ['./tma-guided-selling-product-list-item.component.scss'],
+  providers: [
+    ProductListItemContextSource,
+    {
+      provide: ProductListItemContext,
+      useExisting: ProductListItemContextSource,
+    },
+  ],
 })
-export class TmaGuidedSellingProductListItemComponent extends TmaProductListItemComponent implements OnInit, OnDestroy {
+export class TmaGuidedSellingProductListItemComponent
+  extends TmaProductListItemComponent
+  implements OnInit, OnDestroy {
+  @Input()
+  tmfProducts: TmfProduct[];
 
   isSelected: boolean;
 
   protected destroyed$ = new Subject();
 
   constructor(
+    public productListItemContextSource: ProductListItemContextSource,
+    public priceService: TmaPriceService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected changeDetectorRef: ChangeDetectorRef,
-    public priceService: TmaPriceService,
-    protected productService: ProductService,
-    protected currencyService: CurrencyService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected productSpecificationProductService: TmaProductService,
-    protected consumptionChangeService: TmaConsumptionChangeService,
-    protected billingFrequencyConfig: TmaBillingFrequencyConfig
+    protected currencyService?: CurrencyService,
+    protected activatedRoute?: ActivatedRoute,
+    protected guidedSellingStepsService?: TmaGuidedSellingStepsService,
+    protected configurablePscvusService?: TmaConfigurablePscInputsDataHandlingService,
+    protected guidedSellingProductConfigSelectionsService?: TmaGuidedSellingProductConfigSelectionsService
   ) {
-    super(priceService, productService, currencyService, consumptionConfig, productSpecificationProductService, consumptionChangeService, billingFrequencyConfig);
+    super(productListItemContextSource, priceService,currencyService);
   }
 
   ngOnInit(): void {
-    this.isSelected = !!this.guidedSellingCurrentSelectionsService.getCurrentSelections()
-      .find((currentSelection: TmaProduct) => currentSelection.code === this.product.code);
+    this.isSelected = !!this.guidedSellingCurrentSelectionsService
+      .getCurrentSelections()
+      .find(
+        (currentSelection: TmaProduct) =>
+          currentSelection.code === this.product.code
+      );
     this.guidedSellingCurrentSelectionsService.selection$
       .pipe(takeUntil(this.destroyed$))
-      .subscribe((selection: { product: TmaProduct, action: TmaSelectionAction }) => {
-        this.isSelected = !(selection.action === TmaSelectionAction.REMOVE && this.product.code === selection.product.code) && this.isSelected;
-      });
+      .subscribe(
+        (selection: { product: TmaProduct; action: TmaSelectionAction }) => {
+          this.isSelected =
+            !(
+              selection.action === TmaSelectionAction.REMOVE &&
+              this.product.code === selection.product.code
+            ) && this.isSelected;
+        }
+      );
     this.changeDetectorRef.detectChanges();
   }
 
@@ -60,9 +94,54 @@ export class TmaGuidedSellingProductListItemComponent extends TmaProductListItem
    * @param isSelected - Flag indicating if the current product is selected
    */
   updateSelected(isSelected: boolean): void {
-    this.isSelected = isSelected;
-    this.guidedSellingCurrentSelectionsService.changeSelection(this.product, this.isSelected ? TmaSelectionAction.ADD :
-      TmaSelectionAction.REMOVE);
+    this.configurablePscvusService.selectPressed = isSelected;
+    this.configurablePscvusService.setUpContext(this.product);
+
+    if (
+      this.configurablePscvusService.areAllMandatoryConfigurablePscvusSet(
+        this.product.code
+      ) ||
+      !this.configurablePscvusService?.mandatoryConfigurablePscvus?.length
+    ) {
+      this.isSelected = isSelected;
+      this.guidedSellingCurrentSelectionsService.changeSelection(
+        this.product,
+        this.isSelected ? TmaSelectionAction.ADD : TmaSelectionAction.REMOVE
+      );
+      this.updateProduct(this.product, this.isSelected);
+    }
+  }
+
+  updateProduct(product: TmaProduct, selected: boolean): void {
+    const bpoCode = this.activatedRoute.snapshot.url[1].toString();
+    const guidedSellingSteps =
+      this.guidedSellingStepsService.getGuidedSellingSteps(bpoCode);
+    const activeStep = guidedSellingSteps.find((step) => step.active === true);
+    if (selected) {
+      let characteristics: TmaPscvuProductCharaceristic[] = [];
+      characteristics = characteristics
+        .concat(this.configurablePscvusService.getProductCharacteristics())
+        .filter(
+          (pscvu: TmaPscvuProductCharaceristic) =>
+            pscvu.productCode === product.code
+        );
+      this.guidedSellingProductConfigSelectionsService.addConfig(
+        activeStep.id,
+        characteristics.map<TmfProductCharacteristic>(
+          (pscvu: TmaPscvuProductCharaceristic) => ({
+            name: pscvu.name,
+            value: pscvu.value
+          })
+        ),
+        product.code
+      );
+    } else {
+      this.guidedSellingProductConfigSelectionsService.removeConfig(
+        activeStep.id,
+        product.code
+      );
+      this.configurablePscvusService.removePscvusFromMap(product.code);
+    }
   }
 
   /**
@@ -70,7 +149,10 @@ export class TmaGuidedSellingProductListItemComponent extends TmaProductListItem
    *
    * @param shouldRemoveCurrentSelections - Flag which indicates if current selections should be removed or not.
    */
-  setShouldRemoveCurrentSelections(shouldRemoveCurrentSelections: boolean): void {
-    this.guidedSellingCurrentSelectionsService.shouldRemoveCurrentSelections = shouldRemoveCurrentSelections;
+  setShouldRemoveCurrentSelections(
+    shouldRemoveCurrentSelections: boolean
+  ): void {
+    this.guidedSellingCurrentSelectionsService.shouldRemoveCurrentSelections =
+      shouldRemoveCurrentSelections;
   }
 }

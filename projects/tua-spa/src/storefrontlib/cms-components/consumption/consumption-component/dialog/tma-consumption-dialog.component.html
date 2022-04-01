@@ -8,28 +8,32 @@
       aria-label="Close"
       (click)="dismissModal({})"
     >
-        <span aria-hidden="true">
-          <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
-        </span>
+          <span aria-hidden="true">
+            <cx-icon [type]="iconTypes.CLOSE"></cx-icon>
+          </span>
     </button>
 
     <!-- Consumption component -->
-    <ngb-tabset type="pills">
-      <ngb-tab *ngFor="let poConsumption of consumptionComponent?.searchByConsumptionComponents | keyvalue">
-        <ng-template ngbTabTitle>
+    <ul ngbNav #nav="ngbNav" class="nav-pills">
+      <li ngbNavItem *ngFor="let poConsumption of consumptionComponent?.searchByConsumptionComponents | keyvalue">
+        <ng-template ngbNavTitle>
           <span>{{ poConsumption.value.productSpecification.name }}</span>
         </ng-template>
-        <ng-template ngbTabContent>
+      <ng-template ngbNavContent>
+        <ng-container *ngIf="currentPageCode$ | async as currentPage">
           <cx-po-search-by-consumption
             [poConsumption]="poConsumption.value"
             [isModal]="true"
             [url]="url"
             [queryParams]="queryParams"
+            [isCartPage]="currentPage === 'cartPage' ? true : false"
+            [cartEntryConsumption]="cartEntryConsumption"
             (closeModal)="dismissModal($event)"
           >
           </cx-po-search-by-consumption>
-        </ng-template>
-      </ngb-tab>
-    </ngb-tabset>
+        </ng-container>
+      </ng-template>
+      </li>
+    </ul>
   </section>
 </div>

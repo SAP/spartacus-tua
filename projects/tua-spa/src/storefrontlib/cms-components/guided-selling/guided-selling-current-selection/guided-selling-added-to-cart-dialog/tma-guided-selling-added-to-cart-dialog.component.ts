@@ -1,21 +1,30 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TmaActiveCartService, TmaCartPriceService, TmaCartService } from '../../../../../core/cart/facade';
+import {
+  TmaActiveCartService,
+  TmaCartPriceService,
+  TmaCartService,
+} from '../../../../../core/cart/facade';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CurrencyService } from '@spartacus/core';
-import { TmaOrderEntry, TmaProduct, TmaProductOfferingPrice } from '../../../../../core/model';
-import { TmaAddedToCartDialogComponent } from '../../../cart';
-import { ModalService, PromotionService } from '@spartacus/storefront';
+import {
+  TmaOrderEntry,
+  TmaProduct,
+  TmaProductOfferingPrice,
+} from '../../../../../core/model';
+import { ModalService } from '@spartacus/storefront';
 import { TmaGuidedSellingCurrentSelectionsService } from '../../../../../core/guided-selling/facade';
 import { TmaPriceService } from '../../../../../core/product/facade';
 import { Observable } from 'rxjs';
+import { TmaAddedToCartDialogComponent } from '../../../cart/add-to-cart/added-to-cart-dialog/tma-added-to-cart-dialog.component';
 
 @Component({
   selector: 'cx-guided-selling-added-to-cart-dialog',
   templateUrl: './tma-guided-selling-added-to-cart-dialog.component.html',
-  styleUrls: ['./tma-guided-selling-added-to-cart-dialog.component.scss']
+  styleUrls: ['./tma-guided-selling-added-to-cart-dialog.component.scss'],
 })
-export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDialogComponent implements OnInit {
-
+export class TmaGuidedSellingAddedToCartDialogComponent
+  extends TmaAddedToCartDialogComponent
+  implements OnInit {
   @Input()
   parentBpo: TmaProduct;
 
@@ -29,11 +38,15 @@ export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDi
     protected activeCartService: TmaActiveCartService,
     protected fb: FormBuilder,
     protected currencyService: CurrencyService,
-    protected promotionService: PromotionService,
     protected guidedSellingCurrentSelectionsService: TmaGuidedSellingCurrentSelectionsService,
     protected priceService: TmaPriceService
   ) {
-    super(cartPriceService, modalService, cartService, fb, currencyService, promotionService);
+    super(
+      cartPriceService,
+      modalService,
+      cartService,
+      currencyService
+    );
   }
 
   ngOnInit() {
@@ -60,12 +73,16 @@ export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDi
       return '-';
     }
 
-    const oneTimePrices: TmaProductOfferingPrice[] = this.priceService.getOneTimeCharges(price[0]);
+    const oneTimePrices: TmaProductOfferingPrice[] = this.priceService.getOneTimeCharges(
+      price[0]
+    );
     if (!oneTimePrices || oneTimePrices.length === 0) {
       return '-';
     }
 
-    return this.priceService.getFormattedPrice(this.priceService.getSumOfPrices(oneTimePrices));
+    return this.priceService.getFormattedPrice(
+      this.priceService.getSumOfPrices(oneTimePrices)
+    );
   }
 
   /**
@@ -79,8 +96,14 @@ export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDi
       return '-';
     }
 
-    const recurringPrices: TmaProductOfferingPrice[] = this.priceService.getRecurringPrices(price[0].bundledPop);
-    if (!recurringPrices || recurringPrices.length === 0 || !recurringPrices[0].price) {
+    const recurringPrices: TmaProductOfferingPrice[] = this.priceService.getRecurringPrices(
+      price[0].bundledPop
+    );
+    if (
+      !recurringPrices ||
+      recurringPrices.length === 0 ||
+      !recurringPrices[0].price
+    ) {
       return '-';
     }
 
@@ -107,8 +130,7 @@ export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDi
         const code: string = entry.entryNumber.toString();
         if (!this.form.controls[code]) {
           this.form.setControl(code, this.createFormGroupForEntry(entry));
-        }
-        else {
+        } else {
           const entryForm = this.form.controls[code] as FormGroup;
           entryForm.controls.quantity.setValue(entry.quantity);
         }
@@ -126,7 +148,7 @@ export class TmaGuidedSellingAddedToCartDialogComponent extends TmaAddedToCartDi
   protected createFormGroupForEntry(entry: TmaOrderEntry): FormGroup {
     return this.fb.group({
       entryNumber: entry.entryNumber,
-      quantity: entry.quantity
+      quantity: entry.quantity,
     });
   }
 }

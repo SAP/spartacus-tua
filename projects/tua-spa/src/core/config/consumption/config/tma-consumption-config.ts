@@ -6,3 +6,7 @@ export abstract class TmaConsumptionConfig {
     default: string,
   };
 }
+
+declare module '@spartacus/core' {
+  interface Config extends TmaConsumptionConfig {}
+}

@@ -12,22 +12,35 @@ export const product = {
     usageChargePrices: 'Charge Prices',
     overage: 'Overage',
     months: 'Months',
-    costEstimationWarning: 'The average cost is properly determined only for prices that have a single usage unit',
-    warningMessage: 'The average cost is properly determined only for prices that have a single usage unit!',
-    loginNeeded: 'You need to login before adding product to cart.',
+    costEstimationWarningMessage: 'The average cost can properly be determined only for prices that have a single usage unit!',
+    loginNeeded: 'Please login to proceed with add to cart.',
     price: {
       contractDuration: 'Contract Duration',
       common: {
+        usage_charge_cost: 'cost per {{unit}}',
+        off: 'OFF',
+        fixedDiscount: '-{{price}} {{currency}} OFF',
+        percentageDiscount: '-{{price}} % OFF',
+        hierarchical_price: 'Hierarchical Price',
         from: 'From',
         to: 'to',
         upTo: 'up to',
         onwards: 'onwards',
-        each: 'each'
+        each: 'each',
+        discount: 'You Save',
+        applicableDiscount: 'Discounts / ',
+        for: 'for'
       },
       priceTypes: {
         payNow: 'Pay Now',
         recurringCharges: 'Recurring Charges',
         billingEvents: {
+          billingEvent_paynow: 'On Checkout',
+          billingEvent_oncancellation: 'On Cancellation',
+          billingEvent_onfirstbill: 'On First Bill',
+          billingEvent_monthly: 'monthly',
+          billingEvent_yearly: 'yearly',
+          billingEvent_quarterly: 'quarterly',
           oneTime: 'Pay Now',
           oneTime_paynow: 'Pay Now',
           oneTime_oncancellation: 'cancellation',
@@ -61,19 +74,26 @@ export const product = {
           charge_highest_applicable_tier: 'Charged By'
         },
         usageTypes: {
-          usageType_each_respective_tier: 'Each Respective Tier',
-          usageType_highest_applicable_tier: 'Highest Applicable Tier',
+          usageType_each_respective_tier: 'Charged By Each Respective Tier',
+          usageType_highest_applicable_tier: 'Charged By Highest Applicable Tier',
           usageType: 'Each Respective Tier'
         },
         perUnit: 'Per Unit',
         perVolume: 'Per Volume'
       }
+    },
+    productSpecificCharacteristics: {
+      selectBetweenMinAndMax: 'Please select at least {{min}} and at most {{max}} values.',
+      selectAtLeast: 'Please select at least {{min}} values.',
+      mandatoryField: 'Mandatory field',
+      mandatoryFieldValues: 'Please select {{quantity}} values'
     }
   },
   productList: {
     viewDetails: 'View Details',
     viewDetailedPrices: 'View Detailed Prices',
-    averageCostBaseOnConsumption: 'Average cost base on your consumption',
-    updateConsumption: 'Update Your Consumption'
+    averageCostBaseOnConsumption: 'Average cost based on your consumption',
+    updateConsumption: 'Update Your Consumption',
+    seeDetails: 'See Details'
   }
 };

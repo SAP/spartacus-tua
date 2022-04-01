@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { AuthService } from '@spartacus/core';
+import { AuthStorageService, ClientTokenService } from '@spartacus/core';
 import { TmfEndpointsService } from '../../tmf/services/tmf-endpoints.service';
 import { Observable } from 'rxjs';
 import { switchMap, take } from 'rxjs/operators';
@@ -8,8 +8,9 @@ import { switchMap, take } from 'rxjs/operators';
 @Injectable({ providedIn: 'root' })
 export class TmaUserTokenInterceptor implements HttpInterceptor {
   constructor(
-    private authService: AuthService,
-    private tmfEndpoints: TmfEndpointsService
+    private authStorageService: AuthStorageService,
+    private tmfEndpoints: TmfEndpointsService,
+    protected clientTokenService: ClientTokenService
   ) {
   }
 
@@ -17,7 +18,7 @@ export class TmaUserTokenInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return this.authService.getUserToken().pipe(
+    return this.authStorageService.getToken().pipe(
       take(1),
       switchMap(token => {
         if (
@@ -38,6 +39,8 @@ export class TmaUserTokenInterceptor implements HttpInterceptor {
   }
 
   protected isTmfUrl(url: string): boolean {
-    return url.includes(this.tmfEndpoints.getBaseEndpoint());
+    return this.tmfEndpoints
+      .getBaseEndpointListWithDefaultVersion()
+      .some((item) => url.includes(item));
   }
 }

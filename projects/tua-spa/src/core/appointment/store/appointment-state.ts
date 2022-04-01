@@ -1,5 +1,5 @@
 import { Appointment } from '../../model';
-import { LoaderState } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 
 export const APPOINTMENT_FEATURE = 'appointment';
 export const APPOINTMENT_DATA = '[Appointment] Appointment Data';
@@ -9,10 +9,10 @@ export interface StateWithAppointment {
 }
 
 export interface AppointmentState {
-  appointments?: LoaderState<Appointment[]>;
-  newAppointment?: LoaderState<Appointment>;
-  error?: LoaderState<AppointmentError[]>;
-  updateAppointmentError?: LoaderState<AppointmentError>;
+  appointments?: StateUtils.LoaderState<Appointment[]>;
+  newAppointment?: StateUtils.LoaderState<Appointment>;
+  error?: StateUtils.LoaderState<AppointmentError[]>;
+  updateAppointmentError?: StateUtils.LoaderState<AppointmentError>;
 }
 
 export interface AppointmentError {

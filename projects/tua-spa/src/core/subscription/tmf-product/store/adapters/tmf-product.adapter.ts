@@ -11,5 +11,5 @@ export abstract class TmfProductAdapter {
   abstract getTmfProductDetails(
     baseSiteId: string,
     tmfProductId: string
-  ): Observable<TmfProduct[]>;
+  ): Observable<TmfProduct>;
 }

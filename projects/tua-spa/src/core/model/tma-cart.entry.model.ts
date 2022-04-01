@@ -1,11 +1,13 @@
 import { OrderEntry, Price, Region } from '@spartacus/core';
-import { TmaSubscribedProduct } from './tma-cart.model';
-import { TmaCycle, TmaProcessType } from './tma-product.model';
+import { TmaSubscribedProduct, TmaValidationMessage } from './tma-cart.model';
 import { Appointment } from './appointment.model';
+import { TmaCycle, TmaProcessType } from './tma-common.model';
 
 export enum TmaActionType {
   ADD = 'ADD',
   UPDATE = 'UPDATE',
+  REMOVE = 'REMOVE',
+  KEEP = 'KEEP'
 }
 
 export enum TmaBillingTimeType {
@@ -21,8 +23,12 @@ export enum TmaChargeType {
 }
 
 export enum TmaPriceType {
-  DISCOUNT = 'DISCOUNT',
+  PRODUCT_PRICE = 'PRODUCT_PRICE',
   DELIVERY_COST = 'DELIVERY_COST',
+  PAYMENT_COST = 'PAYMENT_COST',
+  DISCOUNT = 'DISCOUNT',
+  DISCOUNT_PRICE_ALTERATION = 'DISCOUNT_PRICE_ALTERATION',
+  CREDIT_ALLOWANCE = 'CREDIT_ALLOWANCE'
 }
 
 export interface TmaDuration {
@@ -65,6 +71,9 @@ export interface TmaCartPrice {
   childPrices?: TmaChildCartPrice[];
   usageChargeType?: string;
   parentId?: string;
+  priceAlteration: TmaCartPrice[];
+  percentage: string;
+  price: TmaCartPrice;
 }
 
 export interface TmaOrderEntry extends OrderEntry {
@@ -79,6 +88,9 @@ export interface TmaOrderEntry extends OrderEntry {
   region?: Region;
   rootBpoCode?: string;
   cartPrice?: TmaCartPrice;
+  entries?: TmaOrderEntry[];
+  validationMessages?: TmaValidationMessage[];
+  entryNumber?: number;
 }
 
 export interface TmaChildCartPrice {
@@ -99,6 +111,7 @@ export interface TmaBillingTime {
 export interface TmaCartItemPrice {
   currencyIso: string;
   payOnCheckoutPrice: number;
+  payOnCheckoutDiscount: number;
   recurringPrices: TmaCartPrice[];
   usageChargePrices: TmaCartPrice[];
   oneTimeChargePrices: TmaCartPrice[];

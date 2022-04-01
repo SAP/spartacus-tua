@@ -1,27 +1,26 @@
-export interface TmaTmfEndpoints {
-  /**
-   * Checklist Action
-   *
-   */
-  checklistAction?: string;
-  /**
-   * Tmf subscriptionBase
-   */
-  subscriptionBase?: string;
-  /**
-   * Tmf subscriptionBase Details
-   */
-  subscriptionBaseId?: string;
-  /**
-   * Tmf Product
-   */
-  tmfProductId?: string;
-  /**
-   * Tmf Usage Consumption
-   */
-  usageConsumptionReport?: string;
-  /**
-   * Shopping Cart
-   */
-  shoppingCart?: string;
+export const TMF_DEFAULT_SCOPE = 'default';
+
+/**
+ * Structure for Tmf endpoints
+ */
+export interface TmfEndpoint {
+  baseUrl?: string;
+  prefix?: string;
+  version?:string
+  endpoint?: string | TmfEndpointWithScope;
+}
+
+/**
+ * Structure for Tmf endpoint with scope
+ */
+export interface TmfEndpointWithScope {
+  default?: string;
+  [scope: string]: string | undefined;
+}
+
+/**
+ * Structure for Tmf endpoints
+ */
+export interface TmfEndpointMap {
+  [id: string]: TmfEndpoint;
 }

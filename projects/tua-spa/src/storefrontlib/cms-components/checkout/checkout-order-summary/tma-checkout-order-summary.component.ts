@@ -1,7 +1,7 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CheckoutOrderSummaryComponent } from "@spartacus/checkout/components";
+import { ActiveCartService } from '@spartacus/core';
 import { Observable } from 'rxjs';
-import { CartService } from '@spartacus/core';
-import { CheckoutOrderSummaryComponent } from '@spartacus/storefront';
 import { TmaCart } from '../../../../core/model';
 
 @Component({
@@ -13,7 +13,9 @@ export class TmaCheckoutOrderSummaryComponent extends CheckoutOrderSummaryCompon
 
   cart$: Observable<TmaCart>;
 
-  constructor(protected cartService: CartService) {
-    super(cartService);
+  constructor(
+    protected activeCartService: ActiveCartService
+  ) {
+    super(activeCartService);
   }
 }

@@ -1,3 +1,4 @@
+import { TmaItem } from '../../../storefrontlib/cms-components/cart/cart-shared/cart-item/tma-cart-item.component';
 import { Injectable, OnDestroy } from '@angular/core';
 import {
   AuthService,
@@ -6,15 +7,18 @@ import {
   MultiCartService,
   OCC_CART_ID_CURRENT,
   OCC_USER_ID_ANONYMOUS,
-  ProcessesLoaderState,
-  StateWithMultiCart
+  StateWithMultiCart,
+  UserIdService
 } from '@spartacus/core';
 import { select, Store } from '@ngrx/store';
 import * as TmaCartActions from '../store/actions/tma-tmf-cart.action';
-import { TmaTmfShoppingCart } from '../../model';
+import { TmaTmfShoppingCart, TmaCart, TmaOrderEntry } from '../../model';
 import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
-
+import { ProcessesLoaderState } from '@spartacus/core/src/state/utils/utils-group';
+interface TmaGroupedItemMap {
+  [key: number]: TmaItem;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -46,9 +50,9 @@ export class TmaTmfCartService implements OnDestroy {
   constructor(
     protected store: Store<StateWithMultiCart>,
     protected multiCartService: MultiCartService,
-    protected authService: AuthService
+    protected userIdService: UserIdService
   ) {
-    this.authService.getOccUserId()
+    this.userIdService.getUserId()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((userId: string) =>
         this.userId = userId
@@ -75,6 +79,88 @@ export class TmaTmfCartService implements OnDestroy {
           new TmaCartActions.UpdateCart({ shoppingCart: shoppingCart })
         );
       });
+  }
+
+   /**
+   * Gets the newly added entries of the cart by comparing the entries before and after add to cart
+   *
+   * @param oldCart - Cart before add to cart
+   * @param newCart - Cart after add to cart
+   * @return - TmaOrderEntry[] The newly added entries of the cart
+   */
+  public getNewlyAddedEntries(
+    oldCart: TmaCart,
+    newCart: TmaCart
+  ): TmaOrderEntry[] {
+    const entriesWithLastAdded: number[] = [];
+    const entriesWithoutLastAdded: number[] = [];
+    if (newCart.entries) {
+    newCart.entries.forEach((entry: TmaOrderEntry) =>
+      entriesWithLastAdded.push(entry.entryNumber)
+     );
+    }
+    if (oldCart.entries) {
+      oldCart.entries.forEach((entry: TmaOrderEntry) =>
+        entriesWithoutLastAdded.push(entry.entryNumber)
+      );
+    }
+
+    const newlyAddedEntryIds: number[] = entriesWithLastAdded.filter(
+      (entryNumber: number) => entriesWithoutLastAdded.indexOf(entryNumber) < 0
+    );
+
+    const newlyAddedEntries: TmaOrderEntry[] = [];
+    newlyAddedEntryIds.forEach((entryNumber: number) =>
+      newlyAddedEntries.push(
+        newCart.entries.find(
+          (entry: TmaOrderEntry) => entry.entryNumber === entryNumber
+        )
+      )
+    );
+
+    return newlyAddedEntries;
+  }
+
+  /**
+   * Gets the grouped map for bundle products which contain all the cart entries
+   * in flat structure  of corresponding product hierarchy ie in case we have added
+   * tv_basic as part of quadPlay in  cart then the group item will be [0: [quadPlay,homedeal,tvDeal]]
+   *
+   * @param items list of cart items
+   *
+   * @returns a {@link TmaGroupedItemMap} as flat structure
+   */
+  getGroupedItems(items: TmaItem[]): TmaGroupedItemMap[] {
+    const groups: TmaGroupedItemMap[] = [];
+
+    for (const item of items) {
+
+      const groupNr: number = item.entries
+        ? item.entryNumber
+        : -1;
+
+      if (!groups[groupNr]) {
+        groups[groupNr.toString()] = [];
+      }
+
+      item.entries ?
+        groups[groupNr.toString()] = this.getBpoGroupedItems(item.entries, []) :
+        groups[groupNr.toString()].push(item);
+
+    }
+    return groups;
+  }
+
+  protected getBpoGroupedItems(items: TmaItem[], groupedItems: TmaItem[]): TmaItem[] {
+    for (const item of items) {
+
+      groupedItems.push(item);
+      if (item.entries) {
+        this.getBpoGroupedItems(item.entries, groupedItems);
+      }
+    }
+
+    return groupedItems;
   }
 
   protected requireLoadedCart(customCartSelector$?: Observable<ProcessesLoaderState<Cart>>): Observable<ProcessesLoaderState<Cart>> {

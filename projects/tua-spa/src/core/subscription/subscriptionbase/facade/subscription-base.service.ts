@@ -4,10 +4,11 @@ import { select, Store } from '@ngrx/store';
 import * as SubscriptionBaseSelectors from '../store';
 import { takeUntil, tap } from 'rxjs/operators';
 import { StateWithSubscriptionBase } from '../store';
-import { BaseSiteService, UserService, User } from '@spartacus/core';
+import { BaseSiteService, User } from '@spartacus/core';
 import { SubscriptionBase } from '../../../model';
 import * as SubscriptionBaseActions from '../store/actions/subscription-base.action';
 import { Subject } from 'rxjs/internal/Subject';
+import { UserAccountFacade } from '@spartacus/user/account/root';
 
 @Injectable({
   providedIn: 'root',
@@ -19,14 +20,14 @@ export class SubscriptionBaseService implements OnDestroy {
 
   constructor(
     protected store: Store<StateWithSubscriptionBase>,
-    protected userService: UserService,
+    protected userAccountFacade: UserAccountFacade,
     protected baseSiteService: BaseSiteService
   ) {
     this.baseSiteService
       .getActive()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((baseSiteId: string) => (this.baseSiteId = baseSiteId));
-    this.userService
+    this.userAccountFacade
       .get()
       .pipe(takeUntil(this.destroyed$))
       .subscribe((customer: User) => (this.user = customer));

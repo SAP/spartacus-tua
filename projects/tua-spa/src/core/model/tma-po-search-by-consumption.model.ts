@@ -1,5 +1,6 @@
 import { TmaImage } from './tma-image.model';
-import { TmaBillingEvent, TmaProductSpecification, TmaUsageUnit } from './tma-product.model';
+import { TmaBillingEvent, TmaUsageUnit } from './tma-product.model';
+import { TmaProductSpecification } from './tma-product-specification.model';
 
 export interface TmaSliderOption {
   uid: string;

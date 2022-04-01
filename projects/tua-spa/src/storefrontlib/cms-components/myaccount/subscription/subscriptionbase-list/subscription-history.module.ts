@@ -9,7 +9,7 @@ import {
 import { SubscriptionBaseListComponent } from './subscriptionbase-list.component';
 import { SubscriptionBaseService } from '../../../../../core/subscription/subscriptionbase/facade';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { SubscriptionBaseDetailService } from '../../../../../core/subscription/subscriptionbase-detail/facade';
+import { SubscriptionBaseDetailsService } from '../../../../../core/subscription/subscriptionbase-details/facade';
 import { UsageConsumptionComponentModule } from '../usage-consumption';
 import { UsageConsumptionService } from '../../../../../core/subscription';
 import { RouterModule } from '@angular/router';
@@ -34,11 +34,11 @@ import { TmfProductComponentModule } from '../tmf-product';
   ],
   providers: [
     SubscriptionBaseService,
-    SubscriptionBaseDetailService,
+    SubscriptionBaseDetailsService,
     UsageConsumptionService,
   ],
-  declarations: [SubscriptionBaseListComponent],
-  exports: [SubscriptionBaseListComponent],
+  declarations: [],
+  exports: [],
   entryComponents: [SubscriptionBaseListComponent],
 })
 export class SubscriptionHistoryModule {}
