@@ -105,4 +105,4 @@ Many improvements are coming! All tasks will be posted to our GitHub issue track
 
 # License
 
-Copyright 2020-2021 SAP SE or an SAP affiliate company and spartacus-tua contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/spartacus-tua).
+Copyright 2020-2022 SAP SE or an SAP affiliate company and spartacus-tua contributors. Please see our [LICENSE](LICENSE) for copyright and license information. Detailed information including third-party components and their licensing/copyright information is available [via the REUSE tool](https://api.reuse.software/info/github.com/SAP/spartacus-tua).
