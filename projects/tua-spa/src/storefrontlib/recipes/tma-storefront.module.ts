@@ -10,7 +10,6 @@ import { TmaStorefrontFoundationModule } from './tma-storefront-foundation.modul
 import { TmaOccModule } from '../../core/occ';
 import { TmfModule } from '../../core/tmf';
 import { TmfAppointmentModule } from '../../core/tmf-appointment';
-import { PremiseLookupModule } from '../../core/premiselookup';
 import { TmfResourcePoolManagementModule } from '../../core/tmf-resource-pool-management/tmf-resource-pool-management.module';
 
 
@@ -18,7 +17,6 @@ import { TmfResourcePoolManagementModule } from '../../core/tmf-resource-pool-ma
   imports: [
     TmaOccModule.forRoot(),
     TmfModule.forRoot(),
-    PremiseLookupModule.forRoot(),
     TmfResourcePoolManagementModule.forRoot(),
     TmfAppointmentModule.forRoot(),
   ],

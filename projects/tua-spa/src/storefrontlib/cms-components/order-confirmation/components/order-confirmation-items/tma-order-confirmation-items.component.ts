@@ -16,7 +16,7 @@ export class TmaOrderConfirmationItemsComponent extends OrderConfirmationItemsCo
 
   constructor(
     protected checkoutService: CheckoutService,
-    protected promotionService?: PromotionService
+    protected promotionService: PromotionService
   ) {
     super(checkoutService, promotionService);
   }

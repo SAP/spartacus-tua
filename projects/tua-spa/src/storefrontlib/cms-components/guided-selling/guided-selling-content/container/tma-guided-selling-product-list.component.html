@@ -22,7 +22,8 @@
                 >
                   <cx-pagination
                     [pagination]="model.pagination"
-                    (viewPageEvent)="viewPage($event)"
+                    queryParam="currentPage"
+                    [defaultPage]="0"
                   ></cx-pagination>
                 </div>
               </div>
@@ -81,17 +82,18 @@
                 </div>
               </div>
               <div
-                *ngIf="!isInfiniteScroll"
-                class="col-auto"
-                aria-label="product search pagination"
-              >
-                <div class="cx-pagination">
-                  <cx-pagination
-                    [pagination]="model.pagination"
-                    (viewPageEvent)="viewPage($event)"
-                  ></cx-pagination>
-                </div>
+              *ngIf="!isInfiniteScroll"
+              class="col-auto"
+              aria-label="product search pagination"
+            >
+              <div class="cx-pagination">
+                <cx-pagination
+                  [pagination]="model.pagination"
+                  queryParam="currentPage"
+                  [defaultPage]="0"
+                ></cx-pagination>
               </div>
+            </div>
               <div class="col-auto ml-auto ml-lg-0">
                 <cx-product-view
                   (modeChange)="setViewMode($event)"

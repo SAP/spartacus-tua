@@ -3,7 +3,7 @@ import { Config } from '@spartacus/core';
 
 @Injectable({
   providedIn: 'root',
-  useExisting: Config
+  useExisting: Config,
 })
 export abstract class JourneyChecklistConfig {
   journeyChecklist?: {

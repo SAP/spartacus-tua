@@ -1,4 +1,4 @@
-@import "~@spartacus/styles/scss/mixins";
+@import '~@spartacus/styles/scss/mixins';
 
 .cx-page-section {
   @include media-breakpoint-down(md) {
@@ -39,7 +39,6 @@
 }
 
 .cx-bottom-fixed {
-
   @include media-breakpoint-down(md) {
     position: fixed;
     left: 0;
@@ -69,6 +68,20 @@
   justify-content: center;
   align-items: center;
   margin: 0 6px;
+}
+
+.charge-align {
+  justify-content: center;
+  align-items: center;
+  margin: 0 6px;
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .font-small {
+    font-size: 0.7rem;
+  }
 }
 
 .price {

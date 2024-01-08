@@ -64,10 +64,11 @@ export interface ContactMedium {
 
 export interface RelatedPlaceRef {
   id: string;
-  href: string;
-  name: string;
-  role: string;
-  isRef: boolean;
+  href?: string;
+  name?: string;
+  role?: string;
+  isRef?: boolean;
+  '@referredType': string;
 }
 
 export interface MediumCharacteristic {

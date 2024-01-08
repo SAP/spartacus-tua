@@ -43,7 +43,7 @@ const mockLogicalResources: AppliedCapacityAmount = {
     {
       id: 'PN_000000005',
       value: '07467339811',
-      '@referredType': 'phone number'
+      referredType: 'phone number'
     }
   ]
 };

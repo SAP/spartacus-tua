@@ -22,8 +22,8 @@ export const updateReservationErrorInitialState: ReservationError = {};
  *          The state of ReservationState
  * @param  action
  *          Dispatched action of {@link ReservationState}
- * @returns Reservation[]
- *          list of Reservations
+ * @return
+ *       list of Reservations
  */
 export function reservationReducer(
   state = reservationInitialState,
@@ -38,7 +38,9 @@ export function reservationReducer(
       );
     }
     case ReservationActionTypes.LOAD_RESERVATION_POOL_MANAGEMENT_SUCCESS: {
-      if (!!action.payload.reservation) {
+      if (!action.payload.reservation) {
+        return state;
+      }
         action.payload.reservation.find((reservationEntry: Reservation) => {
           reservationEntry.reservationItem.find((item: ReservationItem) => {
             item.appliedCapacityAmount.find(
@@ -60,22 +62,23 @@ export function reservationReducer(
             );
           });
         });
-      }
       return state;
+
     }
     case ReservationActionTypes.CLEAR_RESERVATION_POOL_MANAGEMENT: {
       return reservationInitialState;
     }
     case ReservationActionTypes.CLEAR_INVALID_RESERVATIONS: {
-      if (!!action.payload.invalidReservations) {
-        state = state.filter(
+      if (!action.payload.invalidReservations) {
+        return state;
+      }
+        return state.filter(
           (item: Reservation) =>
             action.payload.invalidReservations.indexOf(item) === -1
         );
       }
-      return state;
     }
-  }
+
   return state;
 }
 
@@ -86,8 +89,8 @@ export function reservationReducer(
  *          The state of ReservationState
  * @param  action
  *          Dispatched action of {@link ReservationState}
- * @returns Reservation
- *            newly created reservation
+ * @return
+ *       newly created reservation
  */
 export function createReservationReducer(
   state = createReservationInitialState,
@@ -111,8 +114,8 @@ export function createReservationReducer(
  *          The state of ReservationState
  * @param  action
  *          Dispatched action of {@link ReservationState}
- * @returns ReservationError[]
- *          Array of errors
+ * @return
+ *        Array of errors
  */
 export function reservationErrorReducer(
   state = errorInitialState,
@@ -153,8 +156,8 @@ export function reservationErrorReducer(
  *          The state of ReservationState
  * @param  action
  *          Dispatched action of {@link ReservationState}
- * @returns ReservationError
- *           Error while updating reservation
+ * @return
+ *        Error while updating reservation
  */
 export function updateReservationErrorReducer(
   state = updateReservationErrorInitialState,

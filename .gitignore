@@ -1,7 +1,3 @@
-# SPDX-FileCopyrightText: 2020 SAP SE or an SAP affiliate company and contributors.
-#
-# SPDX-License-Identifier: CC0-1.0
-
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
@@ -49,3 +45,15 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+.metadata/
+*.class
+*/jalo/
+*/build.xml
+*/extensioninfo.xsd
+*/resources/items.xsd
+*/resources/beans.xsd
+*/gensrc/
+*/platformhome.properties
+*/resources/*/*-testclasses.xml
+*/resources/*/*-webtestclasses.xml
+*.iml

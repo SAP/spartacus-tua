@@ -24,4 +24,12 @@ export interface TmaTmfEndpoints {
    * Shopping Cart
    */
   shoppingCart?: string;
+  /**
+   * Create Geographic Address
+   */
+  createGeographicAddress?: string;
+  /**
+   * Update Geographic Address
+   */
+  updateGeographicAddress?: string;
 }

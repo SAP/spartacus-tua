@@ -1,20 +1,24 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnDestroy,
+  AfterViewChecked,
+} from '@angular/core';
 import { SearchTimeSlotService } from '../../../../core/search-time-slot/facade';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import {
   SearchTimeSlot,
   TimeSlot,
   TmaOrderEntry,
   TmaCart,
-  TmaTmfShoppingCart,
   TimePeriod,
-  Appointment,
+  GeographicAddress,
 } from '../../../../core/model';
 import { AppointmentService } from '../../../../core/appointment/facade';
 import {
   User,
   UserService,
-  OCC_USER_ID_ANONYMOUS,
   BaseSiteService,
   CxDatePipe,
 } from '@spartacus/core';
@@ -22,10 +26,12 @@ import {
   TmaTmfCartService,
   TmaActiveCartService,
   LOCAL_STORAGE,
+  GeographicAddressService,
 } from '../../../../core';
-import { first, last, take, filter, takeUntil } from 'rxjs/operators';
+import { first, take, takeUntil, filter } from 'rxjs/operators';
 import { ModalService } from '@spartacus/storefront';
 import { JourneyChecklistConfig } from '../../../../core/journey-checklist-config/config';
+import { ChangeDetectorRef } from '@angular/core';
 
 const { CALL_TO_SCHEDULE } = LOCAL_STORAGE.APPOINTMENT;
 
@@ -34,7 +40,8 @@ const { CALL_TO_SCHEDULE } = LOCAL_STORAGE.APPOINTMENT;
   templateUrl: './journey-checklist-appointment.component.html',
   styleUrls: ['./journey-checklist-appointment.component.scss'],
 })
-export class JourneyChecklistAppointmentComponent implements OnInit, OnDestroy {
+export class JourneyChecklistAppointmentComponent
+  implements AfterViewChecked, OnInit, OnDestroy {
   @Input()
   checkListLengthApp: number;
 
@@ -51,8 +58,12 @@ export class JourneyChecklistAppointmentComponent implements OnInit, OnDestroy {
   currentSelectedTimePeriod?: TimePeriod;
 
   @Input()
-  cartEntry: TmaOrderEntry;
+  cartEntries: TmaOrderEntry[];
 
+  @Input()
+  placeRequired: boolean;
+
+  place: GeographicAddress;
   timeSlotChanged: boolean;
   selectedAvailableTimeSlot: any = null;
   timeSlots$: Observable<SearchTimeSlot>;
@@ -75,23 +86,19 @@ export class JourneyChecklistAppointmentComponent implements OnInit, OnDestroy {
     protected userService: UserService,
     protected modalService: ModalService,
     protected datePipe: CxDatePipe,
-    protected config?: JourneyChecklistConfig
+    protected config?: JourneyChecklistConfig,
+    protected geographicAddressService?: GeographicAddressService,
+    private cdRef?: ChangeDetectorRef
   ) {}
 
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
+  }
+
   ngOnInit() {
-    if (this.currentSelectedTimePeriod !== undefined) {
-      const preSelectedTimeSlot: TimeSlot = {
-        validFor: this.currentSelectedTimePeriod,
-      };
-      this.selectedAvailableTimeSlot = this.datePipe.transform(
-        preSelectedTimeSlot.validFor.startDateTime,
-        'MMM d, y h:mm a',
-        'UTC'
-      );
-    } else {
-      this.selectedAvailableTimeSlot = this.defaultTimeSlot;
-      this.selectedTimeSlot(this.defaultTimeSlot);
-    }
+    this.selectedAvailableTimeSlot = this.defaultTimeSlot;
+    this.selectedTimeSlot(this.defaultTimeSlot);
+
     this.activeCartService
       .getActive()
       .pipe(takeUntil(this.destroyed$))
@@ -108,13 +115,15 @@ export class JourneyChecklistAppointmentComponent implements OnInit, OnDestroy {
     this.baseSiteService
       .getActive()
       .pipe(
-        first((baseSiteId: string) => baseSiteId != null),
+        first((baseSiteId: string) => !!baseSiteId),
         takeUntil(this.destroyed$)
       )
       .subscribe((baseSiteId: string) => (this.currentBaseSiteId = baseSiteId));
 
     this.timeSlotChanged = false;
-    this.timeSlots$ = this.tmaSearchTimeSlotService.getAvailableTimeSlots();
+    if (!this.placeRequired) {
+      this.timeSlots$ = this.tmaSearchTimeSlotService.getAvailableTimeSlots();
+    }
   }
 
   ngOnDestroy() {
@@ -126,131 +135,36 @@ export class JourneyChecklistAppointmentComponent implements OnInit, OnDestroy {
   }
 
   selectedTimeSlot(timeSlot: TimeSlot): void {
-    if (this.currentAppointmentId) {
-      if (
-        timeSlot.id === this.currentAppointmentId ||
-        this.currentSelectedStartDate ===
-          (timeSlot.validFor !== undefined
-            ? timeSlot.validFor.startDateTime
-            : undefined)
-      ) {
-        this.timeSlotChanged = false;
-        return;
-      }
-      this.tmaSearchTimeSlotService.setSelectedTimeSlot(timeSlot);
-      this.timeSlotChanged = true;
-      return;
-    }
     this.tmaSearchTimeSlotService.setSelectedTimeSlot(timeSlot);
-  }
-
-  update(): void {
-    this.tmfAppointmentService.updateAppointment(this.cartEntry.appointment.id);
-    const selectedTimeSlot = this.getTimeSlot();
-    if (
-      this.cartEntry.appointment.id === CALL_TO_SCHEDULE ||
-      selectedTimeSlot.id === CALL_TO_SCHEDULE
-    ) {
-      this.tmfAppointmentService
-        .getCreateAppointmentError()
-        .pipe(
-          take(2),
-          filter((result: string) => result != null),
-          takeUntil(this.destroyed$)
-        )
-        .subscribe((result: string) => {
-          this.errPatch = result;
-          return;
-        });
-      this.tmfAppointmentService
-        .getCreatedAppointment()
-        .pipe(
-          take(2),
-          filter((result) => Object.keys(result).length !== 0),
-          takeUntil(this.destroyed$)
-        )
-        .subscribe((result: Appointment) => {
-          const appointmentId = result.id;
-          this.updateToCart(appointmentId);
-          this.closeModal();
-        });
-    } else {
-      this.tmfAppointmentService
-        .getUpdateAppointmentError(this.cartEntry.appointment.id)
-        .pipe(
-          take(2),
-          filter((result: string) => !!result),
-          takeUntil(this.destroyed$)
-        )
-        .subscribe((result: string) => {
-          this.errPatch = result;
-          return;
-        });
-      this.tmfAppointmentService
-        .getAppointmentById(this.cartEntry.appointment.id)
-        .pipe(
-          take(2),
-          filter((result: Appointment) => !!result),
-          last(),
-          takeUntil(this.destroyed$)
-        )
-        .subscribe((result: Appointment) => {
-          const appointmentId = result.id;
-          this.updateToCart(appointmentId);
-          this.closeModal();
-        });
-    }
-  }
-
-  updateToCart(appointmentId: string): void {
-    const currentUserId: string =
-      this.currentUser && this.currentUser.uid
-        ? this.currentUser.uid
-        : OCC_USER_ID_ANONYMOUS;
-    const shoppingCart: TmaTmfShoppingCart = {
-      baseSiteId: this.currentBaseSiteId,
-      cartItem: [
-        {
-          id:
-            this.currentCart.code +
-            '_' +
-            this.cartEntry.entryNumber +
-            '_' +
-            'SPO',
-          appointment: {
-            id: appointmentId,
-          },
-        },
-      ],
-      relatedParty: [
-        {
-          id: currentUserId,
-        },
-      ],
-    };
-    this.tmaTmfCartService.updateCart(shoppingCart);
-  }
-
-  closeModal(): void {
-    this.modalService.dismissActiveModal('close appointment component');
   }
 
   getrequestedNumberOfTimeSlots(): string {
     return this.config.journeyChecklist.appointment.requested_number_of_timeslots.toString();
   }
 
-  private getTimeSlot(): TimeSlot {
-    let selectedTimeSlot: TimeSlot;
-    this.tmaSearchTimeSlotService
-      .getSelectedTimeSlot()
-      .pipe(
-        take(1),
-        filter((result: TimeSlot) => !!result),
-        takeUntil(this.destroyed$)
-      )
-      .subscribe((result: TimeSlot) => {
-        selectedTimeSlot = result;
-      });
-    return selectedTimeSlot;
+  getTimeSlots(searchSlot: SearchTimeSlot): Observable<SearchTimeSlot> {
+    if (searchSlot === null) {
+      if (!this.placeRequired) {
+        return this.timeSlots$;
+      } else {
+        this.geographicAddressService
+          .getSelectedInstallationAddress()
+          .pipe(
+            take(2),
+            filter((result: GeographicAddress) => !!result),
+            takeUntil(this.destroyed$)
+          )
+          .subscribe((result: GeographicAddress) => {
+            this.place = result;
+          });
+        if (this.place.id) {
+          this.timeSlots$ = this.tmaSearchTimeSlotService.getAvailableTimeSlots(
+            this.place
+          );
+          return this.timeSlots$;
+        }
+      }
+    }
+    return of(searchSlot);
   }
 }

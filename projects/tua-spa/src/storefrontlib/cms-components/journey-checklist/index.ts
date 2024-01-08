@@ -2,3 +2,4 @@ export * from './journey-checklist-appointment/journey-checklist-appointment.com
 export * from './journey-checklist-logical-resource/journey-checklist-logical-resource.component';
 export * from './journey-checklist-step/journey-checklist-step.component';
 export * from './journey-checklist.module';
+export * from './journey-checklist-installation-address/journey-checklist-installation-address.component';

@@ -55,28 +55,22 @@ export interface TmaProductOfferingPrice {
   tierStart?: number;
   tierEnd?: number;
   region?: TmaRegion[];
+  priority?: number;
+  isPercentage?: boolean;
+  alterations?: TmaProductOfferingPrice[];
 }
 
 export enum TmaPopChargeType {
   ONE_TIME = 'oneTime',
   RECURRING = 'recurring',
-  USAGE = 'usage'
+  USAGE = 'usage',
+  DISCOUNT = 'discount'
 }
 
 export enum TmaPopBillingEventType {
   ON_CANCELLATION = 'oncancellation',
   PAY_NOW = 'paynow',
   ON_FIRST_BILL = 'onfirstbill'
-}
-
-export enum TmaUsageType {
-  EACH_RESPECTIVE_TIER = 'each_respective_tier',
-  HIGHEST_APPLICABLE_TIER = 'highest_applicable_tier',
-}
-
-export enum TmaItemType {
-  PER_UNIT_USAGE_CHARGE = 'PerUnitUsageCharge',
-  VOLUME_USAGE_CHARGE = 'VolumeUsageCharge'
 }
 
 export interface TmaProductOfferingTerm {
@@ -122,8 +116,4 @@ export interface TmaProductOfferingGroup {
   id?: string;
   name?: string;
   childProductOfferings?: TmaProduct[];
-}
-
-export interface TmaBillingEvent {
-  name?: string;
 }

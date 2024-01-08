@@ -1,8 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { CmsService } from '@spartacus/core';
-import { ModalService, PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
-import { TmaConsumptionConfig } from '../../../../../core/config/consumption/config';
+import { PageLayoutService, ProductListComponentService, ViewConfig } from '@spartacus/storefront';
 import { TmaProductListComponent } from '../../../product/product-list';
 
 @Component({
@@ -15,12 +12,8 @@ export class TmaGuidedSellingProductListComponent extends TmaProductListComponen
   constructor(
     pageLayoutService: PageLayoutService,
     productListComponentService: ProductListComponentService,
-    scrollConfig: ViewConfig,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected activatedRoute: ActivatedRoute,
-    protected cmsService: CmsService,
-    protected modalService: ModalService
+    scrollConfig?: ViewConfig
   ) {
-    super(pageLayoutService, productListComponentService, consumptionConfig, activatedRoute, cmsService, scrollConfig, modalService);
+    super(pageLayoutService, productListComponentService, scrollConfig);
   }
 }

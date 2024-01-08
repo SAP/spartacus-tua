@@ -5,6 +5,7 @@ export namespace Tmf {
     id: string;
     name: string;
     actionType: string;
+    productOffering?: TmfProductOffering[];
   }
 
   export interface BaseSites {
@@ -167,5 +168,48 @@ export namespace Tmf {
     href: string;
     role?: string;
     name?: string;
+  }
+
+  export interface TmfProductOffering {
+    id: string;
+    href?: string;
+    name?: string;
+  }
+  
+  export interface TmfGeographicAddress {
+    id?: string;
+    href?: string;
+    streetNr?: string;
+    streetNrLast?: string;
+    streetNrLastSuffix?: string;
+    streetName?: string;
+    streetType?: string;
+    streetSuffix?: string;
+    postcode?: string;
+    locality?: string;
+    city?: string;
+    stateOfProvince?: string;
+    country?: string;
+    relatedParty: TmaTmfRelatedParty;
+    geographicSubAddress?: TmfGeographicSubAddress;
+    isInstallationAddress?: boolean;
+    isUnloadingAddress?: boolean;
+    isContactAddress?: boolean;
+    isShippingAddress?: boolean;
+    isBillingAddress?: boolean;
+  }
+
+  export interface TmfGeographicSubAddress {
+    id?: string;
+    href?: string;
+    name?: string;
+    type?: string;
+    subUnitType?: string;
+    subUnitNumber?: string;
+    levelType?: string;
+    levelNumber?: string;
+    buildingName?: string;
+    privateStreetNumber?: string;
+    privateStreetName?: string;
   }
 }

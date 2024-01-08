@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { CartTotalsComponent } from '@spartacus/storefront';
-import { CartService } from '@spartacus/core';
+import { ActiveCartService } from '@spartacus/core';
 import {
   TmaCart,
   TmaMessage,
   TmaRootGroup,
   TmaValidationMessage,
-  TmaValidationMessageType
+  TmaValidationMessageType,
 } from '../../../../core/model';
 import { Observable } from 'rxjs';
 import { AppointmentService } from '../../../../core/appointment/facade';
@@ -15,7 +15,7 @@ import { LogicalResourceReservationService } from '../../../../core/reservation/
 @Component({
   selector: 'cx-cart-totals',
   templateUrl: './tma-cart-totals.component.html',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TmaCartTotalsComponent
   extends CartTotalsComponent
@@ -26,11 +26,11 @@ export class TmaCartTotalsComponent
   hasCancelledReservations$: Observable<boolean>;
 
   constructor(
-    protected cartService: CartService,
-    protected appointmentService?: AppointmentService,
+    protected activeCartService: ActiveCartService,
+    protected appointmentService: AppointmentService,
     protected logicalResourceReservationService?: LogicalResourceReservationService
   ) {
-    super(cartService);
+    super(activeCartService);
   }
 
   ngOnInit() {

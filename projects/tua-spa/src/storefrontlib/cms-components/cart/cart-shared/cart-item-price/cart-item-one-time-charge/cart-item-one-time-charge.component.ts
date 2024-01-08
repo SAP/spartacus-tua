@@ -1,22 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TmaCartPrice } from '../../../../../../core/model';
-import { CurrencyService } from '@spartacus/core';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'cx-cart-item-one-time-charge',
   templateUrl: './cart-item-one-time-charge.component.html',
-  styleUrls: ['./cart-item-one-time-charge.component.scss'],
 })
-export class CartItemOneTimeChargeComponent implements OnInit {
+export class CartItemOneTimeChargeComponent{
   @Input()
-  oneTimeCharge: TmaCartPrice[];
+  oneTimeCharge: TmaCartPrice;
 
-  currency$: Observable<string>;
+  constructor() {}
 
-  constructor(protected currencyService: CurrencyService) {}
-
-  ngOnInit() {
-    this.currency$ = this.currencyService.getActive();
-  }
 }

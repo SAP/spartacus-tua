@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ConverterService, FeatureConfigService, OccCartEntryAdapter, OccEndpointsService } from '@spartacus/core';
+import { ConverterService, OccCartEntryAdapter, OccEndpointsService } from '@spartacus/core';
 import { Observable } from 'rxjs';
-import { TmaCartModification } from '../../../model/tma-cart.model';
-import { TmaCartEntryAdapter } from '../../../cart/store/adapters/tma-cart-entry.adapter';
-import { TmaOrderEntry } from '../../../model/tma-cart.entry.model';
+import { TmaCartModification,TmaOrderEntry } from '../../../model';
+import { TmaCartEntryAdapter } from '../../../cart/store/adapters';
 import { TMA_CART_MODIFICATION_NORMALIZER } from "../../../cart/connectors";
 
 @Injectable({
@@ -16,9 +15,8 @@ export class TmaOccCartEntryAdapter extends OccCartEntryAdapter implements TmaCa
     protected http: HttpClient,
     protected occEndpointsService: OccEndpointsService,
     protected converterService: ConverterService,
-    protected featureConfigService?: FeatureConfigService
   ) {
-    super(http, occEndpointsService, converterService, featureConfigService);
+    super(http, occEndpointsService, converterService);
   }
 
   addCartEntry(

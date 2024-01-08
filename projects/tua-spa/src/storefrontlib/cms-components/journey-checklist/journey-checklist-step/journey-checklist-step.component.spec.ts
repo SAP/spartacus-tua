@@ -1,33 +1,36 @@
 import {
   LogicalResourceReservationService,
-  MsisdnReservationService
+  MsisdnReservationService,
 } from '../../../../core/reservation';
 import {
   TmaTmfRelatedParty,
-  TmaTmfRelatedPartyRole
+  TmaTmfRelatedPartyRole,
 } from '../../../../core/model';
-import { of, Observable, ReplaySubject } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import {
   TmaTmfCartService,
   TmaActiveCartService,
-  TmaProduct
+  TmaChecklistAction,
+  GeographicAddressService,
+  SearchTimeSlotService,
 } from '../../../../core';
 import { StoreModule } from '@ngrx/store';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   I18nTestingModule,
   User,
   UserService,
   BaseSiteService,
-  OCC_USER_ID_CURRENT,
   AuthService,
   Cart,
   MultiCartService,
-  UserToken,
-  ProductService
+  ProductService,
+  OCC_USER_ID_CURRENT,
+  CxDatePipe,
+  ConfigModule,
 } from '@spartacus/core';
 import createSpy = jasmine.createSpy;
 import { AppointmentService } from '../../../../core/appointment/facade';
@@ -35,18 +38,23 @@ import { JourneyChecklistStepComponent } from './journey-checklist-step.componen
 
 const userId = 'testUserId';
 const cartCode = 'xxx';
-const customerId = '1234-5678-abcdef';
+const customerId = '1234-5678-ab';
 const baseSite = 'test-site';
-const userToken$ = new ReplaySubject<UserToken>();
+
+const checklist: TmaChecklistAction = {
+  actionType: 'APPOINTMENT',
+};
+const checklistActions: TmaChecklistAction[] = [checklist];
+
 const user: User = {
   uid: userId,
-  customerId
+  customerId,
 };
 const relatedParty: TmaTmfRelatedParty = {
   id: userId,
   href: undefined,
   role: TmaTmfRelatedPartyRole.CUSTOMER,
-  name: 'abc'
+  name: 'abc',
 };
 const testCart: Cart = {
   code: cartCode,
@@ -54,19 +62,15 @@ const testCart: Cart = {
   totalItems: 0,
   totalPrice: {
     currencyIso: 'USD',
-    value: 0
+    value: 0,
   },
   totalPriceWithTax: {
     currencyIso: 'USD',
-    value: 0
-  }
+    value: 0,
+  },
 };
 
 class AuthServiceStub {
-  getUserToken(): Observable<UserToken> {
-    return userToken$.asObservable();
-  }
-
   getOccUserId(): Observable<string> {
     return of(OCC_USER_ID_CURRENT);
   }
@@ -92,20 +96,16 @@ class MockUserService {
 }
 
 class MockAppointmentService {
-  clearAppointmentState() {
-  }
+  clearAppointmentState() {}
 
-  clearCreatedAppointmentState() {
-  }
+  clearCreatedAppointmentState() {}
 
-  clearAppointmentError() {
-  }
+  clearAppointmentError() {}
 }
 
 class MockMultiCartService {
   getCart = createSpy().and.returnValue(of(testCart));
   addEntry = createSpy();
-  removeEntry = createSpy();
   isStable = createSpy().and.returnValue(of(true));
 }
 
@@ -115,37 +115,38 @@ class MockActiveCartService {
   }
 }
 
+class MockMultiProductService {}
+
+class MockGeographicAddressService {
+  clearGeographicAddressError() {}
+  clearCreatedGeographicAddressState() {}
+}
+
 class MockMsisdnReservationService {
   currentUser = relatedParty;
 
-  setInitialReservationState() {
-  }
+  setInitialReservationState() {}
 
-  clearReservationError() {
-  }
+  clearReservationError() {}
 }
 
 class MockLogicalResourceReservationService {
   currentUser = relatedParty;
 
-  setInitialReservationState() {
-  }
+  setInitialReservationState() {}
 
-  clearReservationError() {
-  }
+  clearReservationError() {}
 
-  clearReservationState() {
-  }
+  clearReservationState() {}
 
-  clearCreatedReservationState() {
-  }
+  clearCreatedReservationState() {}
 }
 
-class MockProductService {
-  getProduct(): Observable<TmaProduct> {
-    return of();
-  }
-}
+class MockChangeDetectorRef {}
+
+class MockSearchTimeSlotService {}
+
+class MockCxDatePipe {}
 
 describe('JourneyChecklistStepComponent', () => {
   let component: JourneyChecklistStepComponent;
@@ -158,7 +159,8 @@ describe('JourneyChecklistStepComponent', () => {
         FormsModule,
         I18nTestingModule,
         NgbModule,
-        StoreModule.forRoot({})
+        ConfigModule,
+        StoreModule.forRoot({}),
       ],
       providers: [
         { provide: TmaActiveCartService, useClass: MockActiveCartService },
@@ -167,29 +169,46 @@ describe('JourneyChecklistStepComponent', () => {
         { provide: AppointmentService, useClass: MockAppointmentService },
         {
           provide: LogicalResourceReservationService,
-          useClass: MockLogicalResourceReservationService
+          useClass: MockLogicalResourceReservationService,
         },
         { provide: BaseSiteService, useClass: MockBaseSiteService },
         { provide: AuthService, useClass: AuthServiceStub },
         { provide: MultiCartService, useClass: MockMultiCartService },
-        { provide: ProductService, useClass: MockProductService },
+        { provide: ProductService, useClass: MockMultiProductService },
+        {
+          provide: GeographicAddressService,
+          useClass: MockGeographicAddressService,
+        },
         {
           provide: MsisdnReservationService,
-          useClass: MockMsisdnReservationService
-        }
-      ]
+          useClass: MockMsisdnReservationService,
+        },
+        {
+          provide: ChangeDetectorRef,
+          useClass: MockChangeDetectorRef,
+        },
+        {
+          provide: SearchTimeSlotService,
+          useClass: MockSearchTimeSlotService,
+        },
+        { provide: CxDatePipe, useClass: MockCxDatePipe },
+      ],
     }).compileComponents();
   }));
+
   beforeEach(() => {
     fixture = TestBed.createComponent(JourneyChecklistStepComponent);
     component = fixture.componentInstance;
+    component.checklistActions = checklistActions;
     component.ngOnInit();
     fixture.detectChanges();
   });
+
   afterEach(() => {
     fixture.destroy();
     component.ngOnDestroy();
   });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
