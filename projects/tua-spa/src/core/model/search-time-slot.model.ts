@@ -1,3 +1,4 @@
+import { RelatedPlaceRef } from './appointment.model';
 import { TimePeriod } from './time-period.model';
 import { TmaTmfRelatedParty } from './tma-tmf-related-party.model';
 
@@ -7,6 +8,7 @@ export interface SearchTimeSlot {
   searchResult?: string;
   status?: string;
   requestedTimeSlot?: TimeSlot[];
+  relatedPlace?: RelatedPlaceRef;
 }
 
 export interface TimeSlot {

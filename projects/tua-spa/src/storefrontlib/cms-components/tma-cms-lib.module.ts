@@ -13,7 +13,6 @@ import { TmaPremiseDetailsModule } from './premise-details';
 import { TmaProductListModule, TmaProductSummaryModule } from './product';
 import { TmaProductTabsModule } from './product/product-tabs';
 
-
 @NgModule({
   imports: [
     TmaProductListModule,
@@ -21,16 +20,15 @@ import { TmaProductTabsModule } from './product/product-tabs';
     TmaProductTabsModule,
     TmaCartComponentModule,
     TmaCheckoutComponentModule,
-    TmaConsumptionModule,
     TmaOrderConfirmationModule,
     TmaOrderModule,
-    TmaGuidedSellingModule,
-    TmaPremiseDetailsModule,
     SubscriptionComponentModule,
     TmaGuidedSellingModule,
+    LogicalResourceModule,
     JourneyChecklistComponentModule,
     TmaAddressFormModule,
-    LogicalResourceModule
+    TmaPremiseDetailsModule,
+    TmaConsumptionModule
   ],
 })
 export class TmaCmsLibModule {}

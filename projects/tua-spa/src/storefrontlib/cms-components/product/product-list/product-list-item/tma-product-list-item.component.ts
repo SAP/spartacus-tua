@@ -3,23 +3,16 @@ import { CurrencyService, ProductService } from '@spartacus/core';
 import { ProductListItemComponent } from '@spartacus/storefront';
 import { Observable, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
-import {
-  TmaBillingFrequencyConfig, 
-  TmaBillingFrequencyMap, 
-  TmaConsumptionChangeService, 
-  TmaConsumptionConfig, 
-  TmaPriceService,
-  TmaProductService
-} from '../../../../../core';
-import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionValue, TmaProduct, TmaUsageUnit } from '../../../../../core/model';
+import { SEPARATOR, TmaBillingFrequencyConfig, TmaBillingFrequencyMap, TmaCmsConsumptionComponent, TmaConsumptionConfig, TmaConsumptionValue, TmaProduct, TmaUsageUnit } from '../../../../../core';
+import { TmaConsumptionChangeService, TmaPriceService, TmaProductService } from '../../../../../core/product/facade';
 
 @Component({
   selector: 'cx-product-list-item',
   templateUrl: './tma-product-list-item.component.html',
   styleUrls: ['./tma-product-list-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TmaProductListItemComponent extends ProductListItemComponent implements OnInit, OnDestroy {
+export class TmaProductListItemComponent extends ProductListItemComponent implements OnInit, OnDestroy  {
 
   @Input()
   consumptionComponent: TmaCmsConsumptionComponent;
@@ -42,14 +35,15 @@ export class TmaProductListItemComponent extends ProductListItemComponent implem
 
   protected consumptionChangeServiceSubject: Subscription;
 
+
   constructor(
-    public priceService: TmaPriceService,
-    protected productService: ProductService,
-    protected currencyService: CurrencyService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected productSpecificationProductService: TmaProductService,
-    protected consumptionChangeService: TmaConsumptionChangeService,
-    protected billingFrequencyConfig: TmaBillingFrequencyConfig
+    public priceService?: TmaPriceService,
+    protected currencyService?: CurrencyService,
+    protected productService?: ProductService,
+    protected consumptionConfig?: TmaConsumptionConfig,
+    protected productSpecificationProductService?: TmaProductService,
+    protected consumptionChangeService?: TmaConsumptionChangeService,
+    protected billingFrequencyConfig?: TmaBillingFrequencyConfig
   ) {
     super();
   }

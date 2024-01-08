@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { JourneyChecklistAppointmentComponent } from './journey-checklist-appointment.component';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   I18nTestingModule,
@@ -14,10 +14,11 @@ import {
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { StoreModule } from '@ngrx/store';
 import {
-  defaultJourneyChecklistConfig,
-  JourneyChecklistConfig,
   TmaActiveCartService,
   TmaTmfCartService,
+  GeographicAddressService,
+  JourneyChecklistConfig,
+  defaultJourneyChecklistConfig,
 } from '../../../../core';
 import { AppointmentService } from '../../../../core/appointment';
 import { SearchTimeSlotService } from '../../../../core/search-time-slot';
@@ -90,6 +91,10 @@ describe('TmaJourneyChecklistAppointmentComponent', () => {
     }
   }
 
+  class MockGeographicAddressService {}
+
+  class MockChangeDetectorRef {}
+
   const MockJourneyChecklistConfig: JourneyChecklistConfig = defaultJourneyChecklistConfig;
 
   beforeEach(async(() => {
@@ -115,6 +120,14 @@ describe('TmaJourneyChecklistAppointmentComponent', () => {
         },
         { provide: ModalService, useClass: MockModalService },
         { provide: CxDatePipe, useClass: MockCxDatePipe },
+        {
+          provide: GeographicAddressService,
+          useClass: MockGeographicAddressService,
+        },
+        {
+          provide: ChangeDetectorRef,
+          useClass: MockChangeDetectorRef,
+        },
         {
           provide: JourneyChecklistConfig,
           useValue: MockJourneyChecklistConfig,

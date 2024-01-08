@@ -31,3 +31,12 @@
     background-size: 30px;
   }
 }
+
+.strikethrough {
+  text-decoration: line-through;
+  color: #747881;
+}
+
+.cx-bold {
+  font-weight: var(--cx-font-weight-bold);
+}

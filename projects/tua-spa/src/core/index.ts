@@ -1,4 +1,3 @@
-export * from './appointment/index';
 export * from './auth/index';
 export * from './cart/index';
 export * from './checklistaction/index';
@@ -9,8 +8,8 @@ export * from './occ/index';
 export * from './premisedetail/index';
 export * from './premiselookup/index';
 export * from './product/index';
-export * from './tmf-cart/index';
 export * from './tmf/index';
+export * from './tmf-cart/index';
 export * from './util/index';
 export * from './subscription/index';
 export * from './appointment/index';
@@ -19,4 +18,5 @@ export * from './reservation/index';
 export * from './availability-check/index';
 export * from './tmf-resource-pool-management/index';
 export * from './tmf-appointment/index';
-export * from './journey-checklist-config/index'
+export * from './geographic-address/index';
+export * from './global-message/index';

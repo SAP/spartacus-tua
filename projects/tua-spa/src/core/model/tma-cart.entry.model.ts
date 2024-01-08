@@ -65,6 +65,9 @@ export interface TmaCartPrice {
   childPrices?: TmaChildCartPrice[];
   usageChargeType?: string;
   parentId?: string;
+  priceAlteration: TmaCartPrice[];
+  percentage: string;
+  price: TmaCartPrice;
 }
 
 export interface TmaOrderEntry extends OrderEntry {
@@ -99,6 +102,7 @@ export interface TmaBillingTime {
 export interface TmaCartItemPrice {
   currencyIso: string;
   payOnCheckoutPrice: number;
+  payOnCheckoutDiscount: number;
   recurringPrices: TmaCartPrice[];
   usageChargePrices: TmaCartPrice[];
   oneTimeChargePrices: TmaCartPrice[];

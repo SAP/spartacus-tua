@@ -7,6 +7,6 @@ export const consumption = {
     },
     getAvailableOffers: 'Get Available Offers',
     updateMyConsumption: 'Update My Consumption',
-    annualConsumption: 'or annual consumption',
+    annualConsumption: 'or annual consumption'
   }
 };

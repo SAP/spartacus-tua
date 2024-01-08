@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { MediaService } from '@spartacus/storefront';
 
 @Component({
@@ -45,7 +44,7 @@ export class TmaSliderOptionComponent implements OnInit {
   updateSlider(): void {
     const consumption: number = Number(this.consumption);
     this.sliderOptions.forEach((option, index) => {
-      if (consumption === option.value){
+      if (consumption === option.value) {
         this.checked[index] = true;
       }
     });

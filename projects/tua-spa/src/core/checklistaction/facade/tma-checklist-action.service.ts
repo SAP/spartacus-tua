@@ -1,26 +1,24 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { BaseSiteService } from '@spartacus/core';
-import { Observable, Subject } from 'rxjs';
-import { filter, takeUntil, tap } from 'rxjs/operators';
-import * as TmaChecklistActionModel from '../../model/tma-checklist-action.model';
-import { TmaChecklistActionMap, TmaStateWithChecklistAction } from '../store';
-import * as TmaChecklistAction from '../store/actions/tma-checklist-action.action';
-import * as TmaChecklistActionSelectors from '../store/selectors/tma-checklist-action.selector';
 import { TmaProcessTypeEnum } from '../../model';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import * as TmaChecklistAction from '../store/actions/tma-checklist-action.action';
+import * as TmaChecklistActionModel from '../../model/tma-checklist-action.model';
+import { Store, select } from '@ngrx/store';
+import { TmaStateWithChecklistAction } from '../store';
+import * as TmaChecklistActionSelectors from '../store/selectors/tma-checklist-action.selector';
+import { takeUntil, tap } from 'rxjs/operators';
+import { BaseSiteService } from '@spartacus/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class TmaChecklistActionService implements OnDestroy {
-
+  
   protected activeBaseSite: string;
-
+  
   protected destroyed$ = new Subject();
 
   /**
    *
-   * @deprecated Since 1.1
+   * @deprecated Since 2.0
    * Add baseSiteService
    */
   constructor(
@@ -45,29 +43,73 @@ export class TmaChecklistActionService implements OnDestroy {
   }
 
   /**
-   * Returns the checklist action for the provided base site id, product code and process type
-   *
-   * @param baseSiteId - The identifier of the base site
-   * @param productCode - The identifier of the product
-   * @param processType - The process type
-   * @return List of {@link TmaChecklistActionModel.TmaChecklistAction} as an {@link Observable}
+   * This method is used to retrive checklist actions for defined product and process type
+   * @param baseSiteId  The base site Id
+   * @param productCode The product code
+   * @param processType? The process type to find the checklist actions
+   * @returns TmaChecklistActionModel.TmaChecklistAction[] The applicable checkist actions
    */
-  getChecklistActionForProductCode(baseSiteId: string, productCode: string, processType?: TmaProcessTypeEnum): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
-    this.store.select(TmaChecklistActionSelectors.getAllChecklistActions)
-      .pipe(
-        tap((checklistActions: TmaChecklistActionMap[]) => {
-          if (!checklistActions.find((checklistAction: TmaChecklistActionMap) => checklistAction.productId === productCode && checklistAction.baseSiteId === baseSiteId && checklistAction.processType === processType)) {
-            this.store.dispatch(new TmaChecklistAction.LoadChecklistActions({
+  getChecklistActionForProductCode(
+    baseSiteId: string,
+    productCode: string,
+    processType?: TmaProcessTypeEnum
+  ): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
+    return this.store.pipe(
+      select(TmaChecklistActionSelectors.getChecklistActionForProductCode, {
+        productCode,
+        baseSiteId,
+        processType,
+      }),
+      tap((checklistActions: TmaChecklistActionModel.TmaChecklistAction[]) => {
+        if (
+          checklistActions === undefined ||
+          Object.keys(checklistActions).length === 0
+        ) {
+          this.store.dispatch(
+            new TmaChecklistAction.LoadChecklistActions({
               baseSiteId,
               productCode,
-              processType
-            }));
-          }
-        }),
-        filter((checklistActions: TmaChecklistActionMap[]) => checklistActions != null),
-        takeUntil(this.destroyed$))
-      .subscribe();
+              processType,
+            })
+          );
+        }
+      })
+    );
+  }
 
-    return this.store.select(TmaChecklistActionSelectors.getChecklistActionForProductCode, { productCode, baseSiteId, processType });
+  /**
+   * Retrives the checklist actions for multiple product offerings based on process type
+   *
+   * @param baseSiteId  The base site Id
+   * @param productOfferingCodes The list of product offering codes
+   * @param processType? The process type to find the checklist actions
+   * @returns TmaChecklistActionModel.TmaChecklistAction[] The applicable checklist actions
+   */
+  getChecklistActionsFor(
+    baseSiteId: string,
+    productOfferingCodes: string[],
+    processType?: TmaProcessTypeEnum
+  ): Observable<TmaChecklistActionModel.TmaChecklistAction[]> {
+    return this.store.pipe(
+      select(TmaChecklistActionSelectors.getChecklistActionForPoCodes, {
+        productOfferingCodes,
+        baseSiteId,
+        processType,
+      }),
+      tap((checklistActions: TmaChecklistActionModel.TmaChecklistAction[]) => {
+        if (
+          checklistActions === undefined ||
+          Object.keys(checklistActions).length === 0
+        ) {
+          this.store.dispatch(
+            new TmaChecklistAction.LoadChecklistActions({
+              baseSiteId,
+              productOfferingCodes,
+              processType,
+            })
+          );
+        }
+      })
+    );
   }
 }

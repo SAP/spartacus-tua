@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Country, Region, UserAddressService } from '@spartacus/core';
+import { Country, Region } from '@spartacus/core';
 import { ICON_TYPE, ModalService } from '@spartacus/storefront';
 import { BehaviorSubject } from 'rxjs';
 import { TmaInstallationAddress, TmaPremiseDetail } from '../../../../../core/model';
@@ -23,7 +23,7 @@ export class TmaPremiseDetailsFormComponent implements OnInit, AfterViewInit {
   @Output()
   validatePremiseDetails = new EventEmitter<any>();
 
-  @ViewChild(TmaAddressFormComponent, { static: true})
+  @ViewChild(TmaAddressFormComponent, { static: true })
   addressComponent!: TmaAddressFormComponent;
 
   iconTypes = ICON_TYPE;
@@ -41,13 +41,12 @@ export class TmaPremiseDetailsFormComponent implements OnInit, AfterViewInit {
 
   constructor(
     protected fb: FormBuilder,
-    protected userAddressService: UserAddressService,
     protected modalService: ModalService
   ) {
   }
 
   ngOnInit(): void {
-    if (this.premiseDetail && this.premiseDetail.installationAddress){
+    if (this.premiseDetail && this.premiseDetail.installationAddress) {
       this.installationAddress = this.premiseDetail.installationAddress;
     }
     this.updatePremiseDetailInputs();
@@ -59,20 +58,20 @@ export class TmaPremiseDetailsFormComponent implements OnInit, AfterViewInit {
   }
 
   /**
-     * Sets up the isocode for the selected country
-     * 
-     * @param country - the selected country
-     */
+   * Sets up the isocode for the selected country
+   *
+   * @param country - the selected country
+   */
   onCountrySelected(country: Country): void {
     this.selectedCountry$.next(country);
     this.selectedRegion$.next(null);
   }
 
   /**
-     * Sets up the isocode for the selected region
-     * 
-     * @param region - the selected region
-     */
+   * Sets up the isocode for the selected region
+   *
+   * @param region - the selected region
+   */
   onRegionSelected(region: Region): void {
     this.selectedRegion$.next(region);
   }
@@ -103,7 +102,7 @@ export class TmaPremiseDetailsFormComponent implements OnInit, AfterViewInit {
 
   /**
    * Closes the popup modal
-   * 
+   *
    * @param reason - reason for closing the modal
    */
   onDismissModal(reason?: any): void {

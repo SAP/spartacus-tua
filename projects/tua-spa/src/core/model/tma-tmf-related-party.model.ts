@@ -7,5 +7,4 @@ export interface TmaTmfRelatedParty {
 
 export enum TmaTmfRelatedPartyRole {
   CUSTOMER = 'CUSTOMER',
-  ANONYMOUS = 'ANONYMOUS',
 }

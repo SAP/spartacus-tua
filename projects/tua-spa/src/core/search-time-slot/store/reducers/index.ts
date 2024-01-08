@@ -6,11 +6,11 @@ import {
   SEARCH_TIME_SLOT_DATA,
 } from '../search-time-slot.state';
 import { SearchTimeSlot } from '../../..';
-import { loaderReducer } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 
 export function getReducers(): ActionReducerMap<SearchTimeSlotState> {
   return {
-    searchTimeSlots: loaderReducer<SearchTimeSlot>(
+    searchTimeSlots: StateUtils.loaderReducer<SearchTimeSlot>(
       SEARCH_TIME_SLOT_DATA,
       fromTmaSearchTimeSlotReducers.searchTimeSlotReducer
     ),

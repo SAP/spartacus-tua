@@ -8,7 +8,7 @@ import { TmaConsumptionChangeService } from '../../../../../core/product/facade'
   selector: 'cx-consumption',
   templateUrl: './tma-consumption-dialog.component.html',
   styleUrls: ['./tma-consumption-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TmaConsumptionDialogComponent implements OnInit {
 
@@ -28,7 +28,7 @@ export class TmaConsumptionDialogComponent implements OnInit {
 
   constructor(
     protected modalService: ModalService,
-    protected consumptionChangeService: TmaConsumptionChangeService,
+    protected consumptionChangeService: TmaConsumptionChangeService
   ) {
   }
 
@@ -38,7 +38,7 @@ export class TmaConsumptionDialogComponent implements OnInit {
   dismissModal(
     {
       consumption,
-      productSpecification,
+      productSpecification
     }: {
       consumption?: number,
       productSpecification?: string

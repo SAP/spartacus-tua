@@ -13,10 +13,11 @@ import {
 import { Observable, of } from 'rxjs';
 import { TmaBillingFrequencyConfig } from '../../../../core/config/billing-frequency/config';
 import { TmaConsumptionConfig } from '../../../../core/config/consumption/config';
-import { TmaProduct } from '../../../../core/model/tma-product.model';
+import { TmaProduct } from '../../../../core/model';
 import { TmaPriceService, TmaProductService } from '../../../../core/product/facade';
 import { TmaPriceModule } from '../price';
 import { TmaProductSummaryComponent } from './tma-product-summary.component';
+import { TmaPriceDisplayModule } from '../price/price-display/tma-price-display.module';
 
 class MockCurrentProductService {
   getProduct(): Observable<TmaProduct> {
@@ -70,7 +71,7 @@ describe('TmaProductSummaryComponent in product', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [SpinnerModule, AddToCartModule, ItemCounterModule, I18nTestingModule, TmaPriceModule],
+      imports: [SpinnerModule, AddToCartModule, ItemCounterModule, I18nTestingModule, TmaPriceModule, TmaPriceDisplayModule],
       declarations: [TmaProductSummaryComponent, ProductSummaryComponent, OutletDirective],
       providers: [
         {

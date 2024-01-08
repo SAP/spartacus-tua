@@ -1,4 +1,4 @@
-import { StateLoaderActions } from '@spartacus/core';
+import { StateUtils } from '@spartacus/core';
 import { SEARCH_TIME_SLOT_DATA } from '../search-time-slot.state';
 
 export enum SearchTimeSlotActionTypes {
@@ -8,7 +8,7 @@ export enum SearchTimeSlotActionTypes {
   SELECTED_TIME_SLOT_SUCCESS = '[Search-TimeSlot] Selected TimeSlot Success',
 }
 
-export class LoadSearchTimeSlot extends StateLoaderActions.LoaderLoadAction {
+export class LoadSearchTimeSlot extends StateUtils.LoaderLoadAction {
   readonly type = SearchTimeSlotActionTypes.LOAD_SEARCH_TIME_SLOT;
 
   constructor(public payload: any) {
@@ -16,7 +16,7 @@ export class LoadSearchTimeSlot extends StateLoaderActions.LoaderLoadAction {
   }
 }
 
-export class LoadSearchTimeSlotSuccess extends StateLoaderActions.LoaderSuccessAction {
+export class LoadSearchTimeSlotSuccess extends StateUtils.LoaderSuccessAction {
   readonly type = SearchTimeSlotActionTypes.LOAD_SEARCH_TIME_SLOT_SUCCESS;
 
   constructor(public payload: any) {
@@ -24,7 +24,7 @@ export class LoadSearchTimeSlotSuccess extends StateLoaderActions.LoaderSuccessA
   }
 }
 
-export class LoadSearchTimeSlotFail extends StateLoaderActions.LoaderFailAction {
+export class LoadSearchTimeSlotFail extends StateUtils.LoaderFailAction {
   readonly type = SearchTimeSlotActionTypes.LOAD_SEARCH_TIME_SLOT_FAIL;
 
   constructor(public payload: any) {

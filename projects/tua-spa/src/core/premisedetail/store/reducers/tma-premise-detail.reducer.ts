@@ -1,5 +1,5 @@
 import { TmaPremiseDetail } from '../../../model';
-import { TmaPremiseDetailActionType, TmaPremiseDetailActionTypes } from '../actions/tma-premise-details.actions';
+import { TmaPremiseDetailActionType, TmaPremiseDetailActionTypes } from '../actions/tma-premise-detail.actions';
 import { TmaPremiseDetailState } from '../tma-premise-detail.state';
 
 const initialState: TmaPremiseDetailState[] = [];

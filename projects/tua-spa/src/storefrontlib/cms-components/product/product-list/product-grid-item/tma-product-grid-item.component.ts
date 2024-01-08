@@ -4,20 +4,26 @@ import { ProductGridItemComponent } from '@spartacus/storefront';
 import { Observable, Subscription } from 'rxjs';
 import { first } from 'rxjs/operators';
 import {
-  TmaBillingFrequencyConfig, 
-  TmaBillingFrequencyMap, 
-  TmaConsumptionChangeService, 
-  TmaConsumptionConfig, 
+  SEPARATOR,
+  TmaBillingFrequencyConfig,
+  TmaBillingFrequencyMap,
+  TmaCmsConsumptionComponent,
+  TmaConsumptionConfig,
+  TmaConsumptionValue,
+  TmaProduct,
+  TmaUsageUnit
+} from '../../../../../core';
+import {
+  TmaConsumptionChangeService,
   TmaPriceService,
   TmaProductService
-} from '../../../../../core';
-import { SEPARATOR, TmaCmsConsumptionComponent, TmaConsumptionValue, TmaProduct, TmaUsageUnit } from '../../../../../core/model';
+} from '../../../../../core/product/facade';
 
 @Component({
   selector: 'cx-product-grid-item',
   templateUrl: './tma-product-grid-item.component.html',
   styleUrls: ['./tma-product-grid-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TmaProductGridItemComponent extends ProductGridItemComponent implements OnInit, OnDestroy {
 
@@ -42,14 +48,15 @@ export class TmaProductGridItemComponent extends ProductGridItemComponent implem
 
   protected consumptionChangeServiceSubject: Subscription;
 
+
   constructor(
-    public priceService: TmaPriceService,
-    protected productService: ProductService,
-    protected currencyService: CurrencyService,
-    protected consumptionConfig: TmaConsumptionConfig,
-    protected productSpecificationProductService: TmaProductService,
-    protected consumptionChangeService: TmaConsumptionChangeService,
-    protected billingFrequencyConfig: TmaBillingFrequencyConfig
+    public priceService?: TmaPriceService,
+    protected currencyService?: CurrencyService,
+    protected productService?: ProductService,
+    protected consumptionConfig?: TmaConsumptionConfig,
+    protected productSpecificationProductService?: TmaProductService,
+    protected consumptionChangeService?: TmaConsumptionChangeService,
+    protected billingFrequencyConfig?: TmaBillingFrequencyConfig
   ) {
     super();
   }
